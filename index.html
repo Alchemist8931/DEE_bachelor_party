@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RIVA - Складской учет и рецепты</title>
-  
+
   <!-- Подключение шрифтов -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -35,15 +35,15 @@
       height: 100vh;
       background: #f5f5f5;
       font-family: 'Comfortaa', sans-serif;
-      overflow: hidden; /* Чтобы не было скролла при показе прелоадера */
+      overflow: hidden; /* Чтобы не было прокрутки при показе прелоадера */
       position: relative;
     }
 
     /* ========================================
        ПРЕЛОАДЕР (Анимация вертикальных линий)
        ======================================== */
-    .lines-loader {
-      position: absolute;
+    #preloader {
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -54,26 +54,26 @@
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s ease, visibility 0.5s ease;
-      z-index: 9999; /* Поверх всего */
+      z-index: 9999; /* Поверх всего остального контента */
     }
-    .lines-loader.visible {
+    #preloader.visible {
       opacity: 1;
       visibility: visible;
     }
-    .lines-loader.fade-out {
+    #preloader.fade-out {
       opacity: 0;
       visibility: hidden;
     }
-    .lines-loader .line {
+    .line {
       width: var(--loader-line-width);
       height: var(--loader-line-height);
       background-color: var(--loader-line-color);
       animation: bounce 1.5s infinite ease-in-out;
       border-radius: 4px;
     }
-    .lines-loader .line:nth-child(2) { animation-delay: 0.3s; }
-    .lines-loader .line:nth-child(3) { animation-delay: 0.6s; }
-    .lines-loader .line:nth-child(5) { animation-delay: 1.2s; }
+    .line:nth-child(2) { animation-delay: 0.3s; }
+    .line:nth-child(3) { animation-delay: 0.6s; }
+    .line:nth-child(5) { animation-delay: 1.2s; }
 
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -82,33 +82,149 @@
     }
 
     /* =========================================
-       КОНТЕЙНЕР С ФОРМОЙ (авторизация/регистрация)
-       Изначально спрятан (opacity=0), потом плавно показываем
+       ОСНОВНОЙ КОНТЕНТ (меню + формы)
+       По умолчанию скрыт (opacity: 0)
        ========================================= */
-    #form-wrapper {
+    #main-content {
+      opacity: 0;
+      pointer-events: none; /* Чтобы не кликалось */
+      transition: opacity 0.5s ease;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #main-content.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* =========================================
+       СТИЛИ МЕНЮ
+       ========================================= */
+    .navigation {
+      position: fixed;
+      top: 20px;
+      left: 20px; 
+      height: 98vh; 
+      width: 60px; 
+      background: #212121;
+      z-index: 1000;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
+    }
+    .navigation ul {
+      position: absolute;
+      top: 0;
+      left: -40px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .navigation ul li {
+      position: relative;
+      list-style: none;
+      width: 70px;
+      height: 70px;
+      z-index: 1;
+      cursor: pointer;
+    }
+    .navigation ul li a {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-weight: 500;
+    }
+    .navigation ul li a .icon {
+      display: block;
+      line-height: 47px;
+      text-align: center;
+      transition: 0.5s;
+      left: -4px;
+    }
+    .navigation ul li a .icon i {
+      font-size: 25px;
+    }
+    .navigation ul li a .title {
+      position: absolute;
+      top: 0px;
+      left: 0px; 
+      background: #212121;
+      transform: translateY(-60%);
+      padding: 10px 10px;
+      border-radius: 10px; 
+      transition: 0.5s;
+      box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); 
+      opacity: 0;
+      visibility: hidden;
+      font-size: 10px;
+    }
+    .navigation ul li:hover a .title {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(70px) translateY(-10px);
+    }
+    .navigation ul li a .title::before {
+      content: "";
+      position: absolute;
+      width: 10px; 
+      height: 10px; 
+      background: #212121;
+      left: -8px; 
+      top: 20%;
+      transition: 0.5s;
+      transform: rotate(45deg) translateY(-60%);
+      border-radius: 10px;
+    }
+    .navigation ul .indicator {
+      position: absolute;
+      left: 45px;
+      width: 50px;
+      height: 30px;
+      transition: 0.5s;
+    }
+    .navigation ul .indicator::before {
+      content: "";
+      position: absolute;
+      width: 50px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 50px;
+      background: white;
+      border-radius: 7px;
+      transition: 0.5s;
+    }
+    .navigation ul li:nth-child(1).active ~ .indicator {
+      transform: translateY(calc(0px * 0)); 
+    }
+    .navigation ul li:nth-child(2).active ~ .indicator {
+      transform: translateY(calc(70px * 1));
+    }
+    .navigation ul li:nth-child(3).active ~ .indicator {
+      transform: translateY(calc(70px * 2));
+    }
+    .navigation ul li:nth-child(4).active ~ .indicator {
+      transform: translateY(calc(70px * 3));
+    }
+    .navigation ul li:nth-child(5).active ~ .indicator {
+      transform: translateY(calc(70px * 4));
+    }
+
+    /* =========================================
+       ФОРМА (авторизация/регистрация)
+       ========================================= */
+    .container {
       width: var(--form-width);
       height: var(--form-height);
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0;                /* Скрыто до окончания прелоадера */
-      pointer-events: none;      /* Чтоб клики не срабатывали */
-      transition: opacity 0.5s ease;
-    }
-    #form-wrapper.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* =========================================
-       СТИЛИ ОВЕРЛЭЯ И ФОРМЫ
-       (ваш код для формы регистрации/входа)
-       ========================================= */
-    .container {
-      width: var(--form-width);
-      height: var(--form-height);
-      position: relative;
       box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
       border-radius: 10px;
       border: 1px solid rgba(0, 0, 0, 0.10);
@@ -146,12 +262,8 @@
       padding: 0px var(--padding);
       text-align: center;
     }
-    .overlay .sign-in {
-      float: left;
-    }
-    .overlay .sign-up {
-      float: right;
-    }
+    .overlay .sign-in { float: left; }
+    .overlay .sign-up { float: right; }
 
     .form {
       width: 100%; 
@@ -159,9 +271,7 @@
       position: absolute;
       border-radius: 10px;
     }
-
-    .form .sign-in, 
-    .form .sign-up {
+    .form .sign-in, .form .sign-up {
       --padding: 50px;
       position: absolute;
       width: calc(var(--form-width) - 385px - var(--padding) * 2);
@@ -175,24 +285,16 @@
     }
     .form .sign-in {
       left: 0;
-      display: none; /* По умолчанию форма регистрации скрыта */
+      display: none; /* По умолчанию скрыта (регистрация) */
     }
     .form .sign-up {
-      right: 0;
+      right: 0; /* По умолчанию видно (вход) */
     }
 
-    .form-right-slide-in {
-      animation: form-slide-in-right 1s;
-    }
-    .form-right-slide-out {
-      animation: form-slide-out-right 1s;
-    }
-    .form-left-slide-in {
-      animation: form-slide-in-left 1s;
-    }
-    .form-left-slide-out {
-      animation: form-slide-out-left 1s;
-    }
+    .form-right-slide-in { animation: form-slide-in-right 1s; }
+    .form-right-slide-out { animation: form-slide-out-right 1s; }
+    .form-left-slide-in  { animation: form-slide-in-left 1s; }
+    .form-left-slide-out { animation: form-slide-out-left 1s; }
 
     @keyframes slideright {
       0%   { clip: rect(0, 385px, var(--form-height), 0); }
@@ -208,6 +310,7 @@
       30%  { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-480px)); }
       0%   { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-385px)); }
     }
+
     @keyframes form-slide-in-right {
       0%   { padding-right: 100px; }
       100% { padding-right: 50px; }
@@ -235,6 +338,15 @@
       width: 380px;
       border-radius: 10px;
     }
+    .modalFORM h3 {
+      font-size: 26px;
+      font-weight: 500;
+      text-align: center;
+      text-transform: uppercase;
+      color: #212121;
+      margin: 0;
+    }
+
     .inputField {
       width: 350px;
       padding: 8px;
@@ -291,14 +403,7 @@
     .button-submit2:active {
       transform: scale(0.95);
     }
-    h3 {
-      font-size: 26px;
-      font-weight: 500;
-      text-align: center;
-      text-transform: uppercase;
-      color: #212121; /* Тёмный цвет */
-      margin: 0;
-    }
+
     h2 {
       --low: 10%;
       --high: 99%;
@@ -340,13 +445,14 @@
       clip-path: var(--clip2);
       text-shadow: 0 0 5px rgba(0,0,0,0.4);
     }
+
   </style>
+
 </head>
 <body>
 
-<!-- Прелоадер -->
-<div id="preloader" class="lines-loader visible">
-  <!-- линии прелоадера -->
+<!-- Прелоадер (по центру экрана) -->
+<div id="preloader">
   <div class="line"></div>
   <div class="line"></div>
   <div class="line"></div>
@@ -354,28 +460,65 @@
   <div class="line"></div>
 </div>
 
-<!-- Обёртка для формы, изначально скрыта (opacity:0) -->
-<div id="form-wrapper">
+<!-- Основной контент (меню + форма), изначально скрыт (opacity:0) -->
+<div id="main-content">
+  <!-- Меню -->
+  <div class="navigation">
+    <ul>
+      <li class="list active" onclick="showModal('modal1')">
+        <a href="#">
+          <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
+          <span class="title">PAGE 1</span>
+        </a>
+      </li>
+      <li class="list" onclick="showModal('modal2')">
+        <a href="#">
+          <span class="icon"><i class="material-symbols-outlined">finance_mode</i></span>
+          <span class="title">PAGE 2</span>
+        </a>
+      </li>
+      <li class="list">
+        <a href="#">
+          <span class="icon"><i class="material-symbols-outlined">data_table</i></span>
+          <span class="title">TASKS</span>
+        </a>
+      </li>
+      <li class="list">
+        <a href="#">
+          <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
+          <span class="title">in_dev</span>
+        </a>
+      </li>
+      <li class="list">
+        <a href="#">
+          <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
+          <span class="title">in_dev</span>
+        </a>
+      </li>
+      <div class="indicator"></div>
+    </ul>
+  </div>
+
+  <!-- Форма (Регистрация/Вход) -->
   <div class="container">
     <div class="overlay" id="overlay">
-      <!-- Левый блок (при регистрации) -->
+      <!-- Блок "только узнали о нас" (для перехода на Регистрацию) -->
       <div class="sign-in" id="sign-in">
         <h3 style="color: white; text-align: left;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
         <p style="text-align: left;">Расскажите немного о себе, и совершенствуйте свое дело вместе с нами!</p>
         <button class="button-submit2" id="slide-right-button">создать учетную запись</button>
       </div>
 
-      <!-- Правый блок (при входе) -->
+      <!-- Блок "мы знакомы" (для перехода на Вход) -->
       <div class="sign-up" id="sign-up">
         <h3 style="color: white; text-align: left;">МЫ ЗНАКОМЫ?</h3>
-        <p style="text-align: left;">Если вы уже зарегистрированы, перейдите пожалуйста на форму входа</p>
+        <p style="text-align: left;">Если вы уже зарегистрированы, перейдите на форму входа</p>
         <button class="button-submit2" id="slide-left-button">форма входа</button>
       </div>
     </div>
 
-    <!-- Основная форма -->
     <div class="form">
-      <!-- Блок регистрации (изначально скрыт, т.к. .sign-in не показан) -->
+      <!-- Форма регистрации (изначально скрыта) -->
       <div class="sign-in" id="sign-in-info">
         <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
         <form id="sign-in-form">
@@ -398,7 +541,7 @@
         </form>
       </div>
 
-      <!-- Блок входа (по умолчанию показывается) -->
+      <!-- Форма входа (по умолчанию видна) -->
       <div class="sign-up" id="sign-up-info">
         <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
         <form id="sign-up-form">
@@ -419,41 +562,57 @@
 </div>
 
 <script>
-  // ========== ЛОГИКА ПРЕЛОАДЕРА И ПЛАВНОГО ПОКАЗА ФОРМЫ ========== //
+  // ====== Показываем прелоадер сразу при загрузке ====== //
+  const preloader = document.getElementById('preloader');
+  preloader.classList.add('visible');
+
+  // ====== Прелоадер: 2 секунды работы, затем плавное исчезновение (0.5s) ====== //
   document.addEventListener('DOMContentLoaded', function() {
-    // Через 2 секунды начинаем скрывать прелоадер
     setTimeout(() => {
-      const preloader = document.getElementById('preloader');
-      // Убираем класс visible, добавляем fade-out (через CSS или напрямую стили)
       preloader.classList.remove('visible');
       preloader.classList.add('fade-out');
-
-      // Ждём 0.5s анимации исчезновения прелоадера
+      
       setTimeout(() => {
         // Полностью скрываем прелоадер
         preloader.style.display = 'none';
         
-        // Показываем форму (присваиваем класс .show блоку #form-wrapper)
-        const formWrapper = document.getElementById('form-wrapper');
-        formWrapper.classList.add('show');
+        // Показываем основной контент
+        const mainContent = document.getElementById('main-content');
+        mainContent.classList.add('show');
 
-        // Разрешаем прокрутку, если нужно (но смотрите по желанию)
+        // Разрешаем прокрутку
         document.body.style.overflow = 'auto';
       }, 500);
 
     }, 2000);
   });
 
+  // ====== Логика анимации пунктов меню (hover) ====== //
+  let list = document.querySelectorAll(".navigation ul li");
+  for (let i = 0; i < list.length; i++) {
+    list[i].onmouseover = function () {
+      let j = 0;
+      while (j < list.length) {
+        list[j++].className = "list";
+      }
+      list[i].className = "list active";
+    };
+  }
 
-  // ========== АНИМАЦИЯ ПЕРЕКЛЮЧЕНИЯ ФОРМ ========== //
+  // ====== Пример функции showModal (имитация открытия «страниц») ====== //
+  function showModal(modalId) {
+    alert("Открывается " + modalId + " (пример имитации)");
+  }
+
+  // ====== Анимация переключения между формами Регистрация / Вход ====== //
   var overlay = document.getElementById("overlay");
   var openSignUpButton = document.getElementById("slide-left-button");
   var openSignInButton = document.getElementById("slide-right-button");
 
-  var leftText = document.getElementById("sign-in");
-  var rightText = document.getElementById("sign-up");
-  var accountForm = document.getElementById("sign-in-info"); // Регистрация
-  var signinForm = document.getElementById("sign-up-info"); // Вход
+  var leftText = document.getElementById("sign-in");       // "ТОЛЬКО УЗНАЛИ О НАС?"
+  var rightText = document.getElementById("sign-up");      // "МЫ ЗНАКОМЫ?"
+  var accountForm = document.getElementById("sign-in-info"); // Форма регистрации
+  var signinForm = document.getElementById("sign-up-info");  // Форма входа
 
   function openSignUp() {
     leftText.classList.remove("overlay-text-left-animation-out");
@@ -505,4 +664,5 @@
 
 </body>
 </html>
+
 
