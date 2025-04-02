@@ -211,11 +211,12 @@
        при open-sign-in оверлей уходит левее 
     */
     .open-sign-up {
-      animation: slideleft 1s linear forwards;
-    }
-    .open-sign-in {
-      animation: slideright 1s linear forwards;
-    }
+  animation: slideright 1s linear forwards;
+}
+
+.open-sign-in {
+  animation: slideleft 1s linear forwards;
+}
 
     @keyframes slideright {
       0%   { clip: rect(0, 385px, var(--form-height), 0); }
