@@ -16,7 +16,7 @@
       --right-color: #fafafa;
       
       --black-color: #121212;
-      --white-color1: #F4F5F0;
+      --white-color1: #f5f5f5;
       --white-color2: #D1D5D0;
 
       /* Для прелоадера */
@@ -181,7 +181,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       height: 50px;
-      background: white;
+      background: var(--white-color1);
       border-radius: 7px;
       transition: 0.5s;
     }
@@ -293,7 +293,7 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      background-color: white;
+      background-color: var(--white-color1);
       padding: 20px;
       width: 380px;
       border-radius: 10px;
@@ -314,7 +314,7 @@
       border-radius: 10px;
       outline: 1px solid #212121;
       border: 0;
-      background-color: white;
+      background-color: var(--white-color1);
       outline-offset: 3px;
       transition: 0.25s;
     }
@@ -336,15 +336,15 @@
     }
     .button-submit:hover {
       color: var(--loader-line-color);
-      background-color: white;
+      background-color: var(--white-color1);
     }
     .button-submit:active {
       transform: scale(0.95);
     }
     .button-submit2 {
       padding: 12px;
-      background-color: white;
-      border: 1px solid white;
+      background-color: var(--white-color1);
+      border: 1px solid var(--white-color1);
       color: #212121;
       font-size: 14px;
       font-weight: 600;
@@ -356,7 +356,7 @@
       margin-top: 26px;
     }
     .button-submit2:hover {
-      color: white;
+      color: var(--white-color1);
       background-color: var(--loader-line-color);
     }
     .button-submit2:active {
