@@ -68,7 +68,7 @@
     .line {
       width: var(--loader-line-width);
       height: var(--loader-line-height);
-      background-color: var(--loader-line-color);
+      background: var(--loader-line-color);
       animation: bounce 1.5s infinite ease-in-out;
       border-radius: 4px;
     }
@@ -95,7 +95,7 @@
       left: 20px;
       height: 98vh;
       width: 60px;
-      background: #212121;
+      background: var(--loader-line-color);
       z-index: 1000;
       border-radius: 10px;
       border: 1px solid rgba(0, 0, 0, 0.10);
@@ -139,7 +139,7 @@
       position: absolute;
       top: 0px;
       left: 0px;
-      background: #212121;
+      background: var(--loader-line-color);
       transform: translateY(-60%);
       padding: 10px 10px;
       border-radius: 10px;
@@ -159,7 +159,7 @@
       position: absolute;
       width: 10px;
       height: 10px;
-      background: #212121;
+      background: var(--loader-line-color);
       left: -8px;
       top: 20%;
       transition: 0.5s;
@@ -303,7 +303,7 @@
       font-weight: 500;
       text-align: center;
       text-transform: uppercase;
-      color: #212121;
+      color: var(--loader-line-color);
       margin: 0;
     }
     .inputField {
@@ -323,8 +323,8 @@
     }
     .button-submit {
       padding: 12px;
-      background-color: #212121;
-      border: 1px solid #212121;
+      background-color: var(--loader-line-color);
+      border: 1px solid var(--loader-line-color);
       color: white;
       font-size: 14px;
       font-weight: 600;
@@ -335,7 +335,7 @@
       transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     }
     .button-submit:hover {
-      color: #212121;
+      color: var(--loader-line-color);
       background-color: white;
     }
     .button-submit:active {
@@ -357,7 +357,7 @@
     }
     .button-submit2:hover {
       color: white;
-      background-color: #212121;
+      background-color: var(--loader-line-color);
     }
     .button-submit2:active {
       transform: scale(0.95);
