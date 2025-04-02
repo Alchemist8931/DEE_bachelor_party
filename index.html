@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>RIVA - Складской учет и рецепты</title>
 
   <!-- Подключение шрифтов -->
@@ -32,6 +31,7 @@
       box-sizing: border-box;
       font-family: 'Comfortaa', sans-serif;
     }
+
     body, html {
       width: 100vw;
       height: 100vh;
@@ -68,7 +68,7 @@
     .line {
       width: var(--loader-line-width);
       height: var(--loader-line-height);
-      background-color: #121212;
+      background-color: var(--loader-line-color);
       animation: bounce 1.5s infinite ease-in-out;
       border-radius: 4px;
     }
@@ -83,11 +83,12 @@
     }
 
     /* ===========================
-       МЕНЮ (Скрыто по умолчанию)
+       БОКОВОЕ МЕНЮ (скрыто вначале)
        =========================== */
     #side-menu {
-      display: none; /* изначально скрыто */
+      display: none; /* станет visible после успешного логина */
     }
+
     .navigation {
       position: fixed;
       top: 20px;
@@ -184,7 +185,6 @@
       border-radius: 7px;
       transition: 0.5s;
     }
-
     /* Анимация активного пункта меню */
     .navigation ul li:nth-child(1).active ~ .indicator {
       transform: translateY(calc(70px * 0));
@@ -203,9 +203,8 @@
     }
 
     /* ===========================
-       ФОРМА ЛОГИН/РЕГИСТРАЦИЯ
-       По умолчанию скрыта (в момент загрузки)
-       Потом показываем после прелоадера
+       ФОРМА: логин/регистрация
+       (login-wrapper скрыт в момент загрузки)
        =========================== */
     #login-wrapper {
       opacity: 0;
@@ -262,7 +261,6 @@
     .overlay .sign-in { float: left; }
     .overlay .sign-up { float: right; }
 
-    /* Форма */
     .form {
       width: 100%;
       height: 100%;
@@ -284,10 +282,10 @@
     }
     .form .sign-in {
       left: 0;
-      display: none; /* по умолчанию скрыта (регистрация) */
+      display: none; /* регистрация скрыта по умолчанию */
     }
     .form .sign-up {
-      right: 0; /* по умолчанию видна (вход) */
+      right: 0;      /* вход виден по умолчанию */
     }
 
     .modalFORM {
@@ -308,7 +306,6 @@
       color: #212121;
       margin: 0;
     }
-
     .inputField {
       width: 350px;
       padding: 8px;
@@ -384,7 +381,7 @@
       0%   { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-385px)); }
     }
 
-    /* Для демонстрации исчезновения/появления формы, можно анимировать opacity */
+    /* Для fadeIn/fadeOut формы (опционально) */
     .fadeOut {
       animation: fadeOut 0.5s forwards;
     }
@@ -401,291 +398,335 @@
 
   </style>
 </head>
+
 <body>
 
-<!-- Прелоадер -->
-<div id="preloader">
-  <div class="line"></div>
-  <div class="line"></div>
-  <div class="line"></div>
-  <div class="line"></div>
-  <div class="line"></div>
-</div>
-
-<!-- Боковое меню (изначально display: none) -->
-<div id="side-menu">
-  <div class="navigation">
-    <ul>
-      <li class="list active" onclick="showModal('modal1')">
-        <a href="#">
-          <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
-          <span class="title">PAGE 1</span>
-        </a>
-      </li>
-      <li class="list" onclick="showModal('modal2')">
-        <a href="#">
-          <span class="icon"><i class="material-symbols-outlined">finance_mode</i></span>
-          <span class="title">PAGE 2</span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="#">
-          <span class="icon"><i class="material-symbols-outlined">data_table</i></span>
-          <span class="title">TASKS</span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="#">
-          <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
-          <span class="title">in_dev</span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="#">
-          <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
-          <span class="title">in_dev</span>
-        </a>
-      </li>
-      <div class="indicator"></div>
-    </ul>
+  <!-- Прелоадер (изначально visible) -->
+  <div id="preloader">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
   </div>
-</div>
 
-<!-- Обёртка формы (по умолчанию скрыта) -->
-<div id="login-wrapper">
-  <div class="container">
-    <div class="overlay" id="overlay">
-      <div class="sign-in" id="sign-in">
-        <h3 style="color: white; text-align: left;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
-        <p style="text-align: left;">Расскажите немного о себе, и совершенствуйте свое дело вместе с нами!</p>
-        <button class="button-submit2" id="slide-right-button">создать учетную запись</button>
-      </div>
-      <div class="sign-up" id="sign-up">
-        <h3 style="color: white; text-align: left;">МЫ ЗНАКОМЫ?</h3>
-        <p style="text-align: left;">Если вы уже зарегистрированы, перейдите на форму входа</p>
-        <button class="button-submit2" id="slide-left-button">форма входа</button>
-      </div>
-    </div>
-
-    <div class="form">
-      <!-- Форма регистрации (по умолчанию скрыта) -->
-      <div class="sign-in" id="sign-in-info">
-        <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
-        <form id="sign-in-form">
-          <div class="modalFORM">
-            <h3>ФОРМА РЕГИСТРАЦИИ</h3>
-            <div class="inputForm" style="margin-top: -30px;">
-              <input class="inputField" placeholder=\"ваше ФИО\" type=\"text\" />
-            </div>
-            <div class="inputForm">
-              <input class="inputField" type=\"text\" id=\"phone\" placeholder=\"+7 (999) 999 99 99\" maxlength=\"12\" autocomplete=\"off\" />
-            </div>
-            <div class="inputForm">
-              <input class=\"inputField\" placeholder=\"почта: mail@gmail.com\" type=\"email\" />
-            </div>
-            <div class=\"inputForm\">
-              <input class=\"inputField\" placeholder=\"пароль\" type=\"password\" />
-            </div>
-            <button class=\"button-submit\">отправить заявку</button>
-          </div>
-        </form>
-      </div>
-      <!-- Форма входа (по умолчанию показана) -->
-      <div class=\"sign-up\" id=\"sign-up-info\">
-        <h2 style=\"--text: 'RIVA';\"><span>RI</span>VA</h2>
-        <form id=\"sign-up-form\">
-          <div class=\"modalFORM\">
-            <h3>ФОРМА ВХОДА</h3>
-            <div class=\"inputForm\" style=\"margin-top: -30px;\">
-              <input class=\"inputField\" type=\"email\" placeholder=\"email: user@gmail.com\" id=\"loginEmail\"/>
-            </div>
-            <div class=\"inputForm\">
-              <input class=\"inputField\" type=\"password\" placeholder=\"ваш пароль\" id=\"loginPassword\"/>
-            </div>
-            <button class=\"button-submit\" id=\"loginBtn\">войти</button>
-          </div>
-        </form>
-      </div>
+  <!-- Боковое меню (скрыто до успешного логина) -->
+  <div id="side-menu">
+    <div class="navigation">
+      <ul>
+        <li class="list active" onclick="showModal('modal1')">
+          <a href="#">
+            <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
+            <span class="title">PAGE 1</span>
+          </a>
+        </li>
+        <li class="list" onclick="showModal('modal2')">
+          <a href="#">
+            <span class="icon"><i class="material-symbols-outlined">finance_mode</i></span>
+            <span class="title">PAGE 2</span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="#">
+            <span class="icon"><i class="material-symbols-outlined">data_table</i></span>
+            <span class="title">TASKS</span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="#">
+            <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
+            <span class="title">in_dev</span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="#">
+            <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
+            <span class="title">in_dev</span>
+          </a>
+        </li>
+        <div class="indicator"></div>
+      </ul>
     </div>
   </div>
-</div>
 
-<script>
-  // ==================================
-  // 1) Показываем прелоадер сразу
-  // 2) Через 2с плавно скрываем прелоадер, показываем форму входа
-  // ==================================
-  const preloader = document.getElementById('preloader');
-  const loginWrapper = document.getElementById('login-wrapper');
+  <!-- Обёртка формы (логин/регистрация), скрыта во время прелоадера -->
+  <div id="login-wrapper">
+    <div class="container">
+      <div class="overlay" id="overlay">
 
-  // При загрузке страницы
-  document.addEventListener('DOMContentLoaded', function() {
-    // Показываем прелоадер
-    preloader.classList.add('visible');
+        <!-- Блок \"ТОЛЬКО УЗНАЛИ О НАС?\" (для переключения на регистрацию) -->
+        <div class="sign-in" id="sign-in">
+          <h3 style="color: white; text-align: left;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
+          <p style="text-align: left;">Расскажите немного о себе, и совершенствуйте свое дело вместе с нами!</p>
+          <button class="button-submit2" id="slide-right-button">создать учетную запись</button>
+        </div>
 
-    // Через 2 секунды скрываем прелоадер
+        <!-- Блок \"МЫ ЗНАКОМЫ?\" (для переключения на вход) -->
+        <div class="sign-up" id="sign-up">
+          <h3 style="color: white; text-align: left;">МЫ ЗНАКОМЫ?</h3>
+          <p style="text-align: left;">Если вы уже зарегистрированы, перейдите на форму входа</p>
+          <button class="button-submit2" id="slide-left-button">форма входа</button>
+        </div>
+
+      </div>
+
+      <!-- Основная форма -->
+      <div class="form">
+        <!-- Регистрация (скрыта по умолчанию) -->
+        <div class="sign-in" id="sign-in-info">
+          <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
+          <form id="sign-in-form">
+            <div class="modalFORM">
+              <h3>ФОРМА РЕГИСТРАЦИИ</h3>
+              <div class="inputForm" style="margin-top: -30px;">
+                <input class="inputField" placeholder="ваше ФИО" type="text" />
+              </div>
+              <div class="inputForm">
+                <input class="inputField" type="text" id="phone" placeholder="+7 (999) 999 99 99" maxlength="12" autocomplete="off" />
+              </div>
+              <div class="inputForm">
+                <input class="inputField" placeholder="почта: mail@gmail.com" type="email" />
+              </div>
+              <div class="inputForm">
+                <input class="inputField" placeholder="пароль" type="password" />
+              </div>
+              <button class="button-submit">отправить заявку</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Вход (показан по умолчанию) -->
+        <div class="sign-up" id="sign-up-info">
+          <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
+          <form id="sign-up-form">
+            <div class="modalFORM">
+              <h3>ФОРМА ВХОДА</h3>
+              <div class="inputForm" style="margin-top: -30px;">
+                <input class="inputField" type="email" placeholder="email: user@gmail.com" id="loginEmail"/>
+              </div>
+              <div class="inputForm">
+                <input class="inputField" type="password" placeholder="ваш пароль" id="loginPassword"/>
+              </div>
+              <button class="button-submit" id="loginBtn">войти</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+/* 
+  Импортируем Supabase через ESM-модуль
+  (важно, чтобы в HTML был type="module")
+*/
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+/* Ваши Supabase параметры */
+const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdHBkc21qd3BqcnN3bGN6endnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNTA3MzMsImV4cCI6MjA1ODkyNjczM30.r1v2_o884o1bmZsEd08kd7U5zdY7kWdZb8PrTnsdm-o';
+
+/* Создаём клиент Supabase */
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* Селекторы DOM */
+const preloader     = document.getElementById('preloader');
+const loginWrapper  = document.getElementById('login-wrapper');
+const sideMenu      = document.getElementById('side-menu');
+
+const slideRightBtn = document.getElementById("slide-right-button"); // 'создать учетную запись'
+const slideLeftBtn  = document.getElementById("slide-left-button");  // 'форма входа'
+const overlay       = document.getElementById("overlay");
+const leftText      = document.getElementById("sign-in");    // Блок \"ТОЛЬКО УЗНАЛИ О НАС?\"
+const rightText     = document.getElementById("sign-up");    // Блок \"МЫ ЗНАКОМЫ?\"
+const accountForm   = document.getElementById("sign-in-info");   // Форма регистрации
+const signinForm    = document.getElementById("sign-up-info");    // Форма входа
+
+/* Поля логина/пароля + кнопка \"войти\" */
+const loginEmail    = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const loginBtn      = document.getElementById('loginBtn');
+
+/* 1. Показываем прелоадер при загрузке */
+document.addEventListener('DOMContentLoaded', function() {
+  // Показываем прелоадер
+  preloader.classList.add('visible');
+
+  // Через 2 секунды скрываем прелоадер
+  setTimeout(() => {
+    preloader.classList.remove('visible');
+    preloader.classList.add('fade-out');
+
+    // Ждём 0.5с, чтобы завершить анимацию исчезновения прелоадера
     setTimeout(() => {
-      preloader.classList.remove('visible');
-      preloader.classList.add('fade-out');
+      // Прячем прелоадер полностью
+      preloader.style.display = 'none';
+      
+      // Показываем блок с формой
+      loginWrapper.classList.add('show'); 
+      // Разрешаем прокрутку, если нужно
+      document.body.style.overflow = 'auto';
+    }, 500);
 
-      setTimeout(() => {
-        // Полностью убрать прелоадер
-        preloader.style.display = 'none';
-        
-        // Показываем форму входа/регистрации
-        loginWrapper.classList.add('show');
-        document.body.style.overflow = 'auto';
+  }, 2000);
+});
 
-      }, 500);
 
-    }, 2000);
-  });
+/* 2. Логика переключения (регистрация / вход) */
+function openSignUp() {
+  leftText.classList.remove("overlay-text-left-animation-out");
+  overlay.classList.remove("open-sign-in");
+  rightText.classList.remove("overlay-text-right-animation");
 
-  // ==================================
-  // Переключение пунктов меню (hover)
-  // ==================================
-  let list = document.querySelectorAll(\".navigation ul li\");
-  for (let i = 0; i < list.length; i++) {
-    list[i].onmouseover = function () {
-      let j = 0;
-      while (j < list.length) {
-        list[j++].className = \"list\";
-      }
-      list[i].className = \"list active\";
-    };
-  }
-  // Имитация открытия модалок
-  function showModal(modalId) {
-    alert(\"Открывается \" + modalId);
-  }
+  accountForm.className += " form-left-slide-out";
+  rightText.className += " overlay-text-right-animation-out";
+  overlay.className += " open-sign-up";
+  leftText.className += " overlay-text-left-animation";
 
-  // ==================================
-  // Логика переключения форм Регистрация / Вход
-  // ==================================
-  var overlay = document.getElementById(\"overlay\");
-  var openSignUpButton = document.getElementById(\"slide-left-button\");
-  var openSignInButton = document.getElementById(\"slide-right-button\");
+  setTimeout(function() {
+    accountForm.classList.remove("form-left-slide-in");
+    accountForm.style.display = "none";
+    accountForm.classList.remove("form-left-slide-out");
+  }, 700);
 
-  var leftText = document.getElementById(\"sign-in\");       // \"ТОЛЬКО УЗНАЛИ О НАС?\"
-  var rightText = document.getElementById(\"sign-up\");      // \"МЫ ЗНАКОМЫ?\"
-  var accountForm = document.getElementById(\"sign-in-info\"); // форма регистрации
-  var signinForm = document.getElementById(\"sign-up-info\");  // форма входа
+  setTimeout(function() {
+    signinForm.style.display = "flex";
+    signinForm.classList += " form-right-slide-in";
+  }, 200);
+}
 
-  function openSignUp() {
-    leftText.classList.remove(\"overlay-text-left-animation-out\");
-    overlay.classList.remove(\"open-sign-in\");
-    rightText.classList.remove(\"overlay-text-right-animation\");
+function openSignIn() {
+  leftText.classList.remove("overlay-text-left-animation");
+  overlay.classList.remove("open-sign-up");
+  rightText.classList.remove("overlay-text-right-animation-out");
 
-    accountForm.className += \" form-left-slide-out\";
-    rightText.className += \" overlay-text-right-animation-out\";
-    overlay.className += \" open-sign-up\";
-    leftText.className += \" overlay-text-left-animation\";
+  signinForm.classList += " form-right-slide-out";
+  leftText.className += " overlay-text-left-animation-out";
+  overlay.className += " open-sign-in";
+  rightText.className += " overlay-text-right-animation";
 
-    setTimeout(function() {
-      accountForm.classList.remove(\"form-left-slide-in\");
-      accountForm.style.display = \"none\";
-      accountForm.classList.remove(\"form-left-slide-out\");
-    }, 700);
+  setTimeout(function(){
+    signinForm.classList.remove("form-right-slide-in");
+    signinForm.style.display = "none";
+    signinForm.classList.remove("form-right-slide-out");
+  }, 700);
 
-    setTimeout(function() {
-      signinForm.style.display = \"flex\";
-      signinForm.classList += \" form-right-slide-in\";
-    }, 200);
-  }
+  setTimeout(function(){
+    accountForm.style.display = "flex";
+    accountForm.classList += " form-left-slide-in";
+  }, 200);
+}
 
-  function openSignIn() {
-    leftText.classList.remove(\"overlay-text-left-animation\");
-    overlay.classList.remove(\"open-sign-up\");
-    rightText.classList.remove(\"overlay-text-right-animation-out\");
+/* Подключаем кнопки переключения */
+slideRightBtn.addEventListener("click", openSignUp, false); // создать учетную запись (регистрация)
+slideLeftBtn.addEventListener("click", openSignIn,  false); // форма входа
 
-    signinForm.classList += \" form-right-slide-out\";
-    leftText.className += \" overlay-text-left-animation-out\";
-    overlay.className += \" open-sign-in\";
-    rightText.className += \" overlay-text-right-animation\";
 
-    setTimeout(function(){
-      signinForm.classList.remove(\"form-right-slide-in\");
-      signinForm.style.display = \"none\";
-      signinForm.classList.remove(\"form-right-slide-out\");
-    }, 700);
+/* 3. Логика проверки логин/пароль и вход */
+loginBtn.addEventListener('click', async function(e) {
+  e.preventDefault();
 
-    setTimeout(function(){
-      accountForm.style.display = \"flex\";
-      accountForm.classList += \" form-left-slide-in\";
-    }, 200);
+  const email = loginEmail.value.trim();
+  const password = loginPassword.value.trim();
+
+  // Проверка в базе (administrators, employees)
+  const isValid = await checkLogin(email, password);
+  if (!isValid) {
+    alert('Неверные логин/пароль');
+    return;
   }
 
-  openSignUpButton.addEventListener(\"click\", openSignUp, false);
-  openSignInButton.addEventListener(\"click\", openSignIn, false);
+  // Если логин/пароль верны:
+  // 1) Скрыть форму входа
+  loginWrapper.classList.remove('show');
+
+  // 2) Показать прелоадер на 1.5с
+  preloader.style.display = 'flex';
+  preloader.classList.remove('fade-out');
+  preloader.classList.add('visible');
+
+  setTimeout(() => {
+    // 3) Спрятать прелоадер
+    preloader.classList.remove('visible');
+    preloader.classList.add('fade-out');
+
+    setTimeout(() => {
+      preloader.style.display = 'none';
+      // 4) Показать меню
+      sideMenu.style.display = 'block';
+    }, 500);
+
+  }, 1500);
+
+});
 
 
-  // ==================================
-  //   ЛОГИКА КНОПКИ \"ВОЙТИ\" (псевдо-проверка)
-  // ==================================
-  const loginBtn = document.getElementById('loginBtn');
-  loginBtn.addEventListener('click', async function(e) {
-    e.preventDefault();
+/* Реальная функция проверки логина/пароля в Supabase */
+async function checkLogin(email, password) {
+  try {
+    // 1) Проверяем в таблице administrators
+    const { data: adminData, error: adminError } = await supabase
+      .from('administrators')
+      .select('*')
+      .eq('email', email)
+      .eq('pass', password)
+      .single();
 
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    // Пример псевдо-проверки (замените на реальную проверку в supabase)
-    const isValid = await checkLogin(email, password);
-    if (!isValid) {
-      alert('Неверные логин/пароль');
-      return;
+    if (adminError) {
+      // Ошибка запроса — можно вывести в консоль
+      console.error('Ошибка в запросе administrators:', adminError);
     }
-    
-    // Если логин/пароль валидны:
-    // 1) Прячем форму
-    loginWrapper.classList.remove('show'); // или добавьте fadeOut
-    // 2) Показываем прелоадер на 1.5с
-    preloader.style.display = 'flex';      // заново показываем
-    preloader.classList.remove('fade-out');
-    preloader.classList.add('visible');    // принудительно показываем
 
-    setTimeout(() => {
-      // Скрыть прелоадер
-      preloader.classList.remove('visible');
-      preloader.classList.add('fade-out');
+    if (adminData) {
+      // Нашли администратора — успех
+      return true;
+    }
 
-      setTimeout(() => {
-        preloader.style.display = 'none';
-        // 3) Показываем меню
-        const sideMenu = document.getElementById('side-menu');
-        sideMenu.style.display = 'block';
-      }, 500);
+    // 2) Если не нашли, проверяем в таблице employees
+    const { data: empData, error: empError } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('email', email)
+      .eq('pass', password)
+      .single();
 
-    }, 1500); // 1.5 секунды показываем прелоадер
-  });
+    if (empError) {
+      // Ошибка запроса — можно вывести в консоль
+      console.error('Ошибка в запросе employees:', empError);
+    }
 
-  // Имитация проверки в базе supabase
-  async function checkLogin(email, password) {
-    // TODO: заменить на реальную проверку в supabase.
-    // Например:
-    //   const { data: adminData } = await supabase
-    //       .from('administrators')
-    //       .select('*')
-    //       .eq('email', email)
-    //       .eq('pass', password)
-    //       .single();
-    //
-    //   if (adminData) return true;
-    //
-    //   const { data: empData } = await supabase
-    //       .from('employees')
-    //       .select('*')
-    //       .eq('email', email)
-    //       .eq('pass', password)
-    //       .single();
-    //
-    //   if (empData) return true;
-    //
-    //   return false;
-    // А пока — простая заглушка:
-    if (email === 'test@gmail.com' && password === '1234') return true;
+    if (empData) {
+      // Нашли сотрудника — успех
+      return true;
+    }
+
+    // Ни админ, ни сотрудник — логин/пароль неверны
+    return false;
+
+  } catch (err) {
+    console.error('checkLogin error:', err);
     return false;
   }
+}
+
+/* 4. (Необязательно) Логика наведения мыши на пункты меню, если нужно */
+const navList = document.querySelectorAll(".navigation ul li");
+for (let i = 0; i < navList.length; i++) {
+  navList[i].onmouseover = function () {
+    let j = 0;
+    while (j < navList.length) {
+      navList[j++].className = "list";
+    }
+    navList[i].className = "list active";
+  };
+}
+
+/* 5. Пример функции showModal (имитация открытия «страниц») */
+function showModal(modalId) {
+  alert(`Открывается ${modalId} (пример)`);
+}
+
 </script>
 
 </body>
