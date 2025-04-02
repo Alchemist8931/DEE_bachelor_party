@@ -536,14 +536,17 @@ const preloader     = document.getElementById('preloader');
 const loginWrapper  = document.getElementById('login-wrapper');
 const sideMenu      = document.getElementById('side-menu');
 
-const slideRightBtn = document.getElementById("slide-right-button"); // 'создать учетную запись'
-const slideLeftBtn  = document.getElementById("slide-left-button");  // 'форма входа'
+const slideRightBtn = document.getElementById("slide-right-button"); // «создать учетную запись» (открыть регистрацию)
+const slideLeftBtn  = document.getElementById("slide-left-button");  // «форма входа» (открыть вход)
 const overlay       = document.getElementById("overlay");
-const leftText      = document.getElementById("sign-in");    // Блок \"ТОЛЬКО УЗНАЛИ О НАС?\"
-const rightText     = document.getElementById("sign-up");    // Блок \"МЫ ЗНАКОМЫ?\"
+const leftText      = document.getElementById("sign-in");   // Левая колонка (создать учетку)
+const rightText     = document.getElementById("sign-up");   // Правая колонка (уже знакомы?)
 const accountForm   = document.getElementById("sign-in-info");   // Форма регистрации
 const signinForm    = document.getElementById("sign-up-info");    // Форма входа
 
+const registrationForm = document.getElementById("sign-in-info");  // Форма регистрации
+const loginForm        = document.getElementById("sign-up-info");  // Форма входа
+  
 /* Поля логина/пароля + кнопка \"войти\" */
 const loginEmail    = document.getElementById('loginEmail');
 const loginPassword = document.getElementById('loginPassword');
@@ -575,20 +578,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /* 2. Логика переключения (регистрация / вход) */
-// Селекторы
-const overlay       = document.getElementById("overlay");
-
-// Блоки «ТОЛЬКО УЗНАЛИ...», «МЫ ЗНАКОМЫ?» в оверлее
-const leftText      = document.getElementById("sign-in");   // Левая колонка (создать учетку)
-const rightText     = document.getElementById("sign-up");   // Правая колонка (уже знакомы?)
-
-// Две формы:
-const registrationForm = document.getElementById("sign-in-info");  // Форма регистрации
-const loginForm        = document.getElementById("sign-up-info");  // Форма входа
-
-// Кнопки для переключения
-const slideRightBtn = document.getElementById("slide-right-button"); // «создать учетную запись» (открыть регистрацию)
-const slideLeftBtn  = document.getElementById("slide-left-button");  // «форма входа» (открыть вход)
 
 function openSignUp() {
   // 1) Убираем классы, если они были (чтобы анимация «обнулилась»)
