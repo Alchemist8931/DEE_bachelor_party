@@ -235,7 +235,7 @@
       text-align: center;
 
       opacity: 1; 
-      transition: opacity 0.6s ease;
+      transition: opacity 0.1s ease;
     }
 
     /* ВАЖНО: 
@@ -493,13 +493,13 @@
       loginForm.style.opacity = '0';
       setTimeout(() => {
         loginForm.style.display = 'none';
-      }, 400);
+      }, 500);
 
       // показываем "ФОРМУ РЕГИСТРАЦИИ" (sign-in-info)
       setTimeout(() => {
         registrationForm.style.display = 'flex';
         registrationForm.style.opacity  = '1';
-      }, 450);
+      }, 600);
     }
 
     function openSignIn() {
@@ -510,13 +510,13 @@
       registrationForm.style.opacity = '0';
       setTimeout(() => {
         registrationForm.style.display = 'none';
-      }, 400);
+      }, 1000);
 
       // показываем "ФОРМУ ВХОДА"
       setTimeout(() => {
         loginForm.style.display = 'flex';
         loginForm.style.opacity  = '1';
-      }, 450);
+      }, 1100);
     }
 
     slideRightBtn.addEventListener('click', openSignUp);
