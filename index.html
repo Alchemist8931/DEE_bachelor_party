@@ -1,4 +1,3 @@
-<!-- //основной HTML-файл -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,15 +8,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <!-- //стили -->
   <style>
     :root {
-      --form-height: 900px;
-      --form-width: 900px;
+      --form-height: 900px;   /* Высота модалки */
+      --form-width: 900px;    /* Ширина модалки */
 
+      /* для прелоадера */
       --loader-line-color: #ffffff;
       --loader-line-width: 10px;
       --loader-line-height: 70px;
+
+      /* ширина чёрной полосы */
+      --overlay-width: 385px; 
     }
 
     * {
@@ -192,59 +194,42 @@
       background: #f0f0f0;
     }
 
+    /* Чёрная полоса */
     .overlay {
-      width: 100%;
+      width: var(--overlay-width);  /* 385px */
       height: 100%;
       position: absolute;
-      z-index: 100;
+      top: 0;
+      left: 0;                     /* изначально прижата к левой границе */
       color: white;
-      /* ВАЖНО: bottom = var(--form-height), чтобы чёрная полоса шла по всей высоте */
-      clip: rect(0, 385px, var(--form-height), 0);
       background: #1B1C1D;
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       border-radius: 10px;
+      transition: left 1s ease;    /* плавное перемещение */
+      z-index: 100;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
     }
-    .open-sign-up {
-      animation: slideright 1s linear forwards;
-    }
-    .open-sign-in {
-      animation: slideleft 1s linear forwards;
-    }
-
-    @keyframes slideright {
-      0%   { clip: rect(0, 385px, var(--form-height), 0); }
-      30%  { clip: rect(0, 480px, var(--form-height), 0); }
-      50%  { clip: rect(0px, calc(var(--form-width)/2 + 480px/2), var(--form-height), calc(var(--form-width)/2 - 480px/2)); }
-      80%  { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-480px)); }
-      100% { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-385px)); }
-    }
-    @keyframes slideleft {
-      100% { clip: rect(0, 385px, var(--form-height), 0); }
-      70%  { clip: rect(0, 480px, var(--form-height), 0); }
-      50%  { clip: rect(0px, calc(var(--form-width)/2 + 480px/2), var(--form-height), calc(var(--form-width)/2 - 480px/2)); }
-      30%  { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-480px)); }
-      0%   { clip: rect(0px, var(--form-width), var(--form-height), calc(var(--form-width)-385px)); }
+    /* Класс, при котором полоса прижимается к правой границе (var(--form-width) - 385px) */
+    .overlay.open-sign-up {
+      left: calc(var(--form-width) - var(--overlay-width));
     }
 
-    /* Левая и правая часть оверлея (текст «ТОЛЬКО УЗНАЛИ?» / «МЫ ЗНАКОМЫ?») */
+    /* Левая часть текста в overlay */
     .overlay .sign-in,
     .overlay .sign-up {
-      --padding: 50px;
-      width: calc(385px - var(--padding) * 2);
-      height: 100%;
       display: flex;
-      justify-content: center;
       flex-direction: column;
-      align-items: start;
-      padding: 0px var(--padding);
-      text-align: left;
+      width: calc(var(--overlay-width) - 40px); 
+      gap: 10px;
     }
-    .overlay .sign-in { float: left; }
-    .overlay .sign-up { float: right; }
 
-    /* Основные формы: регистрация / вход */
+    /* Основные формы */
     .form {
       width: 100%;
       height: 100%;
@@ -255,7 +240,7 @@
     .form .sign-up {
       --padding: 50px;
       position: absolute;
-      width: calc(var(--form-width) - 385px - var(--padding) * 2);
+      width: calc(var(--form-width) - var(--overlay-width) - var(--padding) * 2);
       height: 100%;
       display: flex;
       justify-content: center;
@@ -263,13 +248,15 @@
       align-items: center;
       padding: 0px var(--padding);
       text-align: center;
+      opacity: 1;   /* начальное значение, далее будем управлять через JS */
+      transition: opacity 0.8s;
     }
     .form .sign-in {
       left: 0;
-      display: none; /* Форма регистрации скрыта по умолчанию */
+      display: none; /* скрыта регистрация по умолчанию */
     }
     .form .sign-up {
-      right: 0;      /* Форма входа показана по умолчанию */
+      right: 0;      /* вход по умолчанию виден */
     }
 
     .modalFORM {
@@ -345,7 +332,7 @@
 </head>
 
 <body>
-  <!-- //прелоадер -->
+  <!-- // Прелоадер -->
   <div id="preloader">
     <div class="line"></div>
     <div class="line"></div>
@@ -354,11 +341,10 @@
     <div class="line"></div>
   </div>
 
-  <!-- //Меню (изначально скрыто) -->
+  <!-- // Меню (изначально display: none) -->
   <div id="side-menu">
     <div class="navigation">
       <ul>
-        <!-- //пример пунктов меню -->
         <li class="list active" onclick="showModal('modal1')">
           <a href="#">
             <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
@@ -394,32 +380,30 @@
     </div>
   </div>
 
-  <!-- //Обёртка формы (логин/регистрация) -->
+  <!-- // Обёртка формы (логин/регистрация) -->
   <div id="login-wrapper">
     <div class="container">
-      <!-- //чёрная полоса, изначально слева (clip = 0..385 пикселей) -->
+      <!-- // Чёрная полоса, 385px шириной -->
       <div class="overlay" id="overlay">
-        <!-- Левая половина (\"ТОЛЬКО УЗНАЛИ...\") -> к регистрации -->
-        <div class="sign-in" id="sign-in">
+        <!-- Левая половина надписи в overlay (\"ТОЛЬКО УЗНАЛИ...\") -->
+        <div class="sign-in" id="overlay-left">
           <h3 style="color: white;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
           <p>Расскажите немного о себе, и совершенствуйте свое дело вместе с нами!</p>
           <button class="button-submit2" id="slide-right-button">создать учетную запись</button>
         </div>
-
-        <!-- Правая половина (\"МЫ ЗНАКОМЫ?\") -> к форме входа -->
-        <div class="sign-up" id="sign-up">
+        <!-- Правая половина надписи в overlay (\"МЫ ЗНАКОМЫ?\") -->
+        <div class="sign-up" id="overlay-right" style="text-align: left;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
           <p>Если вы уже зарегистрированы, перейдите на форму входа</p>
           <button class="button-submit2" id="slide-left-button">форма входа</button>
         </div>
       </div>
 
-      <!-- //две формы -->
+      <!-- // Две формы внутри container -->
       <div class="form">
-        <!-- //Форма регистрации (изначально скрыта) -->
+        <!-- Форма регистрации (скрыта по умолчанию) -->
         <div class="sign-in" id="sign-in-info">
-          <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
-          <!-- //форма регистрации -->
+          <h2><span>RI</span>VA</h2>
           <form>
             <div class="modalFORM">
               <h3>ФОРМА РЕГИСТРАЦИИ</h3>
@@ -440,10 +424,9 @@
           </form>
         </div>
 
-        <!-- //Форма входа (видна по умолчанию) -->
+        <!-- Форма входа (видна по умолчанию) -->
         <div class="sign-up" id="sign-up-info">
-          <h2 style="--text: 'RIVA';"><span>RI</span>VA</h2>
-          <!-- //форма входа -->
+          <h2><span>RI</span>VA</h2>
           <form>
             <div class="modalFORM">
               <h3>ФОРМА ВХОДА</h3>
@@ -461,82 +444,95 @@
     </div>
   </div>
 
-  <!-- //логика на JavaScript -->
+  <!-- // Логика на JavaScript -->
   <script type="module">
-    // //Пример подключения Supabase
+    /* //функция подключения к Supabase (пример) */
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-    // //Подключение к Supabase
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...'; // <-- ваш ключ
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // //Селекторы
-    const preloader     = document.getElementById('preloader');
-    const loginWrapper  = document.getElementById('login-wrapper');
-    const sideMenu      = document.getElementById('side-menu');
+    /* //селекторы */
+    const preloader         = document.getElementById('preloader');
+    const loginWrapper      = document.getElementById('login-wrapper');
+    const sideMenu          = document.getElementById('side-menu');
+    const overlay           = document.getElementById("overlay");
 
-    const overlay       = document.getElementById("overlay");
-    const registrationForm = document.getElementById("sign-in-info"); // сама форма регистрации
-    const loginForm        = document.getElementById("sign-up-info"); // сама форма входа
+    const registrationForm  = document.getElementById("sign-in-info"); // форма регистрации
+    const loginForm         = document.getElementById("sign-up-info"); // форма входа
 
-    // //Кнопки переключения форм
-    const slideRightBtn = document.getElementById("slide-right-button"); // «создать учетную запись»
-    const slideLeftBtn  = document.getElementById("slide-left-button");  // «форма входа»
+    // кнопки переключения
+    const slideRightBtn     = document.getElementById("slide-right-button"); // «создать учетную запись»
+    const slideLeftBtn      = document.getElementById("slide-left-button");  // «форма входа»
 
-    // //Поля и кнопка входа
-    const loginEmail    = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginBtn      = document.getElementById('loginBtn');
+    // поля логина
+    const loginEmail        = document.getElementById('loginEmail');
+    const loginPassword     = document.getElementById('loginPassword');
+    const loginBtn          = document.getElementById('loginBtn');
 
-    // =======================
-    // 1) При загрузке страницы: показываем прелоадер ~2с, потом форму
-    // =======================
+    /* =======================
+       ПРЕЛОАДЕР
+    ======================= */
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
-      document.activeElement.blur();
 
+      // Через 2с убираем прелоадер, показываем форму
       setTimeout(() => {
         preloader.classList.remove('visible');
         preloader.classList.add('fade-out');
 
         setTimeout(() => {
           preloader.style.display = 'none';
-          // Показываем форму (логин/регистрация)
           loginWrapper.classList.add('show');
           document.body.style.overflow = 'auto';
         }, 500);
-
       }, 2000);
     });
 
-    // =======================
-    // 2) Переключение форм
-    // =======================
+    /* =======================
+       ПЕРЕКЛЮЧЕНИЕ ФОРМ
+    ======================= */
     function openSignUp() {
-      overlay.classList.remove('open-sign-in');
+      // Чёрная полоса уезжает вправо
       overlay.classList.add('open-sign-up');
 
-      // скрываем форму входа, показываем регистрацию
-      loginForm.style.display = 'none';
-      registrationForm.style.display = 'flex';
+      // Плавно скрываем форму входа
+      loginForm.style.opacity = '0';
+      setTimeout(() => {
+        loginForm.style.display = 'none';
+      }, 500);
+
+      // Спустя время показываем форму регистрации
+      setTimeout(() => {
+        registrationForm.style.display = 'flex';
+        registrationForm.style.opacity  = '1';
+      }, 600);
     }
 
     function openSignIn() {
+      // Чёрная полоса возвращается влево
       overlay.classList.remove('open-sign-up');
-      overlay.classList.add('open-sign-in');
 
-      // скрываем форму регистрации, показываем вход
-      registrationForm.style.display = 'none';
-      loginForm.style.display = 'flex';
+      // Плавно скрываем форму регистрации
+      registrationForm.style.opacity = '0';
+      setTimeout(() => {
+        registrationForm.style.display = 'none';
+      }, 500);
+
+      // Спустя время показываем форму входа
+      setTimeout(() => {
+        loginForm.style.display = 'flex';
+        loginForm.style.opacity  = '1';
+      }, 600);
     }
 
     slideRightBtn.addEventListener('click', openSignUp);
     slideLeftBtn.addEventListener('click', openSignIn);
 
-    // =======================
-    // 3) Кнопка "Войти" -> проверка логина/пароля
-    // =======================
+    /* =======================
+       ПРОВЕРКА ЛОГИНА/ПАРОЛЯ
+    ======================= */
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const email = loginEmail.value.trim();
@@ -547,36 +543,36 @@
         return;
       }
 
-      // //Проверка в Supabase
+      // пример проверки в Supabase
       const isValid = await checkLoginSupabase(email, pass);
       if (!isValid) {
         alert('Неверные логин/пароль');
         return;
       }
 
-      // //Если логин/пароль корректны:
-      loginWrapper.classList.remove('show'); // прячем форму
+      // логин/пароль верны -> убираем форму, показываем прелоадер
+      loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
       preloader.classList.add('visible');
 
+      // затем открываем меню
       setTimeout(() => {
         preloader.classList.remove('visible');
         preloader.classList.add('fade-out');
 
         setTimeout(() => {
           preloader.style.display = 'none';
-          // Показываем меню
           sideMenu.style.display = 'block';
         }, 500);
 
       }, 1500);
     });
 
-    // //Функция проверки в Supabase
+    /* //функция проверки в Supabase (таблицы administrators / employees) */
     async function checkLoginSupabase(email, password) {
       try {
-        // //Таблица administrators
+        // ищем в administrators
         const { data: adminData } = await supabase
           .from('administrators')
           .select('*')
@@ -586,7 +582,7 @@
 
         if (adminData) return true;
 
-        // //Таблица employees
+        // иначе ищем в employees
         const { data: empData } = await supabase
           .from('employees')
           .select('*')
@@ -603,16 +599,12 @@
       }
     }
 
-    // =======================
-    // 4) Пример showModal() для пунктов меню
-    // =======================
+    /* //пример showModal() для пунктов меню */
     window.showModal = function(modalId) {
       alert('Открывается: ' + modalId);
     };
 
-    // =======================
-    // 5) Подсветка активного пункта меню (по желанию)
-    // =======================
+    /* //подсветка активного пункта меню */
     const navList = document.querySelectorAll('.navigation ul li');
     for (let i = 0; i < navList.length; i++) {
       navList[i].onmouseover = function () {
