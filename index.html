@@ -473,14 +473,14 @@
   </div> <!-- #login-wrapper -->
 
   <!-- // Логика на JavaScript -->
-  <script type="module">
-    /* //подключение Supabase (пример, если нужно) */
+   <script type="module">
+    /* Пример подключения Supabase */
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...'; // <-- ваш ключ
+    const SUPABASE_ANON_KEY = 'eyJhbGci...'; // ваш ключ
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* //селекторы */
+    /* Селекторы */
     const preloader        = document.getElementById('preloader');
     const loginWrapper     = document.getElementById('login-wrapper');
     const sideMenu         = document.getElementById('side-menu');
@@ -489,18 +489,16 @@
     const registrationForm = document.getElementById("sign-in-info"); // форма регистрации
     const loginForm        = document.getElementById("sign-up-info"); // форма входа
 
-    // кнопки переключения форм
+    // Кнопки переключения форм
     const slideRightBtn    = document.getElementById("slide-right-button"); // «создать учетную запись»
     const slideLeftBtn     = document.getElementById("slide-left-button");  // «форма входа»
 
-    // поля логина
+    // Поля логина
     const loginEmail       = document.getElementById('loginEmail');
     const loginPassword    = document.getElementById('loginPassword');
     const loginBtn         = document.getElementById('loginBtn');
 
-    /* =======================
-       1) ПРЕЛОАДЕР
-    ======================= */
+    /* 1) Прелоадер */
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
 
@@ -510,7 +508,6 @@
 
         setTimeout(() => {
           preloader.style.display = 'none';
-          // показываем форму входа
           loginWrapper.classList.add('show');
           document.body.style.overflow = 'auto';
         }, 500);
@@ -518,14 +515,12 @@
       }, 2000);
     });
 
-    /* =======================
-       2) ПЕРЕКЛЮЧЕНИЕ ФОРМ
-    ======================= */
+    /* 2) Переключение форм (чёрная полоса + видимость форм) */
     function openSignUp() {
-      // сдвигаем overlay вправо
+      // сдвигаем чёрную полосу вправо
       overlay.classList.add('open-sign-up');
 
-      // прячем форму входа
+      // скрываем форму входа
       loginForm.style.opacity = '0';
       setTimeout(() => {
         loginForm.style.display = 'none';
@@ -539,10 +534,10 @@
     }
 
     function openSignIn() {
-      // возвращаем overlay влево
+      // возвращаем чёрную полосу влево
       overlay.classList.remove('open-sign-up');
 
-      // прячем форму регистрации
+      // скрываем форму регистрации
       registrationForm.style.opacity = '0';
       setTimeout(() => {
         registrationForm.style.display = 'none';
@@ -558,9 +553,7 @@
     slideRightBtn.addEventListener('click', openSignUp);
     slideLeftBtn.addEventListener('click', openSignIn);
 
-    /* =======================
-       3) ВХОД
-    ======================= */
+    /* 3) Кнопка "Войти" */
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const email = loginEmail.value.trim();
@@ -596,7 +589,7 @@
       }, 1500);
     });
 
-    /* //пример проверки в Supabase (таблицы administrators / employees) */
+    /* Функция проверки в Supabase (пример) */
     async function checkLoginSupabase(email, password) {
       try {
         // таблица administrators
@@ -624,16 +617,12 @@
       }
     }
 
-    /* =======================
-       4) Пример showModal() для пунктов меню
-    ======================= */
+    /* Пример функции showModal() для пунктов меню */
     window.showModal = function(modalId) {
       alert('Открывается: ' + modalId);
     };
 
-    /* =======================
-       5) Подсветка активного пункта меню
-    ======================= */
+    /* Подсветка активного пункта меню */
     const navList = document.querySelectorAll('.navigation ul li');
     for (let i = 0; i < navList.length; i++) {
       navList[i].onmouseover = function () {
