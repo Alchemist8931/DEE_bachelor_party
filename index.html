@@ -205,16 +205,11 @@
       -webkit-backdrop-filter: blur(2px);
       border-radius: 10px;
     }
-
-    /* Анимации: 
-       При open-sign-up оверлей уходит правее, 
-       при open-sign-in оверлей уходит левее 
-    */
     .open-sign-up {
-      animation: slideleft 1s linear forwards;
+      animation: slideright 1s linear forwards;
     }
     .open-sign-in {
-      animation: slideright 1s linear forwards;
+      animation: slideleft 1s linear forwards;
     }
 
     @keyframes slideright {
