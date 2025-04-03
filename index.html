@@ -36,7 +36,7 @@
     }
 
     /* ===========================
-       ПРЕЛОАДЕР
+       ПРЕЛОАДЕР (как у вас)
     =========================== */
     #preloader {
       position: fixed;
@@ -191,7 +191,7 @@
       overflow: hidden;
     }
 
-    /* Чёрная полоса */
+    /* Чёрная полоса (overlay) */
     .overlay {
       position: absolute;
       top: 0; 
@@ -214,7 +214,11 @@
       transform: translateX(calc(var(--form-width) - var(--overlay-width)));
     }
 
-    /* Текстовые блоки внутри чёрной полосы */
+    /* Блоки внутри overlay:
+       - sign-in (только узнали о нас)
+       - sign-up (мы знакомы?)
+       По умолчанию показываем только sign-in, а sign-up скрыт
+    */
     .overlay .sign-in,
     .overlay .sign-up {
       position: absolute;  /* накладываем друг на друга */
@@ -285,7 +289,7 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      background-color: #f5f5f5;
+      background-color: white;
       padding: 20px;
       width: 380px;
       border-radius: 10px;
@@ -299,7 +303,7 @@
       margin: 0;
     }
     .inputField {
-      width: 100%;
+      width: 100%; /* чтобы поля и кнопка были одной ширины */
       padding: 8px;
       font-size: 14px;
       font-weight: 500;
@@ -314,6 +318,7 @@
       outline-offset: 5px;
     }
     .button-submit {
+      width: 100%; 
       padding: 12px;
       background-color: #212121;
       border: 1px solid #212121;
@@ -322,7 +327,6 @@
       font-weight: 600;
       border-radius: 10px;
       height: 40px;
-      width: 100%;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     }
@@ -353,7 +357,7 @@
 </head>
 
 <body>
-  <!-- // Прелоадер -->
+  <!-- Прелоадер (пример) -->
   <div id="preloader">
     <div class="line"></div>
     <div class="line"></div>
@@ -362,7 +366,7 @@
     <div class="line"></div>
   </div>
 
-  <!-- // Меню (скрыто до входа) -->
+  <!-- Меню (скрыто до входа) -->
   <div id="side-menu">
     <div class="navigation">
       <ul>
@@ -401,45 +405,47 @@
     </div>
   </div>
 
-  <!-- // Обёртка формы (логин/регистрация) -->
+  <!-- Обертка формы (логин/регистрация) -->
   <div id="login-wrapper">
     <div class="container">
-      <!-- // Чёрная полоса фиксированной ширины, изначально слева -->
+
+      <!-- Чёрная полоса, внутри которой 2 наложенных блока:
+           1) sign-in (виден по умолчанию)
+           2) sign-up (скрыт по умолчанию)
+      -->
       <div class="overlay" id="overlay">
-        <!-- Левая часть (\"ТОЛЬКО УЗНАЛИ...\") -->
         <div class="sign-in">
           <h3 style="color: white;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
-          <p>Расскажите немного о себе, и совершенствуйте своё дело вместе с нами!</p>
+          <p style="color: #ddd;">Расскажите немного о себе, и совершенствуйте своё дело вместе с нами!</p>
           <button class="button-submit2" id="slide-right-button">создать учетную запись</button>
         </div>
 
-        <!-- Правая часть (\"МЫ ЗНАКОМЫ?\") -->
         <div class="sign-up" style="text-align: left;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
-          <p>Если вы уже зарегистрированы, перейдите на форму входа</p>
+          <p style="color: #ddd;">Если вы уже зарегистрированы, перейдите на форму входа</p>
           <button class="button-submit2" id="slide-left-button">форма входа</button>
         </div>
       </div>
 
-      <!-- // Две формы -->
+      <!-- Две формы (регистрация / вход) -->
       <div class="form">
         <!-- Форма регистрации (скрыта по умолчанию) -->
         <div class="sign-in" id="sign-in-info">
-          <h2><span>RI</span>VA</h2>
+          <h2>RIVA</h2>
           <form>
-            <div class="modalFORM" style="margin-left: 95px;">
+            <div class="modalFORM">
               <h3>ФОРМА РЕГИСТРАЦИИ</h3>
-              <div class="inputForm" style="margin-top:-30px;">
-                <input class="inputField" style="margin-top: 30px;" placeholder="ваше ФИО" type="text" autocomplete="off"/>
+              <div class="inputForm">
+                <input class="inputField" type="text" placeholder="ваше ФИО"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" type="text" placeholder="+7 (999) 999 99 99" maxlength="12" autocomplete="off"/>
+                <input class="inputField" type="text" placeholder="+7 (999) 999 99 99"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="почта: mail@gmail.com" type="email" autocomplete="off"/>
+                <input class="inputField" type="email" placeholder="mail@gmail.com"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="пароль" type="password" autocomplete="off"/>
+                <input class="inputField" type="password" placeholder="пароль"/>
               </div>
               <button class="button-submit">Отправить заявку</button>
             </div>
@@ -448,23 +454,23 @@
 
         <!-- Форма входа (видна по умолчанию) -->
         <div class="sign-up" id="sign-up-info">
-          <h2><span>RI</span>VA</h2>
+          <h2>RIVA</h2>
           <form>
-            <div class="modalFORM" style="margin-left: -95px;">
+            <div class="modalFORM">
               <h3>ФОРМА ВХОДА</h3>
-              <div class="inputForm" style="margin-top: -30px;">
-                <input class="inputField" style="margin-top: 30px;" type="email" placeholder="email: user@gmail.com" id="loginEmail" autocomplete="off"/>
+              <div class="inputForm">
+                <input class="inputField" type="email" placeholder="email: user@gmail.com" id="loginEmail"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" type="password" placeholder="ваш пароль" id="loginPassword" autocomplete="off"/>
+                <input class="inputField" type="password" placeholder="ваш пароль" id="loginPassword"/>
               </div>
               <button class="button-submit" id="loginBtn">Войти</button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
-  </div>
+      </div> <!-- .form -->
+    </div> <!-- .container -->
+  </div> <!-- #login-wrapper -->
 
   <!-- // Логика на JavaScript -->
   <script type="module">
