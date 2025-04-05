@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>RIVA - Складской учет и рецепты</title>
-  <!-- Шрифты -->
+  <!-- Подключение шрифтов -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <style>
@@ -56,7 +56,7 @@
     .line:nth-child(3) { animation-delay: 0.6s; }
     .line:nth-child(5) { animation-delay: 1.2s; }
     @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      0%,20%,50%,80%,100% { transform: translateY(0); }
       40% { transform: translateY(-30px); }
       60% { transform: translateY(-15px); }
     }
@@ -170,9 +170,7 @@
       border-radius: 10px;
       transition: left 1s ease;
       z-index: 9999 !important;
-      pointer-events: auto !important;  /* Кликабельно */
-      /* Для отладки: можно добавить рамку */
-      /* border: 2px solid red; */
+      pointer-events: auto !important;
     }
     .overlay.open-sign-up {
       left: calc(var(--form-width) - var(--overlay-width));
@@ -194,22 +192,21 @@
       z-index: 10000;
     }
     .overlay .sign-in {
-  opacity: 1;
-  pointer-events: auto;
-}
-.overlay .sign-up {
-  opacity: 0;
-  pointer-events: none; /* блокируем клики, когда он невидим */
-}
-.overlay.open-sign-up .sign-in {
-  opacity: 0;
-  pointer-events: none;
-}
-.overlay.open-sign-up .sign-up {
-  opacity: 1;
-  pointer-events: auto;
-}
-
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .overlay .sign-up {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .overlay.open-sign-up .sign-in {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .overlay.open-sign-up .sign-up {
+      opacity: 1;
+      pointer-events: auto;
+    }
     /* Блок с формами – располагается справа от overlay */
     .form {
       position: absolute;
@@ -220,7 +217,7 @@
       z-index: 500;
       display: flex;
     }
-    /* Расположим формы в двух колонках (левая – регистрация, правая – вход) */
+    /* Расположим формы в две колонки */
     .form .sign-in,
     .form .sign-up {
       width: 50%;
@@ -236,7 +233,6 @@
     }
     .form .sign-in.show { display: flex; opacity: 1; }
     .form .sign-up.show { display: flex; opacity: 1; }
-    /* По задаче: левая часть = регистрация, правая часть = вход */
     /* modalFORM */
     .modalFORM {
       display: flex;
@@ -247,6 +243,7 @@
       width: 380px;
       border-radius: 10px;
       z-index: 200;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
     .modalFORM h3 {
       font-size: 26px;
@@ -298,6 +295,7 @@
       width: 100%;
       cursor: pointer;
       transition: all 0.4s;
+      margin-top: 26px;
     }
     .button-submit2:hover {
       color: var(--fon);
@@ -367,7 +365,7 @@
           <button class="button-submit2" id="slide-right-button">Создать учетную запись</button>
         </div>
         <!-- "МЫ ЗНАКОМЫ?" (при open-sign-up) -->
-        <div class="sign-up" style="text-align: left;">
+        <div class="sign-up" style="text-align:left;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
           <p style="color: #ddd;">
             Если вы уже зарегистрированы,<br>
@@ -378,38 +376,38 @@
       </div>
       <!-- Блок с формами -->
       <div class="form">
-        <!-- Левая половина: Регистрация -->
+        <!-- Левая половина: Регистрация (по умолчанию скрыта) -->
         <div class="sign-in" id="sign-in-info" style="margin-left: -255px;">
           <h2>RIVA</h2>
-          <form>
+          <form id="registration-form">
             <div class="modalFORM">
               <h3>ФОРМА РЕГИСТРАЦИИ</h3>
               <div class="inputForm">
-                <input class="inputField" placeholder="Фамилия" type="text"/>
+                <input class="inputField" placeholder="Фамилия" type="text" name="lastname"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="Имя" type="text"/>
+                <input class="inputField" placeholder="Имя" type="text" name="firstname"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="Отчество" type="text"/>
+                <input class="inputField" placeholder="Отчество" type="text" name="middlename"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="+7 (999) 999 99 99" type="text"/>
+                <input class="inputField" placeholder="+7 (999) 999 99 99" type="text" name="phone"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="mail@gmail.com" type="email"/>
+                <input class="inputField" placeholder="mail@gmail.com" type="email" name="email"/>
               </div>
               <div class="inputForm">
-                <input class="inputField" placeholder="пароль" type="password"/>
+                <input class="inputField" placeholder="пароль" type="password" name="password"/>
               </div>
-              <button class="button-submit">Отправить заявку</button>
+              <button class="button-submit" id="regBtn">Отправить заявку</button>
             </div>
           </form>
         </div>
         <!-- Правая половина: Вход (по умолчанию видна) -->
         <div class="sign-up show" id="sign-up-info" style="margin-left: 130px;">
           <h2>RIVA</h2>
-          <form>
+          <form id="login-form">
             <div class="modalFORM">
               <h3>ФОРМА ВХОДА</h3>
               <div class="inputForm">
@@ -446,6 +444,7 @@
     const loginPassword = document.getElementById('loginPassword');
     const loginBtn = document.getElementById('loginBtn');
 
+    // Прелоадер для всей страницы
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
       setTimeout(() => {
@@ -465,6 +464,7 @@
       }, 2000);
     });
 
+    // Функция переключения overlay и форм
     function toggleOverlay(toSignUp) {
       console.log("toggleOverlay:", toSignUp);
       if (toSignUp) {
@@ -495,6 +495,7 @@
       toggleOverlay(false);
     });
 
+    // Логика кнопки "Войти"
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const email = loginEmail.value.trim();
@@ -503,11 +504,19 @@
         alert('Пожалуйста, введите логин и пароль');
         return;
       }
+      // Блокируем кнопку и меняем текст
+      loginBtn.disabled = true;
+      const originalLoginText = loginBtn.innerHTML;
+      loginBtn.innerHTML = 'Загрузка...';
+
       const isValid = await checkLoginSupabase(email, pass);
       if (!isValid) {
         alert('Неверные логин/пароль');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = originalLoginText;
         return;
       }
+      // Если все хорошо, выполняем переход
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
@@ -521,6 +530,55 @@
         }, 500);
       }, 1500);
     });
+
+    // Логика кнопки регистрации "Отправить заявку"
+    const regBtn = document.getElementById('regBtn');
+    if (regBtn) {
+      regBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        // Блокируем кнопку регистрации
+        regBtn.disabled = true;
+        const originalRegText = regBtn.innerHTML;
+        regBtn.innerHTML = 'Загрузка...';
+
+        // Собираем данные из формы регистрации
+        const regForm = document.getElementById('registration-form');
+        const formData = new FormData(regForm);
+        const data = {
+          lastname: formData.get('lastname'),
+          firstname: formData.get('firstname'),
+          middlename: formData.get('middlename'),
+          phone: formData.get('phone'),
+          email: formData.get('email'),
+          password: formData.get('password')
+        };
+
+        try {
+          // Попытка регистрации (функция registerUser должна быть настроена для вашей базы)
+          await registerUser(data);
+          alert('Регистрация успешна!');
+          // После успешной регистрации переходим на форму входа
+          toggleOverlay(false);
+        } catch (error) {
+          alert('Ошибка регистрации: ' + error.message);
+        } finally {
+          regBtn.disabled = false;
+          regBtn.innerHTML = originalRegText;
+        }
+      });
+    }
+
+    // Пример функции регистрации (замените на свою реализацию)
+    async function registerUser(userData) {
+      // Пример вставки в таблицу "users" в supabase
+      const { data, error } = await supabase
+        .from('users')
+        .insert([userData]);
+      if (error) {
+        throw error;
+      }
+      return data;
+    }
 
     async function checkLoginSupabase(email, password) {
       try {
