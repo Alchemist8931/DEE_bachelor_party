@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>RIVA - Складской учет и рецепты</title>
-  <!-- Подключаем шрифты -->
+  <!-- Шрифты -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <style>
     :root {
-      --form-width: 900px;    /* общая ширина модального окна */
-      --form-height: 900px;   /* общая высота модального окна */
-      --overlay-width: 385px; /* ширина чёрной полосы */
+      --form-width: 900px;
+      --form-height: 900px;
+      --overlay-width: 385px;
 
-      /* Прелоадер */
+      /* прелоадер */
       --loader-line-color: #ffffff;
       --loader-line-width: 10px;
       --loader-line-height: 70px;
     }
 
     * {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       box-sizing: border-box;
       font-family: 'Comfortaa', sans-serif;
@@ -29,7 +29,7 @@
       width: 100vw;
       height: 100vh;
       background: #f5f5f5;
-      overflow: hidden; 
+      overflow: hidden;
       position: relative;
     }
 
@@ -73,7 +73,7 @@
       60% { transform: translateY(-15px); }
     }
 
-    /* ========== МЕНЮ (скрыто до входа) ========== */
+    /* ========== МЕНЮ (скрыто до логина) ========== */
     #side-menu {
       display: none;
     }
@@ -86,7 +86,7 @@
       background: #212121;
       z-index: 1000;
       border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.10);
+      border: 1px solid rgba(0,0,0,0.10);
       box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
     }
     .navigation ul {
@@ -119,8 +119,8 @@
     }
     .navigation ul li a .title {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0px;
+      left: 0px;
       background: #212121;
       transform: translateY(-60%);
       padding: 10px 10px;
@@ -156,7 +156,7 @@
       transition: 0.5s;
     }
 
-    /* ========== ФОРМА (логин/регистрация) ========== */
+    /* ========== ЛОГИН/РЕГИСТРАЦИЯ ========== */
     #login-wrapper {
       opacity: 0;
       pointer-events: none;
@@ -171,33 +171,32 @@
     }
 
     .container {
-      width: var(--form-width);  /* 900px */
-      height: var(--form-height);/* 900px */
+      width: var(--form-width);
+      height: var(--form-height);
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
       border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.10);
+      border: 1px solid rgba(0,0,0,0.10);
       overflow: hidden;
       position: relative;
     }
 
-    /* ======== Overlay (чёрная полоса) ======== */
+    /* ====== Overlay (чёрная полоса) ====== */
     .overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: var(--overlay-width);   /* 385px */
+      top: 0; 
+      left: 0;  
+      width: var(--overlay-width); /* 385px */
       height: 100%;
       background: #1B1C1D;
       border-radius: 10px;
       transition: left 1s ease; 
-      z-index: 200; 
-      /* по умолчанию прижата к левой границе контейнера */
+      z-index: 200;
     }
-    /* Когда надо «приехать» к правой границе при нажатии «Создать учётную запись» */
+    /* При нажатии «Создать учетную запись» => overlay уезжает вправо */
     .overlay.open-sign-up {
       left: calc(var(--form-width) - var(--overlay-width)); /* 900 - 385 = 515px */
     }
@@ -215,11 +214,11 @@
       gap: 15px;
       transition: opacity 0.5s;
     }
-    /* «ТОЛЬКО УЗНАЛИ О НАС?» (по умолчанию) */
+    /* «ТОЛЬКО УЗНАЛИ...»: виден по умолчанию */
     .overlay .sign-in {
       opacity: 1;
     }
-    /* «МЫ ЗНАКОМЫ?» (скрыт) */
+    /* «МЫ ЗНАКОМЫ?»: скрыт */
     .overlay .sign-up {
       opacity: 0;
     }
@@ -231,50 +230,45 @@
       opacity: 1;
     }
 
-    /* ======== Две формы ========
-       Левая форма (регистрация) / Правая форма (вход)
-    */
+    /* ====== Две формы (каждая 50% width) ====== */
     .form {
       width: 100%;
       height: 100%;
       position: absolute;
-      top: 0;
-      left: 0; /* форма растянута на всю ширину, но скрываем отдельные блоки */
+      top: 0; left: 0;
       z-index: 100;
+      display: flex;  /* чтобы формы могли располагаться бок о бок */
     }
+    /* Каждая форма занимает 50% контейнера (900px -> 450px), 
+       но оставляем место overlay (385px) по желанию – зависит от макета.  
+       Здесь сделаем 50/50 именно внутри .form. 
+    */
     .form .sign-in,
     .form .sign-up {
-      position: absolute;
-      width: calc(var(--form-width) - var(--overlay-width)); /* 900 - 385 = 515 */
+      width: 50%;
       height: 100%;
-      display: none;     /* скрыты по умолчанию, переключаем через класс 'show' */
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s;
     }
+    /* По умолчанию скрыты (opacity=0), переключаем через класс .show */
+    .form .sign-in, .form .sign-up {
+      display: none;
+    }
+    .form .sign-in.show { display: flex; opacity: 1; }
+    .form .sign-up.show { display: flex; opacity: 1; }
 
-    /* Форма РЕГИСТРАЦИИ (ЛЕВАЯ) */
-    .form .sign-in {
-      left: 0; 
-    }
-    /* Форма ВХОДА (ПРАВАЯ) */
-    .form .sign-up {
-      right: 0; 
-    }
+    /* По задаче: 
+       - "левая часть" = Регистрация
+       - "правая часть" = Вход 
+       Поэтому sign-in (регистрация) находится слева, sign-up (вход) справа.
+    */
 
-    /* Класс .show => делаем видимой форму */
-    .form .sign-in.show {
-      display: flex;
-      opacity: 1;
-    }
-    .form .sign-up.show {
-      display: flex;
-      opacity: 1;
-    }
-
+    /* modalFORM */
     .modalFORM {
       display: flex;
       flex-direction: column;
@@ -345,6 +339,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Прелоадер -->
   <div id="preloader">
@@ -355,7 +350,7 @@
     <div class="line"></div>
   </div>
 
-  <!-- Меню (скрыто до логина) -->
+  <!-- Меню (скрыто до входа) -->
   <div id="side-menu">
     <div class="navigation">
       <ul>
@@ -394,13 +389,13 @@
     </div>
   </div>
 
-  <!-- Контейнер для форм (логин/регистрация) -->
+  <!-- Контейнер логин/регистрация -->
   <div id="login-wrapper">
     <div class="container">
-      
-      <!-- Чёрная полоса (overlay), изначально слева -->
+
+      <!-- Чёрная полоса (overlay) слева -->
       <div class="overlay" id="overlay">
-        <!-- Текст "ТОЛЬКО УЗНАЛИ..." (по умолчанию виден) -->
+        <!-- "ТОЛЬКО УЗНАЛИ?" (по умолчанию) -->
         <div class="sign-in">
           <h3 style="color: white;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
           <p style="color: #ddd;">
@@ -409,8 +404,7 @@
           </p>
           <button class="button-submit2" id="slide-right-button">Создать учетную запись</button>
         </div>
-
-        <!-- Текст "МЫ ЗНАКОМЫ?" (виден при open-sign-up) -->
+        <!-- "МЫ ЗНАКОМЫ?" (при open-sign-up) -->
         <div class="sign-up" style="text-align:left;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
           <p style="color: #ddd;">
@@ -421,9 +415,9 @@
         </div>
       </div>
 
-      <!-- Блок с формами -->
+      <!-- Две половины .form: левая = Регистрация, правая = Вход -->
       <div class="form">
-        <!-- ФОРМА РЕГИСТРАЦИИ (слева) - скрыта по умолчанию -->
+        <!-- Левая половина (Регистрация) => .sign-in -->
         <div class="sign-in" id="sign-in-info">
           <h2>RIVA</h2>
           <form>
@@ -446,7 +440,7 @@
           </form>
         </div>
 
-        <!-- ФОРМА ВХОДА (справа) - по умолчанию видна -->
+        <!-- Правая половина (Вход) => .sign-up (по умолчанию видим) -->
         <div class="sign-up" id="sign-up-info">
           <h2>RIVA</h2>
           <form>
@@ -462,15 +456,17 @@
             </div>
           </form>
         </div>
-      </div>
+
+      </div> <!-- .form -->
 
     </div> <!-- .container -->
   </div> <!-- #login-wrapper -->
 
   <script type="module">
+    /* //подключаем Supabase (пример) */
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';
+    const SUPABASE_ANON_KEY = 'eyJhbGci...';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* Селекторы */
@@ -479,19 +475,20 @@
     const sideMenu         = document.getElementById('side-menu');
     const overlay          = document.getElementById('overlay');
 
-    const registrationForm = document.getElementById("sign-in-info"); // форма регистрации (слева)
-    const loginForm        = document.getElementById("sign-up-info"); // форма входа (справа, видна по умолчанию)
+    // Две формы (левая = registration, правая = login)
+    const registrationForm = document.getElementById("sign-in-info");
+    const loginForm        = document.getElementById("sign-up-info");
 
-    // Кнопки
-    const slideRightBtn    = document.getElementById("slide-right-button"); // «создать учетную запись»
-    const slideLeftBtn     = document.getElementById("slide-left-button");  // «форма входа»
+    // Кнопки «Создать учетную запись» / «Форма входа»
+    const slideRightBtn    = document.getElementById("slide-right-button");
+    const slideLeftBtn     = document.getElementById("slide-left-button");
 
     // Поля входа
     const loginEmail       = document.getElementById('loginEmail');
     const loginPassword    = document.getElementById('loginPassword');
     const loginBtn         = document.getElementById('loginBtn');
 
-    /* 1) Прелоадер */
+    /* Прелоадер */
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
       setTimeout(() => {
@@ -499,48 +496,62 @@
         preloader.classList.add('fade-out');
         setTimeout(() => {
           preloader.style.display = 'none';
-          // Показываем форму входа
+          // показываем wrapper
           loginWrapper.classList.add('show');
           document.body.style.overflow = 'auto';
+
+          // по умолчанию скрываем "регистрацию", показываем "вход"
+          // (левую форму прячем, правую показываем)
+          registrationForm.style.opacity = '0';
+          registrationForm.style.display = 'none';
+
+          loginForm.style.opacity = '1';
+          loginForm.style.display = 'flex';
+
         }, 500);
       }, 2000);
     });
 
-    /* 2) Переключение overlay + форм */
+    /* Переключение overlay + форм */
     function toggleOverlay(toSignUp) {
       if (toSignUp) {
-        // Двигаем overlay вправо
+        // Overlay вправо
         overlay.classList.add('open-sign-up');
         
-        // Прячем форму входа (справа)
-        loginForm.style.display = 'none';
+        // Прячем "ФОРМА ВХОДА" (правая)
         loginForm.style.opacity = '0';
-
-        // Показываем форму регистрации (слева)
-        registrationForm.style.display = 'flex';
         setTimeout(() => {
-          registrationForm.style.opacity = '1';
-        }, 50);
+          loginForm.style.display = 'none';
+        }, 500);
+
+        // Показываем "ФОРМА РЕГИСТРАЦИИ" (левая)
+        setTimeout(() => {
+          registrationForm.style.display = 'flex';
+          registrationForm.style.opacity  = '1';
+        }, 600);
+
       } else {
-        // Двигаем overlay влево
+        // Overlay влево
         overlay.classList.remove('open-sign-up');
 
-        // Прячем форму регистрации
-        registrationForm.style.display = 'none';
+        // Прячем "ФОРМА РЕГИСТРАЦИИ"
         registrationForm.style.opacity = '0';
-
-        // Показываем форму входа
-        loginForm.style.display = 'flex';
         setTimeout(() => {
-          loginForm.style.opacity = '1';
-        }, 50);
+          registrationForm.style.display = 'none';
+        }, 500);
+
+        // Показываем "ФОРМА ВХОДА"
+        setTimeout(() => {
+          loginForm.style.display = 'flex';
+          loginForm.style.opacity  = '1';
+        }, 600);
       }
     }
 
-    slideRightBtn.addEventListener('click', () => toggleOverlay(true));  // «Создать учётную запись»
+    slideRightBtn.addEventListener('click', () => toggleOverlay(true));  // «Создать учетную запись»
     slideLeftBtn.addEventListener('click',  () => toggleOverlay(false)); // «Форма входа»
 
-    /* 3) Кнопка "Войти" */
+    /* Кнопка "Войти" */
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const email = loginEmail.value.trim();
@@ -551,14 +562,13 @@
         return;
       }
 
-      // Пример проверки в Supabase
       const isValid = await checkLoginSupabase(email, pass);
       if (!isValid) {
         alert('Неверные логин/пароль');
         return;
       }
 
-      // Убираем форму -> Показываем меню
+      // Убираем форму => Показываем меню
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
@@ -574,9 +584,10 @@
       }, 1500);
     });
 
-    /* Проверка в Supabase */
+    /* Пример проверки в Supabase */
     async function checkLoginSupabase(email, password) {
       try {
+        // в таблице administrators
         const { data: adminData } = await supabase
           .from('administrators')
           .select('*')
@@ -585,6 +596,7 @@
           .single();
         if (adminData) return true;
 
+        // в таблице employees
         const { data: empData } = await supabase
           .from('employees')
           .select('*')
@@ -607,10 +619,10 @@
 
     /* Подсветка меню */
     const navList = document.querySelectorAll('.navigation ul li');
-    for (let i = 0; i < navList.length; i++) {
-      navList[i].onmouseover = function () {
-        let j = 0;
-        while (j < navList.length) {
+    for (let i=0; i< navList.length; i++) {
+      navList[i].onmouseover = function() {
+        let j=0;
+        while (j< navList.length) {
           navList[j++].className = 'list';
         }
         navList[i].className = 'list active';
