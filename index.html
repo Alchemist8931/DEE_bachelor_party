@@ -214,13 +214,13 @@
       justify-content: center;
       gap: 15px;
       transition: opacity 0.5s;
-      z-index: 900;
+      z-index: 100;
       background: #1B1C1D;
     }
     /* «ТОЛЬКО УЗНАЛИ...»: виден по умолчанию */
     .overlay .sign-in {
       opacity: 1;
-      z-index: 900;
+      z-index: 100;
     }
     /* «МЫ ЗНАКОМЫ?»: скрыт */
     .overlay .sign-up {
@@ -238,7 +238,7 @@
     .form {
   position: absolute;
   top: 0;
-  left: var(--overlay-width); /* начинаем после overlay */
+  left: calc(100% - var(--overlay-width)); /* начинаем после overlay */
   width: calc(100% - var(--overlay-width)); /* оставшаяся ширина */
   height: 100%;
   z-index: 100;
