@@ -192,10 +192,23 @@
       pointer-events: auto;
       z-index: 10000;
     }
-    .overlay .sign-in { opacity: 1; }
-    .overlay .sign-up { opacity: 0; }
-    .overlay.open-sign-up .sign-in { opacity: 0; }
-    .overlay.open-sign-up .sign-up { opacity: 1; }
+    .overlay .sign-in {
+  opacity: 1;
+  pointer-events: auto;
+}
+.overlay .sign-up {
+  opacity: 0;
+  pointer-events: none; /* блокируем клики, когда он невидим */
+}
+.overlay.open-sign-up .sign-in {
+  opacity: 0;
+  pointer-events: none;
+}
+.overlay.open-sign-up .sign-up {
+  opacity: 1;
+  pointer-events: auto;
+}
+
     /* Блок с формами – располагается справа от overlay */
     .form {
       position: absolute;
