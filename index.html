@@ -190,7 +190,7 @@
       position: absolute;
       top: 0; 
       left: 0;  
-      width: var(--overlay-width); /* 385px */
+      width: 385px; /* 385px */
       height: 100%;
       background: white;
       border-radius: 10px;
@@ -206,7 +206,7 @@
     .overlay .sign-up {
       position: absolute;
       top: 0; left: 0;
-      width: 40%; 
+      width: 100%; 
       height: 100%;
       padding: 30px;
       display: flex;
@@ -214,13 +214,13 @@
       justify-content: center;
       gap: 15px;
       transition: opacity 0.5s;
-      z-index: 100;
+      z-index: 900;
       background: #1B1C1D;
     }
     /* «ТОЛЬКО УЗНАЛИ...»: виден по умолчанию */
     .overlay .sign-in {
       opacity: 1;
-      z-index: 100;
+      z-index: 900;
     }
     /* «МЫ ЗНАКОМЫ?»: скрыт */
     .overlay .sign-up {
@@ -238,12 +238,11 @@
     .form {
   position: absolute;
   top: 0;
-  left: calc(100% - var(--overlay-width)); /* начинаем после overlay */
-  width: calc(100% - var(--overlay-width)); /* оставшаяся ширина */
+  left: calc(100% - 385px); /* начинаем после overlay */
+  width: calc(100% - 385px); /* оставшаяся ширина */
   height: 100%;
-  z-index: 100;
   display: flex; /* для расположения форм бок о бок, если нужно */
-      z-index: 900;
+      z-index: 100;
     }
     /* Каждая форма занимает 50% контейнера (900px -> 450px), 
        но оставляем место overlay (385px) по желанию – зависит от макета.  
@@ -262,7 +261,7 @@
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s;
-      z-index: 900;
+      z-index: 100;
     }
     /* По умолчанию скрыты (opacity=0), переключаем через класс .show */
     .form .sign-in, .form .sign-up {
