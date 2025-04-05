@@ -443,8 +443,8 @@
     const loginEmail = document.getElementById('loginEmail');
     const loginPassword = document.getElementById('loginPassword');
     const loginBtn = document.getElementById('loginBtn');
+    const regBtn = document.getElementById('regBtn');
 
-    // Прелоадер для всей страницы
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
       setTimeout(() => {
@@ -454,7 +454,6 @@
           preloader.style.display = 'none';
           loginWrapper.classList.add('show');
           document.body.style.overflow = 'auto';
-
           // По умолчанию: показываем форму ВХОДА (правую)
           registrationForm.style.opacity = '0';
           registrationForm.style.display = 'none';
@@ -464,7 +463,7 @@
       }, 2000);
     });
 
-    // Функция переключения overlay и форм
+    // Функция переключения overlay + форм
     function toggleOverlay(toSignUp) {
       console.log("toggleOverlay:", toSignUp);
       if (toSignUp) {
@@ -504,7 +503,6 @@
         alert('Пожалуйста, введите логин и пароль');
         return;
       }
-      // Блокируем кнопку и меняем текст
       loginBtn.disabled = true;
       const originalLoginText = loginBtn.innerHTML;
       loginBtn.innerHTML = 'Загрузка...';
@@ -516,7 +514,6 @@
         loginBtn.innerHTML = originalLoginText;
         return;
       }
-      // Если все хорошо, выполняем переход
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
@@ -532,11 +529,9 @@
     });
 
     // Логика кнопки регистрации "Отправить заявку"
-    const regBtn = document.getElementById('regBtn');
     if (regBtn) {
       regBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        // Блокируем кнопку регистрации
         regBtn.disabled = true;
         const originalRegText = regBtn.innerHTML;
         regBtn.innerHTML = 'Загрузка...';
@@ -554,10 +549,10 @@
         };
 
         try {
-          // Попытка регистрации (функция registerUser должна быть настроена для вашей базы)
+          // Регистрируем пользователя в таблице administrators
           await registerUser(data);
           alert('Регистрация успешна!');
-          // После успешной регистрации переходим на форму входа
+          // После регистрации автоматически переключаемся на форму входа
           toggleOverlay(false);
         } catch (error) {
           alert('Ошибка регистрации: ' + error.message);
@@ -568,12 +563,18 @@
       });
     }
 
-    // Пример функции регистрации (замените на свою реализацию)
+    // Функция регистрации – вставляем данные в таблицу administrators
     async function registerUser(userData) {
-      // Пример вставки в таблицу "users" в supabase
       const { data, error } = await supabase
-        .from('users')
-        .insert([userData]);
+        .from('administrators')
+        .insert([{
+          last_name: userData.lastname,
+          first_name: userData.firstname,
+          middle_name: userData.middlename,
+          phone: userData.phone,
+          email: userData.email,
+          pass: userData.password
+        }]);
       if (error) {
         throw error;
       }
