@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>RIVA - Складской учет и рецепты</title>
-  <!-- Шрифты -->
+  <!-- Подключение шрифтов -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <style>
@@ -11,14 +11,13 @@
       --form-width: 900px;
       --form-height: 900px;
       --overlay-width: 385px;
-
       /* Прелоадер */
       --loader-line-color: #ffffff;
       --loader-line-width: 10px;
       --loader-line-height: 70px;
     }
     * {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       box-sizing: border-box;
       font-family: 'Comfortaa', sans-serif;
@@ -30,13 +29,15 @@
       overflow: hidden;
       position: relative;
     }
-    /* ===== Прелоадер ===== */
+    /* Прелоадер */
     #preloader {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       display: flex;
+      align-items: center;
+      justify-content: center;
       gap: 10px;
       opacity: 0;
       visibility: hidden;
@@ -60,7 +61,7 @@
       40% { transform: translateY(-30px); }
       60% { transform: translateY(-15px); }
     }
-    /* ===== Меню (не важно для задачи) ===== */
+    /* Меню (скрыто до логина) */
     #side-menu { display: none; }
     .navigation {
       position: fixed;
@@ -71,10 +72,73 @@
       background: #212121;
       z-index: 1000;
       border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.10);
       box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
     }
-    /* ===== Логин/регистрация ===== */
+    .navigation ul {
+      position: absolute;
+      top: 0;
+      left: -40px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .navigation ul li {
+      position: relative;
+      list-style: none;
+      width: 70px;
+      height: 70px;
+      cursor: pointer;
+    }
+    .navigation ul li a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-weight: 500;
+    }
+    .navigation ul li a .icon i { font-size: 25px; }
+    .navigation ul li a .title {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #212121;
+      transform: translateY(-60%);
+      padding: 10px;
+      border-radius: 10px;
+      transition: 0.5s;
+      box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      visibility: hidden;
+      font-size: 10px;
+    }
+    .navigation ul li:hover a .title {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(70px) translateY(-10px);
+    }
+    .navigation ul .indicator {
+      position: absolute;
+      left: 45px;
+      width: 50px;
+      height: 30px;
+      transition: 0.5s;
+    }
+    .navigation ul .indicator::before {
+      content: '';
+      position: absolute;
+      width: 50px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 50px;
+      background: white;
+      border-radius: 7px;
+      transition: 0.5s;
+    }
+    /* Логин/регистрация */
     #login-wrapper {
       opacity: 0;
       pointer-events: auto;
@@ -93,22 +157,25 @@
       transform: translate(-50%, -50%);
       box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
       border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.10);
       overflow: hidden;
       position: relative;
+      z-index: 100;
     }
-    /* ===== Overlay (чёрная полоса) ===== */
+    /* Overlay */
     .overlay {
       position: absolute;
       top: 0;
-      left: 0;  
+      left: 0;
       width: var(--overlay-width);
       height: 100%;
       background: #1B1C1D;
       border-radius: 10px;
       transition: left 1s ease;
-      z-index: 9999; /* самый верх */
-      pointer-events: auto; /* чтобы кнопки внутри принимали клики */
+      z-index: 9999 !important;
+      pointer-events: auto !important; /* ОБЯЗАТЕЛЬНО */
+      /* Для отладки можно добавить рамку: */
+      /* border: 2px solid red; */
     }
     .overlay.open-sign-up {
       left: calc(var(--form-width) - var(--overlay-width));
@@ -126,22 +193,24 @@
       justify-content: center;
       gap: 15px;
       transition: opacity 0.5s;
+      pointer-events: auto;
+      z-index: 10000;
     }
     .overlay .sign-in { opacity: 1; }
     .overlay .sign-up { opacity: 0; }
     .overlay.open-sign-up .sign-in { opacity: 0; }
     .overlay.open-sign-up .sign-up { opacity: 1; }
-    /* ===== Формы (расположены справа от overlay) ===== */
+    /* Формы – располагаются справа от overlay */
     .form {
       position: absolute;
       top: 0;
-      left: var(--overlay-width); /* начинается сразу после overlay */
+      left: var(--overlay-width);
       width: calc(var(--form-width) - var(--overlay-width));
       height: 100%;
       z-index: 500;
       display: flex;
     }
-    /* Для наглядности расположим формы бок о бок (каждая 50% ширины блока .form) */
+    /* Разбиваем на две половины */
     .form .sign-in,
     .form .sign-up {
       width: 50%;
@@ -153,11 +222,11 @@
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s;
+      z-index: 500;
     }
-    /* По умолчанию показываем форму входа (правую) */
-    .form .sign-up.show { display: flex; opacity: 1; }
     .form .sign-in.show { display: flex; opacity: 1; }
-    /* ===== modalFORM (содержимое форм) ===== */
+    .form .sign-up.show { display: flex; opacity: 1; }
+    /* modalFORM */
     .modalFORM {
       display: flex;
       flex-direction: column;
@@ -167,6 +236,7 @@
       width: 380px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      z-index: 100;
     }
     .modalFORM h3 {
       font-size: 26px;
@@ -235,7 +305,6 @@
     <div class="line"></div>
     <div class="line"></div>
   </div>
-
   <!-- Меню (скрыто до логина) -->
   <div id="side-menu">
     <div class="navigation">
@@ -274,7 +343,6 @@
       </ul>
     </div>
   </div>
-
   <!-- Контейнер логин/регистрация -->
   <div id="login-wrapper">
     <div class="container">
@@ -301,7 +369,7 @@
       </div>
       <!-- Блок с формами -->
       <div class="form">
-        <!-- Левая половина (Регистрация) -->
+        <!-- Форма РЕГИСТРАЦИИ (левая половина) -->
         <div class="sign-in" id="sign-in-info">
           <h2>RIVA</h2>
           <form>
@@ -323,7 +391,7 @@
             </div>
           </form>
         </div>
-        <!-- Правая половина (Вход) -->
+        <!-- Форма ВХОДА (правая половина, видна по умолчанию) -->
         <div class="sign-up show" id="sign-up-info" style="margin-left: 420px;">
           <h2>RIVA</h2>
           <form>
@@ -379,7 +447,6 @@
 
           loginForm.style.opacity = '1';
           loginForm.style.display = 'flex';
-
         }, 500);
       }, 2000);
     });
@@ -420,13 +487,11 @@
         alert('Пожалуйста, введите логин и пароль');
         return;
       }
-
       const isValid = await checkLoginSupabase(email, pass);
       if (!isValid) {
         alert('Неверные логин/пароль');
         return;
       }
-
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
@@ -473,9 +538,7 @@
     for (let i=0; i<navList.length; i++) {
       navList[i].onmouseover = function() {
         let j=0;
-        while (j< navList.length) {
-          navList[j++].className = 'list';
-        }
+        while (j< navList.length) { navList[j++].className = 'list'; }
         navList[i].className = 'list active';
       };
     }
