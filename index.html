@@ -63,79 +63,140 @@
     /* Меню */
     #side-menu { display: none; }
     .navigation {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      height: 98vh;
-      width: 60px;
-      background: #212121;
-      z-index: 1000;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.1);
-      box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
-    }
-    .navigation ul {
-      position: absolute;
-      top: 0;
-      left: -40px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    .navigation ul li {
-      position: relative;
-      width: 70px;
-      height: 70px;
-      cursor: pointer;
-    }
-    .navigation ul li a {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      text-align: center;
-      color: white;
-      font-weight: 500;
-    }
-    .navigation ul li a .icon i { font-size: 25px; }
-    .navigation ul li a .title {
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: #212121;
-      transform: translateY(-60%);
-      padding: 10px;
-      border-radius: 10px;
-      transition: 0.5s;
-      box-shadow: 0 10px 10px rgba(0,0,0,0.1);
-      opacity: 0;
-      visibility: hidden;
-      font-size: 10px;
-    }
-    .navigation ul li:hover a .title {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(70px) translateY(-10px);
-    }
-    .navigation ul .indicator {
-      position: absolute;
-      left: 45px;
-      width: 50px;
-      height: 30px;
-      transition: 0.5s;
-    }
-    .navigation ul .indicator::before {
-      content: '';
-      position: absolute;
-      width: 50px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      height: 50px;
-      background: white;
-      border-radius: 7px;
-      transition: 0.5s;
-    }
+  position: fixed;
+  top: 20px;
+  left: 20px; 
+  height: 98vh; 
+  width: 60px; 
+  background: #212121;
+  z-index: 1000;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 2px 10px 40px rgba(22,20,19,0.4);
+}
+
+.navigation ul {
+  position: absolute;
+  top: 0;
+  left: -40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.navigation ul li {
+  position: relative;
+  list-style: none;
+  width: 70px;
+  height: 70px;
+  z-index: 1;
+}
+
+.navigation ul li a {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: 500;
+}
+
+.navigation ul li a .icon {
+  position: relative;
+  display: block;
+  line-height: 47px;
+  text-align: center;
+  transition: 0.5s;
+  left: -4px;
+}
+
+.navigation ul li.active a .icon {
+  color: #212121;
+}
+
+.navigation ul li a .icon i {
+  font-size: 25px;
+}
+
+/*___размер подписей к пунктам меню___*/
+.navigation ul li a .title {
+  position: absolute;
+  top: 0px;
+  left: 0px; 
+  background: #212121;
+  transform: translateY(-60%);
+  padding: 10px 10px;
+  border-radius: 10px; 
+  transition: 0.5s;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); 
+  opacity: 0;
+  visibility: hidden;
+}
+
+/*___текст подписей к пунктам меню___*/
+.navigation ul li:hover a .title {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(70px) translateY(-10px);
+  font-size: 10px;
+}
+
+/*___текст подписей к пунктам меню___*/
+.navigation ul li a .title::before {
+  content: "";
+  position: absolute;
+  width: 10px; 
+  height: 10px; 
+  background: #212121;
+  left: -8px; 
+  top: 20%;
+  transition: 0.5s;
+  transform: rotate(45deg) translateY(-60%);
+  border-radius: 10px;
+}
+
+.navigation ul .indicator {
+  position: absolute;
+  left: 45px;
+  width: 50px;
+  height: 30px;
+  transition: 0.5s;
+}
+
+.navigation ul .indicator::before {
+  content: "";
+  position: absolute;
+  width: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50px;
+  background: white;
+  border-radius: 7px;
+  transition: 0.5s;
+}
+
+.navigation ul li:nth-child(1).active ~ .indicator {
+  transform: translateY(calc(0px * 0)); 
+}
+
+.navigation ul li:nth-child(2).active ~ .indicator {
+  transform: translateY(calc(70px * 1));
+}
+
+.navigation ul li:nth-child(3).active ~ .indicator {
+  transform: translateY(calc(70px * 2));
+}
+
+.navigation ul li:nth-child(4).active ~ .indicator {
+  transform: translateY(calc(70px * 3));
+}
+
+.navigation ul li:nth-child(5).active ~ .indicator {
+  transform: translateY(calc(70px * 4));
+}
     /* Логин/регистрация */
     #login-wrapper {
       opacity: 0;
