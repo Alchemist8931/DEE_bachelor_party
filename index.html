@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <style>
-    :root {
+      :root {
       --form-width: 900px;
       --form-height: 900px;
       --overlay-width: 385px;
@@ -59,7 +59,7 @@
     .line {
       width: var(--loader-line-width);
       height: var(--loader-line-height);
-      background-color: var(--loader-line-color);
+      background-color: #212121;
       animation: bounce 1.5s infinite ease-in-out;
       border-radius: 4px;
     }
@@ -182,6 +182,7 @@
       border: 1px solid rgba(0,0,0,0.10);
       overflow: hidden;
       position: relative;
+      z-index: 100;
     }
 
     /* ====== Overlay (чёрная полоса) ====== */
@@ -191,10 +192,10 @@
       left: 0;  
       width: var(--overlay-width); /* 385px */
       height: 100%;
-      background: #1B1C1D;
+      background: white;
       border-radius: 10px;
       transition: left 1s ease; 
-      z-index: 200;
+      z-index: 10;
     }
     /* При нажатии «Создать учетную запись» => overlay уезжает вправо */
     .overlay.open-sign-up {
@@ -213,10 +214,13 @@
       justify-content: center;
       gap: 15px;
       transition: opacity 0.5s;
+      z-index: 900;
+      background: #1B1C1D;
     }
     /* «ТОЛЬКО УЗНАЛИ...»: виден по умолчанию */
     .overlay .sign-in {
       opacity: 1;
+      z-index: 900;
     }
     /* «МЫ ЗНАКОМЫ?»: скрыт */
     .overlay .sign-up {
@@ -232,12 +236,14 @@
 
     /* ====== Две формы (каждая 50% width) ====== */
     .form {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0; left: 0;
-      z-index: 100;
-      display: flex;  /* чтобы формы могли располагаться бок о бок */
+  position: absolute;
+  top: 0;
+  left: var(--overlay-width); /* начинаем после overlay */
+  width: calc(100% - var(--overlay-width)); /* оставшаяся ширина */
+  height: 100%;
+  z-index: 100;
+  display: flex; /* для расположения форм бок о бок, если нужно */
+      z-index: 900;
     }
     /* Каждая форма занимает 50% контейнера (900px -> 450px), 
        но оставляем место overlay (385px) по желанию – зависит от макета.  
@@ -245,7 +251,7 @@
     */
     .form .sign-in,
     .form .sign-up {
-      width: 50%;
+      width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -254,6 +260,7 @@
       text-align: center;
       opacity: 0;
       transition: opacity 0.5s;
+      z-index: 900;
     }
     /* По умолчанию скрыты (opacity=0), переключаем через класс .show */
     .form .sign-in, .form .sign-up {
@@ -278,6 +285,7 @@
       width: 380px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      z-index: 100;
     }
     .modalFORM h3 {
       font-size: 26px;
@@ -288,7 +296,7 @@
       margin: 0;
     }
     .inputField {
-      width: 100%;
+      width: 96%;
       padding: 8px;
       font-size: 14px;
       font-weight: 500;
@@ -331,7 +339,8 @@
       width: 100%;
       cursor: pointer;
       transition: all 0.4s;
-      margin-top: 26px;
+      margin-top: 0px;
+      z-index: 9999;
     }
     .button-submit2:hover {
       color: white;
@@ -396,7 +405,7 @@
       <!-- Чёрная полоса (overlay) слева -->
       <div class="overlay" id="overlay">
         <!-- "ТОЛЬКО УЗНАЛИ?" (по умолчанию) -->
-        <div class="sign-in">
+        <div class="sign-in" style="z-index: 9999;">
           <h3 style="color: white;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
           <p style="color: #ddd;">
             Расскажите немного о себе,<br>
@@ -405,7 +414,7 @@
           <button class="button-submit2" id="slide-right-button">Создать учетную запись</button>
         </div>
         <!-- "МЫ ЗНАКОМЫ?" (при open-sign-up) -->
-        <div class="sign-up" style="text-align:left;">
+        <div class="sign-up" style="text-align: left; z-index: 9999;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
           <p style="color: #ddd;">
             Если вы уже зарегистрированы,<br>
@@ -418,7 +427,7 @@
       <!-- Две половины .form: левая = Регистрация, правая = Вход -->
       <div class="form">
         <!-- Левая половина (Регистрация) => .sign-in -->
-        <div class="sign-in" id="sign-in-info">
+        <div class="sign-in" id="sign-in-info" style="z-index: 10;">
           <h2>RIVA</h2>
           <form>
             <div class="modalFORM">
@@ -441,7 +450,7 @@
         </div>
 
         <!-- Правая половина (Вход) => .sign-up (по умолчанию видим) -->
-        <div class="sign-up" id="sign-up-info">
+        <div class="sign-up" id="sign-up-info" style="z-index: 10;">
           <h2>RIVA</h2>
           <form>
             <div class="modalFORM">
