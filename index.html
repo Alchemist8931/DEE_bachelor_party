@@ -233,9 +233,9 @@
       padding: 0px var(--padding);
       text-align: center;
 
-      /* именно здесь увеличиваем длительность */
+      /* время анимации 1s */
       opacity: 1; 
-      transition: opacity 1s ease;  /* вместо 0.6s */
+      transition: opacity 1s ease;
     }
 
     /* ФОРМА РЕГИСТРАЦИИ (скрыта по умолчанию) */
@@ -437,13 +437,13 @@
   </div> <!-- #login-wrapper -->
 
   <script type="module">
-    /* Подключение к Supabase (пример, если нужно) */
+    /* //подключение Supabase (пример, если нужно) */
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGci...';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* Селекторы */
+    /* //селекторы */
     const preloader        = document.getElementById('preloader');
     const loginWrapper     = document.getElementById('login-wrapper');
     const sideMenu         = document.getElementById('side-menu');
@@ -479,7 +479,7 @@
       }, 2000);
     });
 
-    /* 2) ПЕРЕКЛЮЧЕНИЕ ФОРМ (с 1c анимацией исчезновения/появления) */
+    /* 2) ПЕРЕКЛЮЧЕНИЕ ФОРМ (учитываем 1s для плавности) */
     function openSignUp() {
       // сдвигаем overlay вправо
       overlay.classList.add('open-sign-up');
@@ -488,13 +488,13 @@
       loginForm.style.opacity = '0';
       setTimeout(() => {
         loginForm.style.display = 'none';
-      }, 1000);  // Ждём 1с
+      }, 1000);  // Ждём 1с (т.к. transition: opacity 1s)
 
-      // показываем "ФОРМУ РЕГИСТРАЦИИ" (registrationForm)
+      // показываем "ФОРМУ РЕГИСТРАЦИИ"
       setTimeout(() => {
         registrationForm.style.display = 'flex';
         registrationForm.style.opacity  = '1';
-      }, 1100);  // на 100мс позже
+      }, 1100);
     }
 
     function openSignIn() {
@@ -553,7 +553,7 @@
       }, 1500);
     });
 
-    /* Пример проверки в Supabase */
+    /* //пример проверки в Supabase */
     async function checkLoginSupabase(email, password) {
       try {
         // Таблица administrators
@@ -581,12 +581,12 @@
       }
     }
 
-    /* Пример showModal() для пунктов меню */
+    /* //пример showModal() */
     window.showModal = function(modalId) {
       alert('Открывается: ' + modalId);
     };
 
-    /* Подсветка активного пункта меню */
+    /* //подсветка активного пункта меню */
     const navList = document.querySelectorAll('.navigation ul li');
     for (let i = 0; i < navList.length; i++) {
       navList[i].onmouseover = function () {
