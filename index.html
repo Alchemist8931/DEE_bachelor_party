@@ -235,7 +235,7 @@
 
       /* время анимации 1s */
       opacity: 1; 
-      transition: opacity 1s ease;
+      transition: opacity 1.5s ease;
     }
 
     /* ФОРМА РЕГИСТРАЦИИ (скрыта по умолчанию) */
@@ -488,13 +488,13 @@
       loginForm.style.opacity = '0';
       setTimeout(() => {
         loginForm.style.display = 'none';
-      }, 1000);  // Ждём 1с (т.к. transition: opacity 1s)
+      }, 1500);  // Ждём 1с (т.к. transition: opacity 1s)
 
       // показываем "ФОРМУ РЕГИСТРАЦИИ"
       setTimeout(() => {
         registrationForm.style.display = 'flex';
         registrationForm.style.opacity  = '1';
-      }, 1100);
+      }, 1500);
     }
 
     function openSignIn() {
