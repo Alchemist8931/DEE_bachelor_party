@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>RIVA - Складской учет и рецепты</title>
+  <!-- Подключение шрифтов -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <style>
     :root {
-      --form-height: 900px;  
-      --form-width: 900px;   
-      --overlay-width: 385px; 
+      --form-height: 900px;
+      --form-width: 900px;
+      --overlay-width: 385px;
 
-      /* Прелоадер */
+      /* Для прелоадера */
       --loader-line-color: #ffffff;
       --loader-line-width: 10px;
       --loader-line-height: 70px;
     }
 
     * {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       box-sizing: border-box;
       font-family: 'Comfortaa', sans-serif;
@@ -28,7 +29,7 @@
       width: 100vw;
       height: 100vh;
       background: #f5f5f5;
-      overflow: hidden; 
+      overflow: hidden;
       position: relative;
     }
 
@@ -65,6 +66,7 @@
     .line:nth-child(2) { animation-delay: 0.3s; }
     .line:nth-child(3) { animation-delay: 0.6s; }
     .line:nth-child(5) { animation-delay: 1.2s; }
+
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
       40% { transform: translateY(-30px); }
@@ -195,9 +197,7 @@
       border-radius: 10px;
       transition: transform 1s ease; 
       transform: translateX(0);
-      z-index: 100;
-      position: relative;
-      overflow: hidden;
+      z-index: 100;  /* overlay */
     }
     .overlay.open-sign-up {
       transform: translateX(calc(var(--form-width) - var(--overlay-width)));
@@ -235,16 +235,19 @@
 
     /* ОСНОВНЫЕ ФОРМЫ */
     .form {
+      position: absolute;
+      top: 0; 
+      left: 0;
       width: 100%;
       height: 100%;
-      position: absolute;
-      z-index: 200; /* чтобы форма была выше overlay */
+      /* ВАЖНО: выше overlay */
+      z-index: 9999;
     }
+
     .form .sign-in,
     .form .sign-up {
       --padding: 50px;
       position: absolute;
-      width: calc(var(--form-width) - var(--overlay-width) - var(--padding)*2);
       height: 100%;
       display: flex;
       justify-content: center;
@@ -252,26 +255,27 @@
       align-items: center;
       padding: 0px var(--padding);
       text-align: center;
-      opacity: 1; 
+      opacity: 1;
       transition: opacity 1s ease;
-    }
-    /* Регистрация (скрыта) */
-    .form .sign-in {
-      left: 0;
-      display: none;
-      opacity: 0;
-    }
-    /* Вход (виден) */
-    .form .sign-up {
-      right: 0;
-      display: flex;
+
+      /* Ширина = (900px - 385px - 100px) = 415px */
+      width: calc(var(--form-width) - var(--overlay-width) - var(--padding)*2);
     }
 
-    /* -------------- ВАЖНО -------------- */
-    /* ДОБАВЛЯЕМ position: relative; z-index: 9999 !important; */
+    .form .sign-in {
+      left: 0;
+      display: none; /* скрыта */
+      opacity: 0;
+    }
+    .form .sign-up {
+      right: 0;
+      display: flex; /* видна по умолчанию */
+    }
+
     .modalFORM {
+      /* КЛЮЧЕВОЕ: высший уровень */
       position: relative;
-      z-index: 9999 !important;
+      z-index: 9999;
 
       margin-top: 0px;
       display: flex;
@@ -342,6 +346,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Прелоадер -->
   <div id="preloader">
@@ -391,16 +396,18 @@
     </div>
   </div>
 
-  <!-- Обёртка форм -->
+  <!-- Обертка форм -->
   <div id="login-wrapper">
     <div class="container">
       <!-- Чёрная полоса -->
       <div class="overlay" id="overlay">
+        <!-- По умолчанию -->
         <div class="sign-in">
           <h3 style="color: white;">ТОЛЬКО УЗНАЛИ О НАС?</h3>
           <p style="color: #ddd;">Расскажите немного о себе, и совершенствуйте своё дело вместе с нами!</p>
           <button class="button-submit2" id="slide-right-button">Создать учетную запись</button>
         </div>
+        <!-- При open-sign-up -->
         <div class="sign-up" style="text-align: left;">
           <h3 style="color: white;">МЫ ЗНАКОМЫ?</h3>
           <p style="color: #ddd;">Если вы уже зарегистрированы, перейдите на форму входа</p>
@@ -408,9 +415,9 @@
         </div>
       </div>
 
-      <!-- Две формы -->
+      <!-- 2 формы справа -->
       <div class="form">
-        <!-- ФОРМА РЕГИСТРАЦИИ -->
+        <!-- ФОРМА РЕГИСТРАЦИИ (скрыта) -->
         <div class="sign-in" id="sign-in-info">
           <h2>RIVA</h2>
           <form>
@@ -433,7 +440,7 @@
           </form>
         </div>
 
-        <!-- ФОРМА ВХОДА (по умолчанию) -->
+        <!-- ФОРМА ВХОДА (видна) -->
         <div class="sign-up" id="sign-up-info">
           <h2>RIVA</h2>
           <form>
@@ -453,45 +460,47 @@
     </div> <!-- .container -->
   </div> <!-- #login-wrapper -->
 
+  <!-- JS логика -->
   <script type="module">
+    // Пример Supabase
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJI...';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* Селекторы */
     const preloader        = document.getElementById('preloader');
     const loginWrapper     = document.getElementById('login-wrapper');
     const sideMenu         = document.getElementById('side-menu');
     const overlay          = document.getElementById('overlay');
 
+    // 2 формы
     const registrationForm = document.getElementById("sign-in-info");
     const loginForm        = document.getElementById("sign-up-info");
 
-    const slideRightBtn    = document.getElementById("slide-right-button");
-    const slideLeftBtn     = document.getElementById("slide-left-button");
+    // Кнопки
+    const slideRightBtn    = document.getElementById("slide-right-button"); 
+    const slideLeftBtn     = document.getElementById("slide-left-button");  
 
+    // Поля логина
     const loginEmail       = document.getElementById('loginEmail');
     const loginPassword    = document.getElementById('loginPassword');
     const loginBtn         = document.getElementById('loginBtn');
 
-    /* Прелоадер */
+    // Прелоадер
     document.addEventListener('DOMContentLoaded', () => {
       preloader.classList.add('visible');
       setTimeout(() => {
         preloader.classList.remove('visible');
         preloader.classList.add('fade-out');
-
         setTimeout(() => {
           preloader.style.display = 'none';
           loginWrapper.classList.add('show');
           document.body.style.overflow = 'auto';
         }, 500);
-
       }, 2000);
     });
 
-    /* Единая функция переключения */
+    // Переключение overlay + форм
     function toggleOverlay(toSignUp) {
       if (toSignUp) {
         overlay.classList.add('open-sign-up');
@@ -499,6 +508,7 @@
         setTimeout(() => {
           loginForm.style.display = 'none';
         }, 1000);
+
         setTimeout(() => {
           registrationForm.style.display = 'flex';
           registrationForm.style.opacity  = '1';
@@ -509,6 +519,7 @@
         setTimeout(() => {
           registrationForm.style.display = 'none';
         }, 1000);
+
         setTimeout(() => {
           loginForm.style.display = 'flex';
           loginForm.style.opacity  = '1';
@@ -516,15 +527,14 @@
       }
     }
 
-    slideRightBtn.addEventListener('click', () => toggleOverlay(true));
-    slideLeftBtn.addEventListener('click', () => toggleOverlay(false));
+    slideRightBtn.addEventListener('click', () => toggleOverlay(true));  // Создать учетную запись
+    slideLeftBtn.addEventListener('click', () => toggleOverlay(false)); // Форма входа
 
-    /* Кнопка "Войти" */
+    // Кнопка "Войти"
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const email = loginEmail.value.trim();
       const pass  = loginPassword.value.trim();
-
       if (!email || !pass) {
         alert('Пожалуйста, введите логин и пароль');
         return;
@@ -538,7 +548,6 @@
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
       preloader.classList.add('visible');
-
       setTimeout(() => {
         preloader.classList.remove('visible');
         preloader.classList.add('fade-out');
@@ -549,6 +558,7 @@
       }, 1500);
     });
 
+    // Пример проверки в Supabase
     async function checkLoginSupabase(email, password) {
       try {
         const { data: adminData } = await supabase
@@ -574,12 +584,12 @@
       }
     }
 
-    /* showModal() */
+    // Пример showModal()
     window.showModal = function(modalId) {
       alert('Открывается: ' + modalId);
     };
 
-    /* Подсветка меню */
+    // Подсветка пункта меню
     const navList = document.querySelectorAll('.navigation ul li');
     for (let i = 0; i < navList.length; i++) {
       navList[i].onmouseover = function () {
