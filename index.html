@@ -592,7 +592,7 @@ if (user.menu_levels) {
     if (levelsAttr) {
       // Приводим ключи пункта меню к верхнему регистру
       const itemLevels = levelsAttr.split(',').map(key => key.trim().toUpperCase());
-      const hasAccess = itemLevels.some(level => userKeys.includes(level));
+      const hasAccess = itemLevels.every(level => userKeys.includes(level));
       console.log('Пункт меню:', item, 'Ключи пункта:', itemLevels, 'Ключи пользователя:', userKeys, 'Доступ:', hasAccess);
       item.style.display = hasAccess ? '' : 'none';
     }
