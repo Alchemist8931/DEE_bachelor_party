@@ -376,36 +376,24 @@
   <div id="side-menu">
     <div class="navigation">
       <ul>
-        <li class="list active" onclick="showModal('modal1')">
-          <a href="#">
-            <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
-            <span class="title">PAGE 1</span>
-          </a>
-        </li>
-        <li class="list" onclick="showModal('modal2')">
-          <a href="#">
-            <span class="icon"><i class="material-symbols-outlined">finance_mode</i></span>
-            <span class="title">PAGE 2</span>
-          </a>
-        </li>
-        <li class="list">
-          <a href="#">
-            <span class="icon"><i class="material-symbols-outlined">data_table</i></span>
-            <span class="title">TASKS</span>
-          </a>
-        </li>
-        <li class="list">
-          <a href="#">
-            <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
-            <span class="title">in_dev</span>
-          </a>
-        </li>
-        <li class="list">
-          <a href="#">
-            <span class="icon"><i class="material-symbols-outlined">full_stacked_bar_chart</i></span>
-            <span class="title">in_dev</span>
-          </a>
-        </li>
+<li class="navbar__item active" data-levels="A1,B,76C,9D" data-modal="modal1">
+  <a href="#">
+    <span class="icon"><i class="material-symbols-outlined">analytics</i></span>
+    <span class="title">PAGE 1</span>
+  </a>
+</li>
+<li class="navbar__item" data-levels="A1,9D" data-modal="modal2">
+  <a href="#">
+    <span class="icon"><i class="material-symbols-outlined">finance_mode</i></span>
+    <span class="title">PAGE 2</span>
+  </a>
+</li>
+<li class="navbar__item" data-levels="A1" data-modal="modal3">
+  <a href="#">
+    <span class="icon"><i class="material-symbols-outlined">data_table</i></span>
+    <span class="title">TASKS</span>
+  </a>
+</li>
         <div class="indicator"></div>
       </ul>
     </div>
@@ -567,13 +555,19 @@
       const originalLoginText = loginBtn.innerHTML;
       loginBtn.innerHTML = 'Загрузка...';
 
-      const isValid = await checkLoginSupabase(email, pass);
-      if (!isValid) {
-        alert('Неверные логин/пароль');
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = originalLoginText;
-        return;
-      }
+      const user = await checkLoginSupabase(email, pass);
+if (!user) {
+  alert('Неверные логин/пароль');
+  loginBtn.disabled = false;
+  loginBtn.innerHTML = originalLoginText;
+  return;
+}
+// Фильтруем пункты меню по ключам пользователя (например, столбец "menu_levels")
+if (user.menu_levels) {
+  filterMenuByUserLevels(user.menu_levels);
+} else {
+  console.log('Пользователь не имеет заданных уровней меню');
+}
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
@@ -587,6 +581,25 @@
         }, 500);
       }, 1500);
     });
+
+    //функция фильтрации меню по уровням
+    function filterMenuByUserLevels(userLevels) {
+  const userKeys = userLevels.split(',').map(key => key.trim());
+  const menuItems = document.querySelectorAll('.navbar__item');
+  menuItems.forEach(item => {
+    const levelsAttr = item.getAttribute('data-levels');
+    if (levelsAttr) {
+      const itemLevels = levelsAttr.split(',').map(key => key.trim());
+      const hasAccess = itemLevels.some(level => userKeys.includes(level));
+      if (!hasAccess) {
+        item.style.display = 'none';
+      } else {
+        item.style.display = '';
+      }
+    }
+  });
+}
+
 
     // Логика кнопки регистрации "Отправить заявку"
     if (regBtn) {
@@ -642,27 +655,34 @@
     }
 
     async function checkLoginSupabase(email, password) {
-      try {
-        const { data: adminData } = await supabase
-          .from('administrators')
-          .select('*')
-          .eq('email', email)
-          .eq('pass', password)
-          .single();
-        if (adminData) return true;
-        const { data: empData } = await supabase
-          .from('employees')
-          .select('*')
-          .eq('email', email)
-          .eq('pass', password)
-          .single();
-        if (empData) return true;
-        return false;
-      } catch (err) {
-        console.error(err);
-        return false;
+  try {
+    let user = null;
+    let { data: adminData } = await supabase
+      .from('administrators')
+      .select('*')
+      .eq('email', email)
+      .eq('pass', password)
+      .single();
+    if (adminData) {
+      user = adminData;
+    } else {
+      let { data: empData } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('email', email)
+        .eq('pass', password)
+        .single();
+      if (empData) {
+        user = empData;
       }
     }
+    return user; // если не найден, вернёт null
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
 
     window.showModal = function(modalId) {
       alert('Открывается: ' + modalId);
