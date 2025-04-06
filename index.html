@@ -110,12 +110,13 @@
 /* Стили для блока с иконкой внутри ссылки */
 .navigation ul li a .icon {
   position: relative;
-  display: block;
-  line-height: 30px;
-  text-align: center;
+  display: flex;             /* Используем flex для центрирования содержимого */
+  align-items: center;       /* Центр по вертикали */
+  justify-content: center;   /* Центр по горизонтали */
+  width: 60px;               /* Размер пункта меню */
+  height: 60px;
   transition: 0.5s;
-  margin-left: -20px;
-  margin-top: 6px;
+  /* Удаляем margin-left и margin-top, чтобы иконка была строго по центру */
 }
 
 /* Стили для активного пункта меню */
@@ -167,45 +168,40 @@
 
 .navigation ul .indicator {
   position: absolute;
-  left: 0px;
+  left: 50%; /* Центрируем по горизонтали */
   width: 60px;
   height: 60px;
-  transition: 0.5s;
+  transform: translate(-50%, 0); /* Горизонтальное смещение для центрирования, вертикальное задаётся отдельно */
+  transition: transform 0.5s ease;
 }
-
+    
 /* Стили для индикатора активного пункта меню */
 .navigation ul .indicator::before {
   content: "";
   position: absolute;
   width: 50px;
   height: 50px;
-  top: 33%;
-  left: 57%;
+  top: 50%;  /* Центр по вертикали */
+  left: 50%; /* Центр по горизонтали */
   transform: translate(-50%, -50%);
   background: #f5f5f5;
   border-radius: 6px;
-  transition: 0.5s;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3); /* Пример тени */
+  transition: background 0.5s ease;
 }
 
 .navigation ul li:nth-child(1).active ~ .indicator {
-  transform: translateY(0px);
+  transform: translate(-50%, 0);
 }
 
 .navigation ul li:nth-child(2).active ~ .indicator {
-  transform: translateY(60px);
+  transform: translate(-50%, 60px);
 }
 
 .navigation ul li:nth-child(3).active ~ .indicator {
-  transform: translateY(120px);
+  transform: translate(-50%, 120px);
 }
-
-.navigation ul li:nth-child(4).active ~ .indicator {
-  transform: translateY(180px);
-}
-
-.navigation ul li:nth-child(5).active ~ .indicator {
-  transform: translateY(240px);
-}
+    
     /* Логин/регистрация */
     #login-wrapper {
       opacity: 0;
