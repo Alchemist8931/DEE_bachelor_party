@@ -555,14 +555,14 @@
       const originalLoginText = loginBtn.innerHTML;
       loginBtn.innerHTML = 'Загрузка...';
 
-      const user = await checkLoginSupabase(email, pass);
+const user = await checkLoginSupabase(email, pass);
 if (!user) {
   alert('Неверные логин/пароль');
   loginBtn.disabled = false;
   loginBtn.innerHTML = originalLoginText;
   return;
 }
-// Фильтруем пункты меню по ключам пользователя (например, столбец "menu_levels")
+console.log('Доступ пользователя (menu_levels):', user.menu_levels);
 if (user.menu_levels) {
   filterMenuByUserLevels(user.menu_levels);
 } else {
@@ -584,21 +584,21 @@ if (user.menu_levels) {
 
     //функция фильтрации меню по уровням
     function filterMenuByUserLevels(userLevels) {
-  const userKeys = userLevels.split(',').map(key => key.trim());
+  // Приводим ключи пользователя к верхнему регистру
+  const userKeys = userLevels.split(',').map(key => key.trim().toUpperCase());
   const menuItems = document.querySelectorAll('.navbar__item');
   menuItems.forEach(item => {
     const levelsAttr = item.getAttribute('data-levels');
     if (levelsAttr) {
-      const itemLevels = levelsAttr.split(',').map(key => key.trim());
+      // Приводим ключи пункта меню к верхнему регистру
+      const itemLevels = levelsAttr.split(',').map(key => key.trim().toUpperCase());
       const hasAccess = itemLevels.some(level => userKeys.includes(level));
-      if (!hasAccess) {
-        item.style.display = 'none';
-      } else {
-        item.style.display = '';
-      }
+      console.log('Пункт меню:', item, 'Ключи пункта:', itemLevels, 'Ключи пользователя:', userKeys, 'Доступ:', hasAccess);
+      item.style.display = hasAccess ? '' : 'none';
     }
   });
 }
+
 
 
     // Логика кнопки регистрации "Отправить заявку"
