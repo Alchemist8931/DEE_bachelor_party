@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Modal1 – PAGE 1</title>
+  <!-- Локальные стили для modal1: все селекторы префиксированы идентификатором контейнера -->
+  <style>
+    /* Контейнер модуля */
+    #modal1-container {
+      font-family: 'Comfortaa', sans-serif;
+    }
+    /* Верхняя часть модального окна */
+    #modal1-container .modal-top {
+      position: relative;
+      width: 1920px; /* если ширина слишком большая – возможен overflow */
+      height: 330px;
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1100;
+    }
+    /* Нижняя часть модального окна */
+    #modal1-container .modal-bottom {
+      position: relative;
+      width: 1920px; /* если ширина слишком большая – возможен overflow */
+      height: calc(100vh - 395px);
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1100;
+    }
+    /* Общий стиль для строк блока */
+    #modal1-container .modalRow {
+      display: flex;
+      position: relative;
+      flex-direction: row;
+      background: none;
+      gap: 10px;
+    }
+    #modal1-container .modalColumn {
+      display: flex;
+      position: relative;
+      flex-direction: column;
+      background: none;
+      gap: 10px;
+    }
+    /* Внутренний контейнер с прокруткой */
+    #modal1-container .modalVNUT-content {
+      padding: 0px 20px 0px 0px; /* Отступы внутри модального окна */
+      height: 100%;
+      width: 100%;
+      overflow-y: scroll; /* Вертикальная прокрутка */
+      box-sizing: border-box;
+    }
+    /* Стилизация скроллбара */
+    #modal1-container .modalVNUT-content::-webkit-scrollbar {
+      width: 4px;
+      background-color: #e2e2e2;
+      border-radius: 20px;
+    }
+    #modal1-container .modalVNUT-content::-webkit-scrollbar-thumb {
+      background-color: #212121;
+      border-radius: 20px;
+    }
+    #modal1-container .modalVNUT-content::-webkit-scrollbar-track {
+      background-color: #e2e2e2;
+    }
+    /* Блок-контейнер внутри модального окна */
+    #modal1-container .modalBLOCK {
+      gap: 14px;
+      display: flex;
+      position: relative;
+      padding: 10px;
+      height: auto;
+      color: black;
+      z-index: 1100;
+      box-sizing: border-box;
+      vertical-align: middle;
+      background: none;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      border-radius: 10px;
+      margin-top: -10px;
+    }
+    #modal1-container .modalBLOCK:hover,
+    #modal1-container .modalBLOCK:focus {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    /* Стили для input полей */
+    #modal1-container .inputT {
+      width: 250px;
+      height: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid #E5E7E9;
+      outline: none;
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: 0px 0px 20px -18px;
+      font-variant-numeric: tabular-nums;
+      text-transform: uppercase;
+      background: #f5f5f5;
+    }
+    #modal1-container .inputT:active { transform: scale(0.95); }
+    #modal1-container .inputT:focus { border: 1px solid #1a1a1a; }
+    #modal1-container .input {
+      width: 250px;
+      height: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid #E5E7E9;
+      outline: none;
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: 0px 0px 20px -18px;
+      font-variant-numeric: tabular-nums;
+      background: #f5f5f5;
+    }
+    #modal1-container .input:active { transform: scale(0.95); }
+    #modal1-container .input:focus { border: 1px solid #1a1a1a; }
+    #modal1-container .inputZAG {
+      width: 250px;
+      height: 20px;
+      padding: 18px;
+      font-size: 20px;
+      font-weight: 500;
+      border: none;
+      border-bottom: 1px solid #f5f5f5;
+      outline: none;
+      font-variant-numeric: tabular-nums;
+      text-transform: uppercase;
+      background: #f5f5f5;
+    }
+    #modal1-container .inputZAG:focus,
+    #modal1-container .inputZAG:hover { border-bottom: 1px solid #1a1a1a; }
+    #modal1-container .inputSUM {
+      width: 116px;
+      height: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid #E5E7E9;
+      outline: none;
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: 0px 0px 20px -18px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      background: #f5f5f5;
+    }
+    #modal1-container .inputSUM:active { transform: scale(0.95); }
+    #modal1-container .inputSUM:focus { border: 1px solid #1a1a1a; }
+    /* Стили для поля даты */
+    #modal1-container .inputDATE {
+      width: 128px;
+      height: 20px;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid #E5E7E9;
+      outline: none;
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      box-shadow: 0px 0px 20px -18px;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      background: #f5f5f5;
+    }
+    #modal1-container .inputDATE:active { transform: scale(0.95); }
+    #modal1-container .inputDATE:focus { border: 1px solid #1a1a1a; }
+    /* Стили для jQuery UI (если используется) */
+    #modal1-container .ui-widget {
+      font-family: Arial, sans-serif !important;
+      border: none !important;
+      background: white !important;
+      color: #212121 !important;
+    }
+    #modal1-container #ui-datepicker-div {
+      display: none;
+      background: white !important;
+      margin-top: 4px;
+      border-radius: 10px !important;
+      padding: 5px;
+      border: 1px solid #212121 !important;
+      box-shadow: none !important;
+    }
+    #modal1-container .ui-datepicker-header {
+      background: white !important;
+      border: none !important;
+      border-radius: 6px !important;
+      color: #212121 !important;
+      padding: 10px 0;
+      margin-top: 2px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+    }
+    #modal1-container .ui-datepicker-calendar {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #modal1-container .ui-datepicker-calendar thead th {
+      padding: 5px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #212121 !important;
+      background: white !important;
+    }
+    #modal1-container .ui-datepicker-calendar tbody td {
+      width: 40px;
+      text-align: center;
+      padding: 0;
+    }
+    #modal1-container .ui-datepicker-calendar tbody td a {
+      display: block;
+      border-radius: 6px;
+      line-height: 36px;
+      transition: 0.3s all;
+      color: #212121 !important;
+      font-size: 14px;
+      text-decoration: none;
+      font-weight: 500;
+      background: white !important;
+    }
+    #modal1-container .ui-datepicker-calendar tbody td a:hover {
+      background-color: #212121 !important;
+      color: white !important;
+    }
+    #modal1-container .ui-datepicker-calendar tbody td a.ui-state-active {
+      background-color: #212121 !important;
+      color: white !important;
+    }
+    #modal1-container .ui-datepicker-header a.ui-corner-all {
+      cursor: pointer;
+      position: absolute;
+      top: 5px;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      transition: 0.3s all;
+      background: white !important;
+      border: none !important;
+    }
+    #modal1-container .ui-datepicker-header a.ui-corner-all:hover {
+      background-color: #212121 !important;
+      color: white !important;
+    }
+    #modal1-container .ui-datepicker-header a.ui-datepicker-prev,
+    #modal1-container .ui-datepicker-header a.ui-datepicker-next {
+      background-image: none !important;
+      color: #212121 !important;
+    }
+    #modal1-container .ui-datepicker-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #212121 !important;
+    }
+    #modal1-container .ui-datepicker-unselectable .ui-state-default {
+      color: #212121 !important;
+      background: white !important;
+      opacity: 0.5;
+    }
+    #modal1-container .ui-widget-content {
+      background: white !important;
+      border: none !important;
+    }
+    #modal1-container .ui-state-default,
+    #modal1-container .ui-widget-content .ui-state-default {
+      background: white !important;
+      border: 1px solid #212121 !important;
+      color: #212121 !important;
+      box-shadow: none !important;
+    }
+    #modal1-container .ui-widget-header {
+      background: white !important;
+      border: 1px solid #212121 !important;
+    }
+    #modal1-container .ui-state-highlight,
+    #modal1-container .ui-widget-content .ui-state-highlight {
+      background: white !important;
+      color: #212121 !important;
+    }
+    #modal1-container .ui-icon {
+      background: none !important;
+    }
+    /* Стили для иконок */
+    #modal1-container .spec-icon {
+      color: #212121;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    #modal1-container .spec-icon:hover {
+      color: #625a56;
+      transform: scale(1.1);
+    }
+    #modal1-container .spec-icon:active {
+      transform: scale(0.92);
+    }
+    /* Стили для кастомного чекбокса */
+    #modal1-container .input[type="checkbox"] {
+      display: none;
+    }
+    #modal1-container .custom-checkbox {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #333;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+    }
+    #modal1-container .custom-checkbox::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background-color: #333;
+      border-radius: 2px;
+      opacity: 0;
+    }
+    #modal1-container .input[type="checkbox"]:checked + .custom-checkbox::after {
+      opacity: 1;
+    }
+    /* Стили для кнопок */
+    #modal1-container .button-form {
+      position: relative;
+      width: 200px;
+      height: 40px;
+      padding: 12px;
+      background-color: #212121;
+      border: 1px solid #212121;
+      color: #f5f5f5;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.4s;
+    }
+    #modal1-container .button-form:hover {
+      color: #212121;
+      background-color: #f5f5f5;
+    }
+    /* Стили для промежуточных информационных блоков */
+    #modal1-container .stats {
+      display: inline-grid;
+      background-color: transparent;
+      color: #212121;
+      border-radius: 12px;
+      border: none;
+    }
+    #modal1-container .stat {
+      display: inline-grid;
+      width: 500px;
+      grid-template-columns: repeat(1, 1fr);
+      column-gap: 10px;
+      padding: 20px;
+    }
+    #modal1-container .stat-title {
+      grid-column-start: 1;
+      white-space: nowrap;
+      color: #212121;
+      font-size: 20px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    #modal1-container .stat-value {
+      grid-column-start: 1;
+      white-space: nowrap;
+      font-size: 40px;
+      line-height: 20px;
+      font-weight: 700;
+      margin-top: 26px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Оборачиваем весь контент в локальный контейнер -->
+  <div id="modal1-container">
+    <!-- Верхняя часть модального окна -->
+    <div class="modal-top">
+      <div class="modalRow">
+        <div class="stats shadow">
+          <div class="stat">
+            <div class="stat-title">размещено заказов</div>
+            <div class="stat-value">1 235 652</div>
+          </div>
+        </div>
+        <div class="stats shadow">
+          <div class="stat">
+            <div class="stat-title">предоплачено</div>
+            <div class="stat-value">356 201</div>
+          </div>
+        </div>
+        <div class="stats shadow">
+          <div class="stat">
+            <div class="stat-title">оплата отложена</div>
+            <div class="stat-value">850 100</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modalRow" style="top: 90px; margin-left: 1400px;">
+        <button class="button-form" style="width: 230px; left: 5px;" id="move-warehouse">
+          переместить на склад
+        </button>
+        <button class="button-form" style="width: 230px; left: 15px;" id="delete-selected">
+          удалить выбранное
+        </button>
+      </div>
+      
+      <div class="modalRow" style="top: 102px;">
+        <div class="modalBLOCK" style="margin-left: 26px; margin-top: -4px;">
+          <div class="modalRow">
+            <input class="inputT" style="width: 130px;" placeholder="RIV-0881"/>
+            <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
+            <input class="inputT" style="width: 213px;" placeholder="URL"/>
+            <input class="inputT" style="width: 270px;" placeholder="поставщик"/>
+            <input class="input"  style="width: 90px; margin-left: 32px;" placeholder="изм."/>
+            <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
+            <input class="inputSUM" placeholder="000 000 000"/>
+          </div>
+        </div>
+        <button class="button-form" style="width: 330px; left: 163px;" id="create-order">
+          создать позицию заказа
+        </button>
+      </div>
+    </div>
+    <!-- Нижняя часть модального окна -->
+    <div class="modal-bottom" style="margin-top: 24px;">
+      <div class="modalVNUT-content">
+        <div class="modalBLOCK">
+          <label>
+            <input type="checkbox" class="input">
+            <span class="custom-checkbox" style="margin-top: 5.4px; margin-left: -8px;"></span>
+          </label>
+          <div class="modalRow">
+            <input class="inputT" style="width: 130px;" placeholder="RIV-0881"/>
+            <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
+            <input class="input"  style="width: 150px;" placeholder="статус"/>
+            <span class="spec-icon" style="margin-left: 30px;">
+              <i class="material-symbols-outlined">captive_portal</i>
+            </span>
+            <input class="inputT" style="width: 270px;" placeholder="поставщик"/>
+            <input class="input"  style="width: 90px; margin-left: 30px;" placeholder="изм."/>
+            <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
+            <input class="inputSUM" placeholder="000 000 000"/>
+          </div>
+          <div class="modalRow" style="margin-left: 30px;">
+            <input class="input"  style="width: 90px;" placeholder="изм."/>
+            <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
+            <input class="inputSUM" placeholder="000 000 000"/>
+            <input class="inputSUM" placeholder="000 000 000"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Локальные функции для modal1 (все переменные и обработчики обёрнуты в IIFE) -->
+  <script>
+    (function() {
+      console.log('Модуль PAGE 1 (modal1) активен');
 
+      // Кнопка "создать позицию заказа"
+      var createOrderBtn = document.getElementById('create-order');
+      if (createOrderBtn) {
+        createOrderBtn.addEventListener('click', function() {
+          // Здесь реализуйте логику создания позиции заказа
+          console.log('Запущена логика создания позиции заказа');
+        });
+      }
+
+      // Кнопка "переместить на склад"
+      var moveWarehouseBtn = document.getElementById('move-warehouse');
+      if (moveWarehouseBtn) {
+        moveWarehouseBtn.addEventListener('click', function() {
+          // Здесь реализуйте логику перемещения на склад
+          console.log('Запущена логика перемещения на склад');
+        });
+      }
+
+      // Кнопка "удалить выбранное"
+      var deleteSelectedBtn = document.getElementById('delete-selected');
+      if (deleteSelectedBtn) {
+        deleteSelectedBtn.addEventListener('click', function() {
+          // Здесь реализуйте логику удаления выбранного элемента
+          console.log('Запущена логика удаления выбранного');
+        });
+      }
+
+      // Добавьте здесь любые другие функции и обработчики,
+      // которые нужны только для страницы modal1.
+    })();
+  </script>
+</body>
+</html>
