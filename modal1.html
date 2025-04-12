@@ -58,7 +58,7 @@
     }
     /* Внутренний контейнер с прокруткой */
     #modal1-container .modalVNUT-content {
-      padding: 0px 20px 0px 0px; /* Отступы внутри модального окна */
+      padding: 0 20px 0 0; /* Отступы внутри модального окна */
       height: 100%;
       width: 100%;
       overflow-y: scroll; /* Вертикальная прокрутка */
@@ -77,7 +77,7 @@
     #modal1-container .modalVNUT-content::-webkit-scrollbar-track {
       background-color: #e2e2e2;
     }
-    /* Блок-контейнер внутри модального окна */
+    /* Блок-контейнер внутри модального окна (форма ввода заказа) */
     #modal1-container .modalBLOCK {
       gap: 14px;
       display: flex;
@@ -455,17 +455,19 @@
     </div>
   </div>
   
-  <!-- Локальные функции для modal1 (все переменные и обработчики обёрнуты в IIFE) -->
+  <!-- Локальные функции для modal1 (код ниже отвечает за функционал) -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
     const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdHBkc21qd3BqcnN3bGN6endnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNTA3MzMsImV4cCI6MjA1ODkyNjczM30.r1v2_o884o1bmZsEd08kd7U5zdY7kWdZb8PrTnsdm-o';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    (function() {
+    // Если этот файл загружается динамически через fetch, учтите, что встроенные <script> не исполняются автоматически.
+    // В таком случае вызовите функцию initModal1() из родительского кода после вставки контента.
+    function initModal1() {
       console.log('Модуль PAGE 1 (modal1) активен');
 
-      // Функция для вставки данных в базу данных Supabase (таблица "orders")
+      // Функция для записи заказа в базу данных Supabase (таблица "orders")
       async function insertOrderToDB(orderData) {
         const { data, error } = await supabase
           .from('orders')
@@ -511,9 +513,7 @@
         const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
         if (formBlock) {
           const inputs = formBlock.querySelectorAll('.modalRow input');
-          inputs.forEach(input => {
-            input.value = '';
-          });
+          inputs.forEach(input => { input.value = ''; });
         }
       }
 
@@ -541,7 +541,7 @@
           }
 
           try {
-            // Запись в базу данных
+            // Записываем заказ в базу данных
             await insertOrderToDB(orderData);
             // Создаём HTML нового заказа
             const newOrderHTML = createOrderElement(orderData);
@@ -566,22 +566,24 @@
         });
       }
 
-      // Дополнительные обработчики для кнопок "переместить на склад" и "удалить выбранное"
+      // Обработчики для дополнительных кнопок
       const moveWarehouseBtn = document.getElementById('move-warehouse');
       if (moveWarehouseBtn) {
         moveWarehouseBtn.addEventListener('click', function() {
           console.log('Запущена логика перемещения на склад');
         });
       }
-
       const deleteSelectedBtn = document.getElementById('delete-selected');
       if (deleteSelectedBtn) {
         deleteSelectedBtn.addEventListener('click', function() {
           console.log('Запущена логика удаления выбранного');
         });
       }
-
-    })();
+    }
+    
+    // Если файл загружается напрямую, инициализируем модуль
+    initModal1();
+    // Если же файл подгружается динамически, удалите (или закомментируйте) вызов выше и вызовите initModal1() вручную после вставки контента.
   </script>
 </body>
 </html>
