@@ -7,34 +7,40 @@
   <style>
     /* Контейнер модуля */
     #modal1-container {
-      font-family: 'Comfortaa', sans-serif;
-    }
+    font-family: 'Comfortaa', sans-serif;
+    /* Можно задать общий max-width, если нужно */
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
     /* Верхняя часть модального окна */
     #modal1-container .modal-top {
-      position: relative;
-      width: 1920px; /* если ширина слишком большая – возможен overflow */
-      height: 330px;
-      background-color: #f5f5f5;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.10);
-      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
-      padding: 20px;
-      overflow-y: auto;
-      z-index: 1100;
-    }
-    /* Нижняя часть модального окна */
-    #modal1-container .modal-bottom {
-      position: relative;
-      width: 1920px; /* если ширина слишком большая – возможен overflow */
-      height: calc(100vh - 395px);
-      background-color: #f5f5f5;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.10);
-      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
-      padding: 20px;
-      overflow-y: auto;
-      z-index: 1100;
-    }
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    height: 330px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1100;
+  }
+   /* Нижняя часть модального окна */
+  #modal1-container .modal-bottom {
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    height: calc(100vh - 395px);
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1100;
+  }
     /* Общий стиль для строк блока */
     #modal1-container .modalRow {
       display: flex;
