@@ -729,7 +729,7 @@
       // После полного завершения анимации (через 2 секунды) подгружаем содержимое
       setTimeout(async () => {
         try {
-          const response = await fetch(`/${pageId}.html`);
+          const response = await fetch(`${pageId}.html`);
           if (!response.ok) {
             throw new Error('Ошибка загрузки страницы');
           }
