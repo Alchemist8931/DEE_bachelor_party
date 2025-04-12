@@ -3,45 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Modal1 – PAGE 1</title>
-  <!-- Локальные стили для modal1: все селекторы префиксированы идентификатором контейнера    -->
+  <!-- Локальные стили для modal1: все селекторы префиксированы идентификатором контейнера -->
   <style>
     /* Контейнер модуля */
     #modal1-container {
-    font-family: 'Comfortaa', sans-serif;
-    /* Можно задать общий max-width, если нужно */
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-  }
+      font-family: 'Comfortaa', sans-serif;
+      width: 100%;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
     /* Верхняя часть модального окна */
     #modal1-container .modal-top {
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-    height: 330px;
-    background-color: #f5f5f5;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
-    padding: 20px;
-    overflow: hidden;
-    z-index: 1100;
-  }
-   /* Нижняя часть модального окна */
-  #modal1-container .modal-bottom {
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-    height: calc(100vh - 395px);
-    background-color: #f5f5f5;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 1100;
-  }
+      width: 100%;
+      max-width: 1920px;
+      margin: 0 auto;
+      height: 330px;
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+      padding: 20px;
+      overflow: hidden;
+      z-index: 1100;
+    }
+    /* Нижняя часть модального окна */
+    #modal1-container .modal-bottom {
+      width: 100%;
+      max-width: 1920px;
+      margin: 0 auto;
+      height: calc(100vh - 395px);
+      background-color: #f5f5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+      padding: 20px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      z-index: 1100;
+    }
     /* Общий стиль для строк блока */
     #modal1-container .modalRow {
       display: flex;
@@ -451,68 +450,137 @@
     <!-- Нижняя часть модального окна -->
     <div class="modal-bottom" style="margin-top: 24px;">
       <div class="modalVNUT-content">
+        <!-- Здесь будут отображаться блоки заказов, добавленные пользователем -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Локальные функции для modal1 (все переменные и обработчики обёрнуты в IIFE) -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdHBkc21qd3BqcnN3bGN6endnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNTA3MzMsImV4cCI6MjA1ODkyNjczM30.r1v2_o884o1bmZsEd08kd7U5zdY7kWdZb8PrTnsdm-o';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    (function() {
+      console.log('Модуль PAGE 1 (modal1) активен');
+
+      // Функция для вставки данных в базу данных Supabase (таблица "orders")
+      async function insertOrderToDB(orderData) {
+        const { data, error } = await supabase
+          .from('orders')
+          .insert([orderData]);
+        if (error) {
+          throw error;
+        }
+        return data;
+      }
+
+      // Функция для создания нового DOM-элемента с заказом
+      function createOrderElement(orderData) {
+        return `
         <div class="modalBLOCK">
           <label>
             <input type="checkbox" class="input">
             <span class="custom-checkbox" style="margin-top: 5.4px; margin-left: -8px;"></span>
           </label>
           <div class="modalRow">
-            <input class="inputT" style="width: 130px;" placeholder="RIV-0881"/>
-            <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
-            <input class="input"  style="width: 150px;" placeholder="статус"/>
-            <span class="spec-icon" style="margin-left: 30px;">
+            <input class="inputT" style="width: 130px;" placeholder="RIV-0881" value="${orderData.orderCode || ''}" readonly/>
+            <input class="input" style="width: 340px;" placeholder="наименование позиции" value="${orderData.name || ''}" readonly/>
+            <input class="input" style="width: 150px;" placeholder="статус" value="заказано" readonly/>
+            <span class="spec-icon" style="margin-left: 30px;" data-url="${orderData.url || ''}">
               <i class="material-symbols-outlined">captive_portal</i>
             </span>
-            <input class="inputT" style="width: 270px;" placeholder="поставщик"/>
-            <input class="input"  style="width: 90px; margin-left: 30px;" placeholder="изм."/>
-            <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
-            <input class="inputSUM" placeholder="000 000 000"/>
+            <input class="inputT" style="width: 270px;" placeholder="поставщик" value="${orderData.supplier || ''}" readonly/>
+            <input class="input" style="width: 90px; margin-left: 30px;" placeholder="изм." value="${orderData.modification || ''}" readonly/>
+            <input class="inputSUM" style="width: 86px;" placeholder="000 000" value="${orderData.field1 || ''}" readonly/>
+            <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2 || ''}" readonly/>
           </div>
           <div class="modalRow" style="margin-left: 30px;">
-            <input class="input"  style="width: 90px;" placeholder="изм."/>
-            <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
-            <input class="inputSUM" placeholder="000 000 000"/>
-            <input class="inputSUM" placeholder="000 000 000"/>
+            <input class="input" style="width: 90px;" placeholder="изм." readonly/>
+            <input class="inputSUM" style="width: 86px;" placeholder="000 000" readonly/>
+            <input class="inputSUM" placeholder="000 000 000" readonly/>
+            <input class="inputSUM" placeholder="000 000 000" readonly/>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Локальные функции для modal1 (все переменные и обработчики обёрнуты в IIFE) -->
-  <script>
-    (function() {
-      console.log('Модуль PAGE 1 (modal1) активен');
+        `;
+      }
 
-      // Кнопка "создать позицию заказа"
-      var createOrderBtn = document.getElementById('create-order');
+      // Функция для очистки формы ввода (верхний блок)
+      function clearForm() {
+        const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+        if (formBlock) {
+          const inputs = formBlock.querySelectorAll('.modalRow input');
+          inputs.forEach(input => {
+            input.value = '';
+          });
+        }
+      }
+
+      // Обработчик кнопки "создать позицию заказа"
+      const createOrderBtn = document.getElementById('create-order');
       if (createOrderBtn) {
-        createOrderBtn.addEventListener('click', function() {
-          // Здесь реализуйте логику создания позиции заказа
-          console.log('Запущена логика создания позиции заказа');
+        createOrderBtn.addEventListener('click', async function() {
+          const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+          if (!formBlock) return;
+          const inputs = formBlock.querySelectorAll('.modalRow input');
+          const orderData = {
+            orderCode: inputs[0].value.trim(),
+            name: inputs[1].value.trim(),
+            url: inputs[2].value.trim(),
+            supplier: inputs[3].value.trim(),
+            modification: inputs[4].value.trim(),
+            field1: inputs[5].value.trim(),
+            field2: inputs[6].value.trim(),
+            status: "заказано"
+          };
+
+          if (!orderData.orderCode || !orderData.name) {
+            alert("Пожалуйста, заполните обязательные поля (код и наименование).");
+            return;
+          }
+
+          try {
+            // Запись в базу данных
+            await insertOrderToDB(orderData);
+            // Создаём HTML нового заказа
+            const newOrderHTML = createOrderElement(orderData);
+            // Добавляем новый заказ в контейнер заказов (нижняя часть)
+            const ordersContainer = document.querySelector('.modalVNUT-content');
+            if (ordersContainer) {
+              ordersContainer.insertAdjacentHTML('beforeend', newOrderHTML);
+            }
+            // Очищаем поля формы
+            clearForm();
+            // Привязываем обработчик на иконку для перехода по URL
+            const newIcon = ordersContainer.querySelector(`.spec-icon[data-url="${orderData.url}"]`);
+            if (newIcon && orderData.url) {
+              newIcon.addEventListener('click', () => {
+                window.open(orderData.url, '_blank');
+              });
+            }
+          } catch (error) {
+            alert("Ошибка при создании заказа: " + error.message);
+            console.error(error);
+          }
         });
       }
 
-      // Кнопка "переместить на склад"
-      var moveWarehouseBtn = document.getElementById('move-warehouse');
+      // Дополнительные обработчики для кнопок "переместить на склад" и "удалить выбранное"
+      const moveWarehouseBtn = document.getElementById('move-warehouse');
       if (moveWarehouseBtn) {
         moveWarehouseBtn.addEventListener('click', function() {
-          // Здесь реализуйте логику перемещения на склад
           console.log('Запущена логика перемещения на склад');
         });
       }
 
-      // Кнопка "удалить выбранное"
-      var deleteSelectedBtn = document.getElementById('delete-selected');
+      const deleteSelectedBtn = document.getElementById('delete-selected');
       if (deleteSelectedBtn) {
         deleteSelectedBtn.addEventListener('click', function() {
-          // Здесь реализуйте логику удаления выбранного элемента
           console.log('Запущена логика удаления выбранного');
         });
       }
 
-      // Добавьте здесь любые другие функции и обработчики,
-      // которые нужны только для страницы modal1.
     })();
   </script>
 </body>
