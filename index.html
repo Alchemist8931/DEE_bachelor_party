@@ -64,131 +64,151 @@
     #side-menu { display: none; }
     /* Фиксированное меню навигации */
     .navigation {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      height: calc(100vh - 40px);
-      width: 70px;
-      background: #212121;
-      border-radius: 12px;
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-    /* Контейнер для списка пунктов меню */
-    .navigation ul {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    /* Стили для каждого пункта меню */
-    .navigation ul li {
-      position: relative;
-      list-style: none;
-      width: 60px;
-      height: 60px;
-      z-index: 1;
-    }
-    /* Стили для ссылок внутри пунктов меню */
-    .navigation ul li a {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      text-align: center;
-      color: #f5f5f5;
-      font-weight: 500;
-      text-decoration: none;
-    }
-    /* Стили для блока с иконкой внутри ссылки */
-    .navigation ul li a .icon {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 60px;
-      height: 60px;
-      transition: 0.5s;
-      left: 9%;
-      top: 7px;
-    }
-    /* Стили для активного пункта меню */
-    .navigation ul li.active a .icon {
-      color: #212121;
-    }
-    /* Размер иконки */
-    .navigation ul li a .icon i {
-      font-size: 32px;
-    }
-    /* Стили для подписи (title) пункта меню */
-    .navigation ul li a .title {
-      position: absolute;
-      top: 50%;
-      left: 124px;
-      background: #212121;
-      transform: translateY(-50%);
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: 0.5s;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      opacity: 0;
-      visibility: hidden;
-    }
-    /* Отображение подписи при наведении на пункт меню */
-    .navigation ul li:hover a .title {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(-48px) translateY(-50%);
-      font-size: 12px;
-    }
-    /* Стилизация стрелки перед подписью */
-    .navigation ul li a .title::before {
-      content: "";
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #212121;
-      left: -6px;
-      top: 30%;
-      transition: 0.5s;
-      transform: rotate(45deg) translateY(-50%);
-      border-radius: 8px;
-    }
-    .navigation ul .indicator {
-      position: absolute;
-      left: 50%;
-      top: 4%;
-      width: 60px;
-      height: 60px;
-      transform: translate(-50%, 0);
-      transition: transform 0.5s ease;
-    }
-    /* Стили для индикатора активного пункта меню */
-    .navigation ul .indicator::before {
-      content: "";
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #f5f5f5;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: background 0.5s ease;
-    }
-    .navigation ul li:nth-child(1).active ~ .indicator {
-      transform: translate(-50%, 0);
-    }
-    .navigation ul li:nth-child(2).active ~ .indicator {
-      transform: translate(-50%, 60px);
-    }
-    .navigation ul li:nth-child(3).active ~ .indicator {
-      transform: translate(-50%, 120px);
-    }
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  height: calc(100vh - 40px);
+  width: 70px;
+  z-index: 1200;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 6px 6px 16px rgba(22,20,19,0.4);
+}
+
+/* Контейнер для списка пунктов меню */
+.navigation ul {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Стили для каждого пункта меню */
+.navigation ul li {
+  position: relative;
+  list-style: none;
+  width: 60px;  /* 3vw */
+  height: 60px; /* 3vw */
+  z-index: 1;
+}
+
+/* Стили для ссылок внутри пунктов меню */
+.navigation ul li a {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  color: #212121;
+  font-weight: 500;
+  text-decoration: none; /* Убираем подчеркивание */
+}
+
+/* Стили для блока с иконкой внутри ссылки */
+.navigation ul li a .icon {
+  position: relative;
+  display: flex;     
+  align-items: center; 
+  justify-content: center;  
+  width: 60px;         
+  height: 60px;
+  transition: 0.5s;
+  left: 9%;
+  top: 7px;
+}
+
+/* Стили для активного пункта меню */
+.navigation ul li.active a .icon {
+  color: #212121;
+}
+
+/* Размер иконки */
+.navigation ul li a .icon i {
+  font-size: 32px;
+}
+
+/* Стили для подписи (title) пункта меню */
+.navigation ul li a .title {
+  position: absolute;
+  top: 50%;
+  left: 124px;       
+  background: #f5f5f5;
+  transform: translateY(-50%);
+  padding: 6px 6px;  
+  border-radius: 6px;
+  border: 1px solid #212121;
+  transition: 0.5s;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Отображение подписи при наведении на пункт меню */
+.navigation ul li:hover a .title {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50px) translateY(-50%);
+  font-size: 16px;
+  width: 150px;
+  height: 30px;
+  font-weight: 700;
+}
+
+/* Стилизация стрелки перед подписью */
+.navigation ul li a .title::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #f5f5f5;
+  left: -6px;
+  top: 30%;
+  transition: 0.5s;
+  transform: rotate(45deg) translateY(-50%);
+  border-radius: 8px;
+}
+
+.navigation ul .indicator {
+  position: absolute;
+  left: 50%; /* Центрируем по горизонтали */
+  top: 4%; /* Центрируем по горизонтали */
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, 0); /* Горизонтальное смещение для центрирования, вертикальное задаётся отдельно */
+  transition: transform 0.5s ease;
+}
+    
+/* Стили для индикатора активного пункта меню */
+.navigation ul .indicator::before {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 50%;  /* Центр по вертикали */
+  left: 50%; /* Центр по горизонтали */
+  transform: translate(-50%, -50%);
+  background: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  border: 1px solid #212121;
+  transition: background 0.5s ease;
+}
+
+.navigation ul li:nth-child(1).active ~ .indicator {
+  transform: translate(-50%, 0);
+}
+
+.navigation ul li:nth-child(2).active ~ .indicator {
+  transform: translate(-50%, 60px);
+}
+
+.navigation ul li:nth-child(3).active ~ .indicator {
+  transform: translate(-50%, 120px);
+}
     /* Логин/регистрация */
     #login-wrapper {
       opacity: 0;
