@@ -354,19 +354,19 @@
       background-color: #212121;
     }
     /* Правое модальное окно (контейнер для подгрузки страниц) */
-    .modal-window {
+.modal-window {
   position: fixed;
   width: calc(100vw - 130px);
   height: calc(100vh - 40px);
   background-color: transparent;
   border: none;
   padding: 0;
-  overflow: visible; /* изменение с hidden */
+  overflow: visible;
   z-index: 1100;
-  display: none;
+  display: none; /* по умолчанию окно скрыто */
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: center;       /* центрирование по горизонтали */
+  justify-content: flex-start;  /* прижимаем контент к верхней границе */
   top: 20px;
   left: 110px;
 }
