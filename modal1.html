@@ -302,6 +302,10 @@
   function initModal1() {
     console.log('[modal1.html] Модуль PAGE 1 активирован!');
 
+     /*---------- 1. Загружаем все существующие заказы ----------*/
+    loadExistingOrders();
+    
+    /*---------- 2. Сохранение нового заказа ----------*/
     // Функция записи заказа (таблица "orders")
     async function insertOrderToDB(orderData) {
       const { data, error } = await supabase
@@ -312,6 +316,46 @@
       }
       return data;
     }
+
+    //загрузка уже существующих заказов
+    async function loadExistingOrders() {
+    const ordersContainer = document.querySelector(
+      '#modal1-container .modal-bottom .modalVNUT-content'
+    );
+
+    // получаем все строки, сортируем по дате создания
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    if (!orders || !orders.length) return;
+
+    // генерируем HTML
+    orders.forEach(order => {
+      ordersContainer.insertAdjacentHTML(
+        'beforeend',
+        createOrderElement(order)
+      );
+
+      // привязываем иконку URL
+      if (order.url) {
+        const icon = ordersContainer.lastElementChild.querySelector('.spec-icon');
+        icon.addEventListener('click', () => window.open(order.url, '_blank'));
+      }
+    });
+
+    /*------ обновляем счётчики в «статистике» ------*/
+    const totalCounter = document.querySelector(
+      '#modal1-container .stats .stat-value'
+    );                                                          // //счётчик заказов
+    if (totalCounter) totalCounter.textContent = orders.length.toLocaleString();
+  }
 
     // Генерация HTML для заказа
     function createOrderElement(orderData) {
