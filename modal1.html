@@ -288,13 +288,8 @@
 
 <!-- Скрипт (type="module") с инициализацией Supabase и функцией initModal1() -->
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-  const SUPABASE_URL = 'https://bftpdsmjwpjrswlczzwg.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR...'; // <-- ваш ключ
-
-  // Инициализируем клиент Supabase
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Инициализация Supabase (предполагаем, что window.supabase уже инициализирован)
+  const supabase = window.supabase;
 
   // Если загружаем напрямую (без динамики), сразу вызовем initModal1()
   initModal1();
