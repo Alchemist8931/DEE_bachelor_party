@@ -131,6 +131,26 @@
   #modal1-container .inputSUM:focus {
     border: 1px solid #1a1a1a;
   }
+  /* ---- кастомный select ---- */
+  #modal1-container .select-wrapper        { position:relative; }
+  #modal1-container .select-input          { cursor:pointer; }
+  #modal1-container .select-dropdown       {
+  position:absolute; top:100%; left:0; width:100%;
+  max-height:150px; background:#f5f5f5; border:1px solid #E5E7E9;
+  border-radius:8px; box-shadow:0 4px 16px rgba(22,20,19,.25);
+  overflow-y:auto; opacity:0; visibility:hidden;
+  transform:translateY(-10px); transition:.25s;
+  z-index:1200;
+  }
+  #modal1-container .select-dropdown.show  {
+  opacity:1; visibility:visible; transform:translateY(0);
+  }
+  /* скролл такой же, как в modalVNUT-content */
+  #modal1-container .select-dropdown::-webkit-scrollbar      { width:4px; background:#e2e2e2; border-radius:20px; }
+  #modal1-container .select-dropdown::-webkit-scrollbar-thumb{ background:#212121; border-radius:20px; }
+  #modal1-container .select-option        { padding:6px 10px; font-size:12px; cursor:pointer; }
+  #modal1-container .select-option:hover  { background:rgba(0,0,0,.05); }
+  
   /* Иконка (URL) */
   #modal1-container .spec-icon {
     color: #212121;
@@ -268,7 +288,10 @@
           <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
           <input class="inputT" style="width: 213px;" placeholder="URL"/>
           <input class="inputT" style="width: 270px;" placeholder="поставщик"/>
-          <input class="input"  style="width: 90px; margin-left: 32px;" placeholder="изм."/>
+          <div class="select-wrapper" style="width: 90px; margin-left: 32px;">
+                    <input class="input select-input" placeholder="изм." readonly />
+                    <div class="select-dropdown"></div>
+          </div>
           <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
           <input class="inputSUM" placeholder="000 000 000"/>
         </div>
@@ -300,171 +323,219 @@
   // Ваш код (в родительском index.html) должен после вставки вызвать initModal1().
   // Или можно убрать строку "initModal1();" выше и всегда звать вручную.
 
+
+
+  
   function initModal1() {
-    console.log('[modal1.html] Модуль PAGE 1 активирован!');
+  console.log('[modal1.html] Модуль PAGE 1 активирован!');
 
-     /*---------- 1. Загружаем все существующие заказы ----------*/
-    loadExistingOrders();
-    
-    /*---------- 2. Сохранение нового заказа ----------*/
-    // Функция записи заказа (таблица "orders")
-    async function insertOrderToDB(orderData) {
-      const { data, error } = await supabase
-        .from('orders')
-        .insert([orderData]);
-      if (error) {
-        throw error;
-      }
-      return data;
-    }
+  // ──────────────────────────────────────────────────────────
+  // 0.  СПРАВОЧНИК ЕДИНИЦ ИЗМЕРЕНИЙ  // +++ новый код +++
+  // ──────────────────────────────────────────────────────────
+  async function loadUnitsMeasure() {
+    const { data, error } = await supabase
+      .from('units_measure')
+      .select('unit_name, unit_group, multiplier')
+      .order('unit_group, multiplier');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  }
+  const unitsPromise = loadUnitsMeasure();   // сразу запускаем загрузку
 
-    //загрузка уже существующих заказов
-    async function loadExistingOrders() {
+  // ──────────────────────────────────────────────────────────
+  // 1.  ЗАГРУЗКА УЖЕ СУЩЕСТВУЮЩИХ ЗАКАЗОВ
+  // ──────────────────────────────────────────────────────────
+  loadExistingOrders();
+
+  // запись заказа в таблицу "orders"
+  async function insertOrderToDB(orderData) {                // //функция записи заказа
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([orderData]);
+    if (error) throw error;
+    return data;
+  }
+
+  // загрузка существующих заказов
+  async function loadExistingOrders() {                      // //загрузка заказов
     const ordersContainer = document.querySelector(
       '#modal1-container .modal-bottom .modalVNUT-content'
     );
 
-    // получаем все строки, сортируем по дате создания
     const { data: orders, error } = await supabase
       .from('orders')
       .select('*')
       .eq('user_key', USER_KEY)
       .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error(error);
-      return;
-    }
-
+    if (error) { console.error(error); return; }
     if (!orders || !orders.length) return;
 
-    // генерируем HTML
     orders.forEach(order => {
       ordersContainer.insertAdjacentHTML(
         'beforeend',
         createOrderElement(order)
       );
-
-      // привязываем иконку URL
       if (order.url) {
         const icon = ordersContainer.lastElementChild.querySelector('.spec-icon');
         icon.addEventListener('click', () => window.open(order.url, '_blank'));
       }
     });
 
-    /*------ обновляем счётчики в «статистике» ------*/
+    // обновляем счётчик «размещено заказов»
     const totalCounter = document.querySelector(
       '#modal1-container .stats .stat-value'
-    );                                                          // //счётчик заказов
+    );
     if (totalCounter) totalCounter.textContent = orders.length.toLocaleString();
   }
 
-    // Генерация HTML для заказа
-    function createOrderElement(orderData) {
-      return `
+  // ──────────────────────────────────────────────────────────
+  // 2.  КАСТОМНЫЙ SELECT "изм."         // +++ новый код +++
+  // ──────────────────────────────────────────────────────────
+  setupCustomSelect();                                      // //инициализация select
+
+  async function setupCustomSelect() {                      // //логика select
+    const units = await unitsPromise;                       // ждём справочник
+
+    const selectInput = document.querySelector('#modal1-container .select-input');
+    const dropdown    = document.querySelector('#modal1-container .select-dropdown');
+    if (!selectInput || !dropdown) return;
+
+    // наполняем выпадающий список
+    const frag = document.createDocumentFragment();
+    units.forEach(u => {
+      const opt = document.createElement('div');
+      opt.className          = 'select-option';
+      opt.textContent        = u.unit_name;
+      opt.dataset.group      = u.unit_group;
+      opt.dataset.multiplier = u.multiplier;
+      frag.appendChild(opt);
+    });
+    dropdown.appendChild(frag);
+
+    // показать / скрыть список
+    selectInput.addEventListener('click', e => {
+      e.stopPropagation();
+      dropdown.classList.toggle('show');
+    });
+
+    // выбор значения
+    dropdown.addEventListener('click', e => {
+      if (!e.target.classList.contains('select-option')) return;
+      selectInput.value = e.target.textContent;
+      dropdown.classList.remove('show');
+    });
+
+    // клик вне компонента — закрываем
+    document.addEventListener('click', e => {
+      if (!dropdown.contains(e.target) && !selectInput.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // 3.  ГЕНЕРАЦИЯ HTML ДЛЯ ЗАКАЗА
+  // ──────────────────────────────────────────────────────────
+  function createOrderElement(orderData) {                  // //генерация HTML
+    return `
       <div class="modalBLOCK">
         <label>
           <input type="checkbox" class="input">
-          <span class="custom-checkbox" style="margin-top: 5.4px; margin-left: -8px;"></span>
+          <span class="custom-checkbox" style="margin-top:5.4px;margin-left:-8px;"></span>
         </label>
         <div class="modalRow">
-          <input class="inputT" style="width: 130px;" placeholder="RIV-0881" value="${orderData.orderCode || ''}" readonly/>
-          <input class="input"  style="width: 340px;" placeholder="наименование позиции" value="${orderData.name || ''}" readonly/>
-          <input class="input"  style="width: 150px;" placeholder="статус" value="заказано" readonly/>
-          <span class="spec-icon" style="margin-left: 30px;" data-url="${orderData.url || ''}">
+          <input class="inputT" style="width:130px;" placeholder="RIV-0881" value="${orderData.orderCode||''}" readonly/>
+          <input class="input"  style="width:340px;" placeholder="наименование позиции" value="${orderData.name||''}" readonly/>
+          <input class="input"  style="width:150px;" placeholder="статус" value="заказано" readonly/>
+          <span class="spec-icon" style="margin-left:30px;" data-url="${orderData.url||''}">
             <i class="material-symbols-outlined">captive_portal</i>
           </span>
-          <input class="inputT" style="width: 270px;" placeholder="поставщик" value="${orderData.supplier || ''}" readonly/>
-          <input class="input"  style="width: 90px; margin-left: 30px;" placeholder="изм." value="${orderData.modification || ''}" readonly/>
-          <input class="inputSUM" style="width: 86px;" placeholder="000 000" value="${orderData.field1 || ''}" readonly/>
-          <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2 || ''}" readonly/>
+          <input class="inputT" style="width:270px;" placeholder="поставщик" value="${orderData.supplier||''}" readonly/>
+          <input class="input select-input" style="width:90px;margin-left:30px;" placeholder="изм." value="${orderData.modification||''}" readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000" value="${orderData.field1||''}" readonly/>
+          <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2||''}" readonly/>
         </div>
-        <div class="modalRow" style="margin-left: 30px;">
-          <input class="input"  style="width: 90px;" placeholder="изм." readonly/>
-          <input class="inputSUM" style="width: 86px;" placeholder="000 000" readonly/>
+        <div class="modalRow" style="margin-left:30px;">
+          <input class="input"  style="width:90px;" placeholder="изм." readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000" readonly/>
           <input class="inputSUM" placeholder="000 000 000" readonly/>
           <input class="inputSUM" placeholder="000 000 000" readonly/>
         </div>
       </div>
-      `;
-    }
-
-    // Очистка формы (верхний блок)
-    function clearForm() {
-      const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
-      if (formBlock) {
-        const inputs = formBlock.querySelectorAll('.modalRow input');
-        inputs.forEach(input => {
-          input.value = '';
-        });
-      }
-    }
-
-    // Логика кнопки "создать позицию заказа"
-    const createOrderBtn = document.getElementById('create-order');
-    if (createOrderBtn) {
-      createOrderBtn.addEventListener('click', async function() {
-        const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
-        if (!formBlock) return;
-
-        const inputs = formBlock.querySelectorAll('.modalRow input');
-        const orderData = {
-          user_key:     USER_KEY,
-          orderCode:    inputs[0].value.trim(),
-          name:         inputs[1].value.trim(),
-          url:          inputs[2].value.trim(),
-          supplier:     inputs[3].value.trim(),
-          modification: inputs[4].value.trim(),
-          field1:       inputs[5].value.trim(),
-          field2:       inputs[6].value.trim(),
-          status:      "заказано"
-        };
-
-        if (!orderData.orderCode || !orderData.name) {
-          alert("Пожалуйста, заполните обязательные поля (код и наименование).");
-          return;
-        }
-
-        try {
-          // Запись в бд
-          await insertOrderToDB(orderData);
-          // Создаём HTML
-          const newHTML = createOrderElement(orderData);
-          // Добавляем в контейнер
-          const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
-          if (ordersContainer) {
-            ordersContainer.insertAdjacentHTML('beforeend', newHTML);
-          }
-          // Очищаем форму
-          clearForm();
-
-          // Привязываем к иконке URL
-          const newIcon = ordersContainer.querySelector(`.spec-icon[data-url="${orderData.url}"]`);
-          if (newIcon && orderData.url) {
-            newIcon.addEventListener('click', () => {
-              window.open(orderData.url, '_blank');
-            });
-          }
-
-        } catch (error) {
-          alert("Ошибка при создании заказа: " + error.message);
-          console.error(error);
-        }
-      });
-    }
-
-    // Дополнительные кнопки
-    const moveWarehouseBtn = document.getElementById('move-warehouse');
-    if (moveWarehouseBtn) {
-      moveWarehouseBtn.addEventListener('click', () => {
-        console.log('Запущена логика перемещения на склад');
-      });
-    }
-    const deleteSelectedBtn = document.getElementById('delete-selected');
-    if (deleteSelectedBtn) {
-      deleteSelectedBtn.addEventListener('click', () => {
-        console.log('Запущена логика удаления выбранного');
-      });
-    }
+    `;
   }
+
+  // ──────────────────────────────────────────────────────────
+  // 4.  ОЧИСТКА ВЕРХНЕЙ ФОРМЫ
+  // ──────────────────────────────────────────────────────────
+  function clearForm() {                                   // //очистка формы
+    const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+    if (!formBlock) return;
+
+    // очищаем все input‑ы
+    const inputs = formBlock.querySelectorAll('.modalRow input');
+    inputs.forEach(i => i.value = '');
+
+    // дополнительно очищаем select‑input  // +++ новый код +++
+    const selInput = formBlock.querySelector('.select-input');
+    if (selInput) selInput.value = '';
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // 5.  СОЗДАНИЕ НОВОЙ ПОЗИЦИИ ЗАКАЗА (кнопка)
+  // ──────────────────────────────────────────────────────────
+  const createOrderBtn = document.getElementById('create-order');
+  if (createOrderBtn) {
+    createOrderBtn.addEventListener('click', async () => {
+      const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+      if (!formBlock) return;
+
+      const inputs = formBlock.querySelectorAll('.modalRow input');
+      const orderData = {                                   // //формируем объект
+        user_key:     USER_KEY,
+        orderCode:    inputs[0].value.trim(),
+        name:         inputs[1].value.trim(),
+        url:          inputs[2].value.trim(),
+        supplier:     inputs[3].value.trim(),
+        modification: inputs[4].value.trim(),               // здесь хранится «изм.»
+        field1:       inputs[5].value.trim(),
+        field2:       inputs[6].value.trim(),
+        status:      "заказано"
+      };
+
+      if (!orderData.orderCode || !orderData.name) {
+        alert("Пожалуйста, заполните обязательные поля (код и наименование).");
+        return;
+      }
+
+      try {
+        await insertOrderToDB(orderData);                    // //запись в БД
+        const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
+        ordersContainer.insertAdjacentHTML('beforeend', createOrderElement(orderData));
+        clearForm();                                         // //очистка формы
+
+        // привязываем URL на иконку
+        if (orderData.url) {
+          const newIcon = ordersContainer.querySelector(`.spec-icon[data-url="${orderData.url}"]`);
+          if (newIcon) newIcon.addEventListener('click', () => window.open(orderData.url, '_blank'));
+        }
+
+      } catch (error) {
+        alert("Ошибка при создании заказа: " + error.message);
+        console.error(error);
+      }
+    });
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // 6.  ПРОЧИЕ КНОПКИ
+  // ──────────────────────────────────────────────────────────
+  const moveWarehouseBtn  = document.getElementById('move-warehouse');
+  const deleteSelectedBtn = document.getElementById('delete-selected');
+
+  moveWarehouseBtn  && moveWarehouseBtn.addEventListener('click', () => console.log('Перемещение на склад'));
+  deleteSelectedBtn && deleteSelectedBtn.addEventListener('click', () => console.log('Удаление выбранного'));
+}
+
 </script>
