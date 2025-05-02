@@ -337,9 +337,6 @@
   // то браузер при вставке <script> не выполняет его сам.
   // Ваш код (в родительском index.html) должен после вставки вызвать initModal1().
   // Или можно убрать строку "initModal1();" выше и всегда звать вручную.
-
-
-
   
   function initModal1() {
   console.log('[modal1.html] Модуль PAGE 1 активирован!');
@@ -456,6 +453,61 @@
     overlay.style.display='none';
   }
 }
+
+    /*───────────────────────────────────────────────────────────
+  3‑bis.  Форматирование полей .inputSUM (тысячи + округление)
+───────────────────────────────────────────────────────────*/
+(function attachSumFormatters(){
+  /** helper: красивый вывод (разделители тысяч, без копеек) */
+  const fmt = n => Math.round(n).toLocaleString('ru-RU');
+
+  /** helper: парсим строку → число */
+  const parseNum = s => parseFloat(
+    String(s).replace(/[\s ]/g,'').replace(',','.')
+  );
+
+  /** ставим обработчики focus / blur на один элемент */
+  function bind(el){
+    if(el.dataset.bindSum==='1') return;         // уже привязан
+
+    // ► при фокусе показываем «сырое» значение с копейками
+    el.addEventListener('focus', ()=>{
+      const raw = el.dataset.raw ?? parseNum(el.value);
+      if(!isNaN(raw)) el.value = Number(raw).toFixed(2);
+    });
+
+    // ► при уходе с поля форматируем и запоминаем raw‑число
+    el.addEventListener('blur', ()=>{
+      const raw = parseNum(el.value);
+      if(isNaN(raw)){ el.value=''; el.dataset.raw=''; return; }
+      el.dataset.raw = raw;                     // сохраняем как есть
+      el.value = fmt(raw);                      // округляем и добавляем пробелы
+    });
+
+    // помечаем, что обработчики уже добавлены
+    el.dataset.bindSum = '1';
+    // если изначально есть значение — сразу форматируем
+    if(el.value) el.dispatchEvent(new Event('blur'));
+  }
+
+  /** привязать форматирование к всем .inputSUM внутри node */
+  function bindInside(node=document){
+    node.querySelectorAll('.inputSUM').forEach(bind);
+  }
+
+  // 1) существующие поля
+  bindInside();
+
+  // 2) новые поля при загрузке заказов
+  const origCreate = createOrderElement;              // перехватываем генерацию
+  createOrderElement = (...args)=>{
+    const html = origCreate(...args);
+    // маленькая хитрость: после вставки HTML привяжем форматирование
+    setTimeout(()=> bindInside(ordersContainer), 0);
+    return html;
+  };
+})();
+
 
 
   // ──────────────────────────────────────────────────────────
