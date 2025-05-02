@@ -629,9 +629,13 @@
         loginBtn.innerHTML = originalLoginText;
         return;
       }
+      // ▼ 1. Сохраняем уникальный ключ пользователя глобально
+    window.USER_KEY = user.user_key;
+      // ▼ 2. Ограничиваем меню доступными уровнями
       if (user.menu_levels) {
         filterMenuByUserLevels(user.menu_levels);
       }
+      // ▼ 3. Переходим из формы логина в основное приложение
       loginWrapper.classList.remove('show');
       preloader.style.display = 'flex';
       preloader.classList.remove('fade-out');
