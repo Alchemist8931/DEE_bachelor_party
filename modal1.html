@@ -472,31 +472,23 @@
   3.  Кнопки «переместить / удалить» показываем,
       только когда выбран хотя бы один чекбокс
 ────────────────────────────────────────────────────────────*/
-const moveBtn    = document.getElementById('move-warehouse');
-const deleteBtn  = document.getElementById('delete-selected');
+/* === НОВАЯ плавная анимация кнопок === */
+const actionRow = document.querySelector('#modal1-container .action-buttons'); // div с двумя кнопками
 
-// прячем по умолчанию
-moveBtn.style.display   = 'none';
-deleteBtn.style.display = 'none';
-
-/* проверяем, есть ли отмеченные чекбоксы внутри .modalVNUT-content */
 function updateActionButtons(){
-  const hasChecked = document.querySelector(
+  const checked = document.querySelector(
     '#modal1-container .modalVNUT-content input[type="checkbox"]:checked'
   );
-  const show = !!hasChecked;
-  moveBtn.style.display   = show ? 'inline-block' : 'none';
-  deleteBtn.style.display = show ? 'inline-block' : 'none';
+  actionRow.classList.toggle('visible', !!checked);   // добавляем/убираем класс
 }
 
-/* 1) делегированный обработчик: реагируем на любое изменение чекбоксов */
 document.querySelector('#modal1-container .modalVNUT-content')
         .addEventListener('change', e=>{
           if(e.target.matches('input[type="checkbox"]')) updateActionButtons();
         });
 
-/* 2) вызов при инициализации и после каждой подгрузки / вставки заказа */
-updateActionButtons();       // сразу после открытия страницы
+updateActionButtons();   // первый запуск
+
 
 
     /*───────────────────────────────────────────────────────────
