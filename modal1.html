@@ -401,7 +401,7 @@
       .from('orders')
       .select('*')
       .eq('user_key', USER_KEY)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false });
 
     if (error) { console.error(error); return; }
     if (!orders || !orders.length) return;
@@ -643,7 +643,11 @@ function clearForm(){
       try {
         await insertOrderToDB(orderData);                    // //запись в БД
         const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
-        ordersContainer.insertAdjacentHTML('beforeend', createOrderElement(orderData));
+        ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
+        /* ▼▼▼  ДОБАВЛЯЕМ 3 СТРОКИ ДЛЯ АНИМАЦИИ ▼▼▼  */
+       const newEl = ordersContainer.firstElementChild;      
+        newEl.classList.add('appear');                        // стартовое «скрытое» состояние
+        requestAnimationFrame(() => newEl.classList.remove('appear'));
         updateActionButtons();                               
         clearForm();                                         // //очистка формы
 
