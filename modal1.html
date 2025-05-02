@@ -655,6 +655,7 @@ function clearForm(){
       }
 
       try {
+        const { base_unit, ...dbData } = orderData;   // ← строка вернулась
         await insertOrderToDB(dbData);      // передаём объект без base_unit // //запись в БД
         const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
         ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
@@ -671,10 +672,10 @@ function clearForm(){
           if (newIcon) newIcon.addEventListener('click', () => window.open(orderData.url, '_blank'));
         }
 
-      } catch (error) {
-        alert("Ошибка при создании заказа: " + error.message);
-        console.error(error);
-      }
+      } catch(err) {
+  alert("Ошибка при создании заказа: " + err.message);
+  console.error(err);
+}
     });
   }
 
