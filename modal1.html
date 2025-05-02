@@ -377,6 +377,16 @@
   }
   const unitsPromise = loadUnitsMeasure();   // сразу запускаем загрузку
 
+    /* возвращает минимальную единицу в той же группе */
+function getBaseUnit(unitName, units){
+  const cur = units.find(u => u.unit_name === unitName);
+  if(!cur) return unitName;                               // защитный fallback
+  return units
+    .filter(u => u.unit_group === cur.unit_group)
+    .sort((a,b) => a.multiplier - b.multiplier)[0]
+    .unit_name;
+}
+
   // ──────────────────────────────────────────────────────────
   // 1.  ЗАГРУЗКА УЖЕ СУЩЕСТВУЮЩИХ ЗАКАЗОВ
   // ──────────────────────────────────────────────────────────
@@ -392,7 +402,8 @@
   }
 
   // загрузка существующих заказов
-  async function loadExistingOrders() {                      // //загрузка заказов
+  async function loadExistingOrders() {    // //загрузка заказов
+    const units = await unitsPromise; 
     const ordersContainer = document.querySelector(
       '#modal1-container .modal-bottom .modalVNUT-content'
     );
@@ -407,6 +418,7 @@
     if (!orders || !orders.length) return;
 
     orders.forEach(order => {
+      order.base_unit = getBaseUnit(order.modification, units);
       ordersContainer.insertAdjacentHTML(
         'beforeend',
         createOrderElement(order)
@@ -579,7 +591,7 @@ updateActionButtons();   // первый запуск
           <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2||''}" readonly/>
         </div>
         <div class="modalRow" style="margin-left:30px;">
-          <input class="input"  style="width:90px;" placeholder="изм." readonly/>
+          <input class="input"  style="width:90px;" placeholder="изм." value="${orderData.base_unit || ''}" readonly/>
           <input class="inputSUM" style="width:86px;" placeholder="000 000" readonly/>
           <input class="inputSUM" placeholder="000 000 000" readonly/>
           <input class="inputSUM" placeholder="000 000 000" readonly/>
@@ -623,6 +635,7 @@ function clearForm(){
       if (!formBlock) return;
 
       const inputs = formBlock.querySelectorAll('.modalRow input');
+      const units = await unitsPromise;  
       const orderData = {                                   // //формируем объект
         user_key:     USER_KEY,
         orderCode:    inputs[0].value.trim(),
@@ -630,6 +643,7 @@ function clearForm(){
         url:          inputs[2].value.trim(),
         supplier:     inputs[3].value.trim(),
         modification: inputs[4].value.trim(),               // здесь хранится «изм.»
+        base_unit:   getBaseUnit(inputs[4].value.trim(), units),
         field1:       inputs[5].value.trim(),
         field2:       inputs[6].value.trim(),
         status:      "заказано"
@@ -641,6 +655,7 @@ function clearForm(){
       }
 
       try {
+        const { base_unit, ...dbData } = orderData;
         await insertOrderToDB(orderData);                    // //запись в БД
         const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
         ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
