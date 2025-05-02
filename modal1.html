@@ -225,6 +225,20 @@
     color: #212121;
     background-color: #f5f5f5;
   }
+  /* ---- плавное появление action-buttons ---- */
+#modal1-container .action-buttons{
+  opacity:0;                    /* спрятано по умолчанию   */
+  pointer-events:none;          /* клики не проходят       */
+  transform:translateY(-6px);   /* лёгкий подъём наверх    */
+  transition:opacity .25s ease, transform .25s ease;
+}
+
+#modal1-container .action-buttons.visible{
+  opacity:1;                    /* полностью видно         */
+  pointer-events:auto;          /* снова кликабельно       */
+  transform:translateY(0);      /* возвращаемся на место   */
+}
+  
   /* Статистика (три прямоугольника вверху) */
   #modal1-container .stats {
     display: inline-grid;
@@ -288,7 +302,7 @@
       </div>
     </div>
     
-    <div class="modalRow" style="top: 90px; margin-left: 1400px;">
+    <div class="modalRow action-buttons" style="top: 90px; margin-left: 1400px;">
       <button class="button-form" style="width: 230px; left: 5px;" id="move-warehouse">
         переместить на склад
       </button>
