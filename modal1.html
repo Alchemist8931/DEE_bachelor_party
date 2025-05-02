@@ -542,21 +542,30 @@
     `;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // 4.  ОЧИСТКА ВЕРХНЕЙ ФОРМЫ
-  // ──────────────────────────────────────────────────────────
-  function clearForm() {                                   // //очистка формы
-    const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
-    if (!formBlock) return;
+  /* ──────────────────────────────────────────────
+   ОЧИСТКА ВЕРХНЕЙ ФОРМЫ после создания позиции
+────────────────────────────────────────────── */
+function clearForm(){
+  const formBlock = document.querySelector(
+    '#modal1-container .modal-top .modalBLOCK'
+  );
+  if(!formBlock) return;
 
-    // очищаем все input‑ы
-    const inputs = formBlock.querySelectorAll('.modalRow input');
-    inputs.forEach(i => i.value = '');
+  const inputs = formBlock.querySelectorAll('.modalRow input');
+  inputs.forEach(inp=>{
+    inp.value = '';
 
-    // дополнительно очищаем select‑input  // +++ новый код +++
-    const selInput = formBlock.querySelector('.select-input');
-    if (selInput) selInput.value = '';
-  }
+    /* если это поле суммы — забудем прежний raw‑кеш */
+    if(inp.classList.contains('inputSUM')){
+      delete inp.dataset.raw;          //  <‑‑ ключевой момент
+    }
+  });
+
+  /* очистим select «изм.» */
+  const sel = formBlock.querySelector('.select-input');
+  if(sel) sel.value='';
+}
+
 
   // ──────────────────────────────────────────────────────────
   // 5.  СОЗДАНИЕ НОВОЙ ПОЗИЦИИ ЗАКАЗА (кнопка)
