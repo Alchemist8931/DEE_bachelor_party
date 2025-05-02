@@ -577,9 +577,9 @@ updateActionButtons();   // первый запуск
             <i class="material-symbols-outlined">captive_portal</i>
           </span>
           <input class="inputT"  style="width:270px;" placeholder="поставщик"    value="${o.supplier||''}"   readonly/>
-          <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм." value="${o.modification||''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000"      value="${fmtNum(o.multMod)}" readonly/>
-          <input class="inputSUM"                 placeholder="000 000 000"       value="${fmtNum(o.priceSel)}" readonly/>
+          <input class="input select-input" style="width:90px;margin-left:30px;" placeholder="изм." value="${orderData.modification||''}" readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000" value="${orderData.field1||''}" readonly/>
+          <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2||''}" readonly/>
         </div>
 
         <div class="modalRow" style="margin-left:30px;">
