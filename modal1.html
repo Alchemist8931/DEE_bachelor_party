@@ -349,92 +349,85 @@
 
 <!-- Скрипт (type="module") с инициализацией Supabase и функцией initModal1() -->
 <script type="module">
-  // Инициализация Supabase (предполагаем, что window.supabase уже инициализирован)
   const supabase = window.supabase;
   const USER_KEY = window.USER_KEY;
 
-  // Если загружаем напрямую (без динамики), сразу вызовем initModal1()
   initModal1();
 
-  // Если загружаем динамически через fetch + innerHTML — 
-  // то браузер при вставке <script> не выполняет его сам.
-  // Ваш код (в родительском index.html) должен после вставки вызвать initModal1().
-  // Или можно убрать строку "initModal1();" выше и всегда звать вручную.
-  
   function initModal1() {
-  console.log('[modal1.html] Модуль PAGE 1 активирован!');
+    console.log('[modal1.html] PAGE 1 активирован');
 
-  // ──────────────────────────────────────────────────────────
-  // 0.  СПРАВОЧНИК ЕДИНИЦ ИЗМЕРЕНИЙ  // +++ новый код +++
-  // ──────────────────────────────────────────────────────────
-  async function loadUnitsMeasure() {
-    const { data, error } = await supabase
-      .from('units_measure')
-      .select('unit_name, unit_group, multiplier')
-      .order('unit_group, multiplier');
-    if (error) { console.error(error); return []; }
-    return data || [];
-  }
-  const unitsPromise = loadUnitsMeasure();   // сразу запускаем загрузку
+/* ---------- 0. справочник единиц ---------- */
+    async function loadUnitsMeasure() {
+      const { data, error } = await supabase
+        .from('units_measure')
+        .select('unit_name, unit_group, multiplier')
+        .order('unit_group, multiplier');
+      if (error) { console.error(error); return []; }
+      return data || [];
+    }
+    const unitsPromise = loadUnitsMeasure();
 
-    /* возвращает минимальную единицу в той же группе */
-function getBaseUnit(unitName, units){
-  const cur = units.find(u => u.unit_name === unitName);
-  if(!cur) return unitName;                               // защитный fallback
-  return units
-    .filter(u => u.unit_group === cur.unit_group)
-    .sort((a,b) => a.multiplier - b.multiplier)[0]
-    .unit_name;
-}
+    /* helpers */
+    function getBaseUnit(unitName, units) {
+      const cur = units.find(u => u.unit_name === unitName);
+      if (!cur) return unitName;
+      return units
+        .filter(u => u.unit_group === cur.unit_group)
+        .sort((a, b) => a.multiplier - b.multiplier)[0]
+        .unit_name;
+    }
+    function getMultiplier(unitName, units) {
+      const u = units.find(x => x.unit_name === unitName);
+      return u ? Number(u.multiplier) : 1;
+    }
+    const fmtNum = n => Number(n).toLocaleString('ru-RU');
 
-  // ──────────────────────────────────────────────────────────
-  // 1.  ЗАГРУЗКА УЖЕ СУЩЕСТВУЮЩИХ ЗАКАЗОВ
-  // ──────────────────────────────────────────────────────────
-  loadExistingOrders();
+    /* ---------- 1. загрузка существующих заказов ---------- */
+    loadExistingOrders();
 
-  // запись заказа в таблицу "orders"
-  async function insertOrderToDB(orderData) {                // //функция записи заказа
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([orderData]);
-    if (error) throw error;
-    return data;
-  }
+    async function insertOrderToDB(obj) {
+      const { data, error } = await supabase.from('orders').insert([obj]);
+      if (error) throw error;
+      return data;
+    }
 
-  // загрузка существующих заказов
-  async function loadExistingOrders() {    // //загрузка заказов
-    const units = await unitsPromise; 
-    const ordersContainer = document.querySelector(
-      '#modal1-container .modal-bottom .modalVNUT-content'
-    );
-
-    const { data: orders, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_key', USER_KEY)
-      .order('created_at', { ascending: false });
-
-    if (error) { console.error(error); return; }
-    if (!orders || !orders.length) return;
-
-    orders.forEach(order => {
-      order.base_unit = getBaseUnit(order.modification, units);
-      ordersContainer.insertAdjacentHTML(
-        'beforeend',
-        createOrderElement(order)
+    async function loadExistingOrders() {
+      const units = await unitsPromise;
+      const ordersContainer = document.querySelector(
+        '#modal1-container .modal-bottom .modalVNUT-content'
       );
-      if (order.url) {
-        const icon = ordersContainer.lastElementChild.querySelector('.spec-icon');
-        icon.addEventListener('click', () => window.open(order.url, '_blank'));
-      }
-    });
 
-    // обновляем счётчик «размещено заказов»
-    const totalCounter = document.querySelector(
-      '#modal1-container .stats .stat-value'
-    );
-    if (totalCounter) totalCounter.textContent = orders.length.toLocaleString();
-  }
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_key', USER_KEY)
+        .order('created_at', { ascending: false });
+
+      if (error) { console.error(error); return; }
+      if (!orders?.length) return;
+
+      orders.forEach(order => {
+        order.base_unit = getBaseUnit(order.modification, units);
+
+        const multMod       = getMultiplier(order.modification, units);
+        order.multMod       = multMod;                    /* A */
+        order.priceSel      = Number(order.field2 || 0);  /* B */
+        order.priceBase     = multMod ? order.priceSel / multMod : 0; /* E */
+        order.total         = order.priceBase * multMod;  /* F */
+
+        ordersContainer.insertAdjacentHTML('beforeend', createOrderElement(order));
+
+        if (order.url) {
+          ordersContainer.lastElementChild
+            .querySelector('.spec-icon')
+            .addEventListener('click', () => window.open(order.url, '_blank'));
+        }
+      });
+
+      const totalCounter = document.querySelector('#modal1-container .stats .stat-value');
+      if (totalCounter) totalCounter.textContent = orders.length.toLocaleString();
+    }
 
   // ──────────────────────────────────────────────────────────
   // 2.  КАСТОМНЫЙ SELECT "изм."         // +++ новый код +++
@@ -568,37 +561,35 @@ updateActionButtons();   // первый запуск
 
 
 
-  // ──────────────────────────────────────────────────────────
-  // 3.  ГЕНЕРАЦИЯ HTML ДЛЯ ЗАКАЗА
-  // ──────────────────────────────────────────────────────────
-  function createOrderElement(orderData) {                  // //генерация HTML
-    return 
+ /* ---------- 4. шаблон контейнера заказа ---------- */
+    function createOrderElement(o) {
+      return `
       <div class="modalBLOCK">
         <label>
           <input type="checkbox" class="input">
           <span class="custom-checkbox" style="margin-top:5px;margin-left:-8px;"></span>
         </label>
         <div class="modalRow">
-          <input class="inputT" style="width:130px;" placeholder="RIV-0881" value="${orderData.orderCode||''}" readonly/>
-          <input class="input"  style="width:340px;" placeholder="наименование позиции" value="${orderData.name||''}" readonly/>
-          <input class="input"  style="width:150px;" placeholder="статус" value="заказано" readonly/>
-          <span class="spec-icon" style="margin-left:30px;" data-url="${orderData.url||''}">
+          <input class="inputT"  style="width:130px;" placeholder="RIV-0881"    value="${o.orderCode||''}" readonly/>
+          <input class="input"   style="width:340px;" placeholder="наименование" value="${o.name||''}"      readonly/>
+          <input class="input"   style="width:150px;" placeholder="статус"       value="заказано"            readonly/>
+          <span  class="spec-icon" style="margin-left:30px;" data-url="${o.url||''}">
             <i class="material-symbols-outlined">captive_portal</i>
           </span>
-          <input class="inputT" style="width:270px;" placeholder="поставщик" value="${orderData.supplier||''}" readonly/>
-          <input class="input select-input" style="width:90px;margin-left:30px;" placeholder="изм." value="${orderData.modification||''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000" value="${orderData.field1||''}" readonly/>
-          <input class="inputSUM" placeholder="000 000 000" value="${orderData.field2||''}" readonly/>
+          <input class="inputT"  style="width:270px;" placeholder="поставщик"    value="${o.supplier||''}"   readonly/>
+          <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм." value="${o.modification||''}" readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000"      value="${fmtNum(o.multMod)}" readonly/>
+          <input class="inputSUM"                 placeholder="000 000 000"       value="${fmtNum(o.priceSel)}" readonly/>
         </div>
+
         <div class="modalRow" style="margin-left:30px;">
-          <input class="input"  style="width:90px;" placeholder="изм." value="${orderData.base_unit || ''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000" readonly/>
-          <input class="inputSUM" placeholder="000 000 000" readonly/>
-          <input class="inputSUM" placeholder="000 000 000" readonly/>
+          <input class="input" style="width:90px;" placeholder="изм." value="${o.base_unit||''}" readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000"          value="${fmtNum(o.multMod)}" readonly/>
+          <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.priceBase)}" readonly/>
+          <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.total)}" readonly/>
         </div>
-      </div>
-    ;
-  }
+      </div>`;
+    }
 
   /* ──────────────────────────────────────────────
    ОЧИСТКА ВЕРХНЕЙ ФОРМЫ после создания позиции
@@ -625,59 +616,65 @@ function clearForm(){
 }
 
 
-  // ──────────────────────────────────────────────────────────
-  // 5.  СОЗДАНИЕ НОВОЙ ПОЗИЦИИ ЗАКАЗА (кнопка)
-  // ──────────────────────────────────────────────────────────
-  const createOrderBtn = document.getElementById('create-order');
-  if (createOrderBtn) {
-    createOrderBtn.addEventListener('click', async () => {
-      const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
-      if (!formBlock) return;
+  /* ---------- 6. создание новой позиции ---------- */
+    const createOrderBtn = document.getElementById('create-order');
+    if (createOrderBtn) {
+      createOrderBtn.addEventListener('click', async () => {
+        const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+        if (!formBlock) return;
 
-      const inputs = formBlock.querySelectorAll('.modalRow input');
-      const units = await unitsPromise;  
-      const orderData = {                                   // //формируем объект
-        user_key:     USER_KEY,
-        orderCode:    inputs[0].value.trim(),
-        name:         inputs[1].value.trim(),
-        url:          inputs[2].value.trim(),
-        supplier:     inputs[3].value.trim(),
-        modification: inputs[4].value.trim(),               // здесь хранится «изм.»
-        base_unit:   getBaseUnit(inputs[4].value.trim(), units),
-        field1:       inputs[5].value.trim(),
-        field2:       inputs[6].value.trim(),
-        status:      "заказано"
-      };
+        const inputs = formBlock.querySelectorAll('.modalRow input');
+        const units  = await unitsPromise;
 
-      if (!orderData.orderCode || !orderData.name) {
-        alert("Пожалуйста, заполните обязательные поля (код и наименование).");
-        return;
-      }
+        const orderData = {
+          user_key:     USER_KEY,
+          orderCode:    inputs[0].value.trim(),
+          name:         inputs[1].value.trim(),
+          url:          inputs[2].value.trim(),
+          supplier:     inputs[3].value.trim(),
+          modification: inputs[4].value.trim(),
+          base_unit:    getBaseUnit(inputs[4].value.trim(), units),
+          field1:       inputs[5].value.trim(),   /* оставляем как есть */
+          field2:       inputs[6].value.trim(),   /* цена за выбранную */
+          status:      "заказано"
+        };
 
-      try {
-        const { base_unit, ...dbData } = orderData;   // ← строка вернулась
-        await insertOrderToDB(dbData);      // передаём объект без base_unit // //запись в БД
-        const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
-        ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
-        /* ▼▼▼  ДОБАВЛЯЕМ 3 СТРОКИ ДЛЯ АНИМАЦИИ ▼▼▼  */
-       const newEl = ordersContainer.firstElementChild;      
-        newEl.classList.add('appear');                        // стартовое «скрытое» состояние
-        requestAnimationFrame(() => newEl.classList.remove('appear'));
-        updateActionButtons();                               
-        clearForm();                                         // //очистка формы
-
-        // привязываем URL на иконку
-        if (orderData.url) {
-          const newIcon = ordersContainer.querySelector(.spec-icon[data-url="${orderData.url}"]);
-          if (newIcon) newIcon.addEventListener('click', () => window.open(orderData.url, '_blank'));
+        if (!orderData.orderCode || !orderData.name) {
+          alert('Заполните обязательные поля (код и наименование)');
+          return;
         }
 
-      } catch(err) {
-  alert("Ошибка при создании заказа: " + err.message);
-  console.error(err);
-}
-    });
-  }
+        /* вычисляем дополнительные показатели */
+        const multMod   = getMultiplier(orderData.modification, units);
+        orderData.multMod    = multMod;
+        orderData.priceSel   = Number(orderData.field2||0);
+        orderData.priceBase  = multMod ? orderData.priceSel / multMod : 0;
+        orderData.total      = orderData.priceBase * multMod;
+
+        try {
+          const { base_unit, multMod:_, priceSel:__, priceBase:___, total:____, ...dbData } = orderData;
+          await insertOrderToDB(dbData);                         // пишем только то, что есть в колонках
+
+          const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
+          ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
+
+          const newEl = ordersContainer.firstElementChild;
+          newEl.classList.add('appear');
+          requestAnimationFrame(() => newEl.classList.remove('appear'));
+
+          updateActionButtons();
+          clearForm();
+
+          if (orderData.url) {
+            newEl.querySelector('.spec-icon').addEventListener('click', () => window.open(orderData.url, '_blank'));
+          }
+
+        } catch (err) {
+          alert('Ошибка при создании заказа: ' + err.message);
+          console.error(err);
+        }
+      });
+    }
 
   // ──────────────────────────────────────────────────────────
   // 6.  ПРОЧИЕ КНОПКИ
