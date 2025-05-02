@@ -131,25 +131,35 @@
   #modal1-container .inputSUM:focus {
     border: 1px solid #1a1a1a;
   }
+
   /* ---- кастомный select ---- */
-  #modal1-container .select-wrapper        { position:relative; }
-  #modal1-container .select-input          { cursor:pointer; }
-  #modal1-container .select-dropdown       {
-  position:absolute; top: 100%; left: 0; width: 160px;
-  max-height: 160px; background: #f5f5f5; border: 1px solid #E5E7E9;
-  border-radius: 8px; box-shadow:0 4px 16px rgba(22,20,19,.25);
-  overflow-y: auto; opacity: 0; visibility: hidden;
-  transform:translateY(-10px); transition: .25s;
-  z-index: 9900;
-  }
-  #modal1-container .select-dropdown.show  {
-  opacity:1; visibility:visible; transform:translateY(0);
-  }
-  /* скролл такой же, как в modalVNUT-content */
-  #modal1-container .select-dropdown::-webkit-scrollbar      { width:4px; background:#e2e2e2; border-radius:20px; }
-  #modal1-container .select-dropdown::-webkit-scrollbar-thumb{ background:#212121; border-radius:20px; }
-  #modal1-container .select-option        { padding:6px 10px; font-size:12px; cursor:pointer; }
-  #modal1-container .select-option:hover  { background:rgba(0,0,0,.05); }
+#global-select-dropdown{
+  position:fixed;               /* за пределами всех модальных блоков */
+  max-height:160px; width:160px;
+  background:#f5f5f5; border:1px solid #E5E7E9;
+  border-radius:8px; box-shadow:0 4px 16px rgba(22,20,19,.25);
+  overflow-y:auto; opacity:0; visibility:hidden;
+  transform:translateY(-10px);  transition:.25s;
+  z-index:9999;                 /* поверх всего интерфейса */
+}
+#global-select-dropdown.show{ opacity:1; visibility:visible; transform:translateY(0); }
+#global-select-dropdown::-webkit-scrollbar{
+  width:4px; background:#e2e2e2; border-radius:20px;
+}
+#global-select-dropdown::-webkit-scrollbar-thumb{
+  background:#212121; border-radius:20px;
+}
+#global-select-dropdown .select-option{
+  padding:6px 10px; font-size:12px; cursor:pointer;
+}
+#global-select-dropdown .select-option:hover{ background:rgba(0,0,0,.05); }
+
+/* лёгкий затемнённый фон, чтобы закрывать по клику */
+#select-overlay{
+  position:fixed; inset:0; background:transparent;
+  z-index:9998; display:none;
+}
+
   
   /* Иконка (URL) */
   #modal1-container .spec-icon {
@@ -249,6 +259,11 @@
 
 <!-- Основная разметка modal1 -->
 <div id="modal1-container">
+
+<!-- ——— портальный контейнер для выпадающего списка ——— -->
+<div id="select-overlay"></div>
+<div id="global-select-dropdown"></div>
+  
   <!-- Верхняя часть модального окна -->
   <div class="modal-top">
     <div class="modalRow">
@@ -288,9 +303,8 @@
           <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
           <input class="inputT" style="width: 213px;" placeholder="URL"/>
           <input class="inputT" style="width: 270px;" placeholder="поставщик"/>
-          <div class="select-wrapper" style="width: 90px; margin-left: 32px;">
-                    <input class="input select-input" style="width: 90px;" placeholder="изм." readonly />
-                    <div class="select-dropdown" style="margin-top: 10px;"></div>
+          <div class="select-wrapper" style="width:90px; margin-left:32px;">
+             <input class="input select-input" style="width:90px;" placeholder="изм." readonly />
           </div>
           <input class="inputSUM" style="width: 86px;" placeholder="000 000"/>
           <input class="inputSUM" placeholder="000 000 000"/>
@@ -394,45 +408,54 @@
   // ──────────────────────────────────────────────────────────
   setupCustomSelect();                                      // //инициализация select
 
-  async function setupCustomSelect() {                      // //логика select
-    const units = await unitsPromise;                       // ждём справочник
+  async function setupCustomSelect(){
+  const units = await unitsPromise;
 
-    const selectInput = document.querySelector('#modal1-container .select-input');
-    const dropdown    = document.querySelector('#modal1-container .select-dropdown');
-    if (!selectInput || !dropdown) return;
+  const localInput = document.querySelector('#modal1-container .select-input');
+  const portal     = document.getElementById('global-select-dropdown');
+  const overlay    = document.getElementById('select-overlay');
+  if(!localInput || !portal || !overlay) return;
 
-    // наполняем выпадающий список
-    const frag = document.createDocumentFragment();
-    units.forEach(u => {
-      const opt = document.createElement('div');
-      opt.className          = 'select-option';
-      opt.textContent        = u.unit_name;
-      opt.dataset.group      = u.unit_group;
-      opt.dataset.multiplier = u.multiplier;
-      frag.appendChild(opt);
+  /* заполняем список (один раз) */
+  if(!portal.hasChildNodes()){
+    const frag=document.createDocumentFragment();
+    units.forEach(u=>{
+      const o=document.createElement('div');
+      o.className='select-option';
+      o.textContent=u.unit_name;
+      o.dataset.group=u.unit_group;
+      o.dataset.multiplier=u.multiplier;
+      frag.appendChild(o);
     });
-    dropdown.appendChild(frag);
-
-    // показать / скрыть список
-    selectInput.addEventListener('click', e => {
-      e.stopPropagation();
-      dropdown.classList.toggle('show');
-    });
-
-    // выбор значения
-    dropdown.addEventListener('click', e => {
-      if (!e.target.classList.contains('select-option')) return;
-      selectInput.value = e.target.textContent;
-      dropdown.classList.remove('show');
-    });
-
-    // клик вне компонента — закрываем
-    document.addEventListener('click', e => {
-      if (!dropdown.contains(e.target) && !selectInput.contains(e.target)) {
-        dropdown.classList.remove('show');
-      }
-    });
+    portal.appendChild(frag);
   }
+
+  /* показать */
+  localInput.addEventListener('click',e=>{
+    e.stopPropagation();
+    const rect = localInput.getBoundingClientRect();
+    portal.style.left = rect.left + 'px';
+    portal.style.top  = (rect.bottom + window.scrollY) + 'px';
+    portal.classList.add('show');
+    overlay.style.display='block';
+  });
+
+  /* выбор */
+  portal.addEventListener('click',e=>{
+    if(!e.target.classList.contains('select-option')) return;
+    localInput.value = e.target.textContent;
+    closeDropdown();
+  });
+
+  /* клик по фону — закрыть */
+  overlay.addEventListener('click', closeDropdown);
+
+  function closeDropdown(){
+    portal.classList.remove('show');
+    overlay.style.display='none';
+  }
+}
+
 
   // ──────────────────────────────────────────────────────────
   // 3.  ГЕНЕРАЦИЯ HTML ДЛЯ ЗАКАЗА
