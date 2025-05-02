@@ -74,6 +74,15 @@
   #modal1-container .modalVNUT-content::-webkit-scrollbar-track {
     background-color: #e2e2e2;
   }
+  #modal1-container .modalVNUT-content .modalBLOCK{
+  transition:transform .25s ease, opacity .25s ease;
+}
+/* впервые вставленный блок */
+#modal1-container .modalVNUT-content .modalBLOCK.appear{
+  opacity:0;
+  transform:translateY(-16px);
+}
+
   /* Блок-контейнер (форма ввода заказа) */
   #modal1-container .modalBLOCK {
     gap: 14px;
