@@ -653,7 +653,7 @@ function clearForm(){
         orderData.total      = orderData.priceBase * multMod;
 
         try {
-          const { base_unit, multMod:_, priceSel:__, priceBase:___, total:____, ...dbData } = orderData;
+          const { base_unit, multMod:_, priceSel:__, priceBase:___, total:____, qtySel:_____, ...dbData } = orderData;
           await insertOrderToDB(dbData);                         // пишем только то, что есть в колонках
 
           const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
