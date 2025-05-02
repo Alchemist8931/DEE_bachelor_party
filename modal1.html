@@ -290,6 +290,7 @@
 <script type="module">
   // Инициализация Supabase (предполагаем, что window.supabase уже инициализирован)
   const supabase = window.supabase;
+  const USER_KEY = window.USER_KEY;
 
   // Если загружаем напрямую (без динамики), сразу вызовем initModal1()
   initModal1();
@@ -327,6 +328,7 @@
     const { data: orders, error } = await supabase
       .from('orders')
       .select('*')
+      .eq('user_key', USER_KEY)
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -407,6 +409,7 @@
 
         const inputs = formBlock.querySelectorAll('.modalRow input');
         const orderData = {
+          user_key:     USER_KEY,
           orderCode:    inputs[0].value.trim(),
           name:         inputs[1].value.trim(),
           url:          inputs[2].value.trim(),
