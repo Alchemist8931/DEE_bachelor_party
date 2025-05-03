@@ -357,6 +357,10 @@
   function initModal1() {
     console.log('[modal1.html] PAGE 1 активирован');
 
+const ordersContainer = document.querySelector(
+  '#modal1-container .modal-bottom .modalVNUT-content'
+);
+    
 /* ---------- 0. справочник единиц ---------- */
     async function loadUnitsMeasure() {
       const { data, error } = await supabase
@@ -369,6 +373,8 @@
     const unitsPromise = loadUnitsMeasure();
 
     /* helpers */
+const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
+    
     function getBaseUnit(unitName, units) {
       const cur = units.find(u => u.unit_name === unitName);
       if (!cur) return unitName;
@@ -381,7 +387,6 @@
       const u = units.find(x => x.unit_name === unitName);
       return u ? Number(u.multiplier) : 1;
     }
-    const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
 
     /* аккуратно превращаем строку‑число (“1 234,56”) → 1234.56 */
     function parseFloatSafe(str=''){
@@ -419,7 +424,8 @@
         order.qtySel       = Number(order.field1 || 0);
         const multMod       = getMultiplier(order.modification, units);
         order.multMod       = multMod;                    /* A */
-        order.priceSel      = parseFloatSafe(order.field2);
+        order.priceSel   = parseFloatSafe(order.field2);
+        order.baseQty    = order.qtySel * multMod;
         order.priceBase     = multMod ? order.priceSel / multMod : 0; /* E */
         order.total         = order.priceBase * multMod;  /* F */
 
@@ -580,18 +586,18 @@ updateActionButtons();   // первый запуск
           <input class="inputT"  style="width:130px;" placeholder="RIV-0881"    value="${o.orderCode||''}" readonly/>
           <input class="input"   style="width:340px;" placeholder="наименование" value="${o.name||''}"      readonly/>
           <input class="input"   style="width:150px;" placeholder="статус"       value="заказано"            readonly/>
-          <span  class="spec-icon" style="margin-left:30px;" data-url="${o.url||''}">
+          <span  class="spec-icon" style="margin-left: 30px;" data-url="${o.url||''}">
             <i class="material-symbols-outlined">captive_portal</i>
           </span>
           <input class="inputT"  style="width:270px;" placeholder="поставщик"    value="${o.supplier||''}"   readonly/>
-          <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм." value="${o.modification||''}" readonly/>
+          <input class="input"   style="width:90px;margin-left: 30px;" placeholder="изм." value="${o.modification||''}" readonly/>
           <input class="inputSUM" style="width:86px;" placeholder="000 000" value="${fmtNum(o.qtySel)}" readonly/>
           <input class="inputSUM" placeholder="000 000 000" value="${fmtNum(o.priceSel)}" readonly/>  
         </div>
 
         <div class="modalRow" style="margin-left:30px;">
           <input class="input" style="width:90px;" placeholder="изм." value="${o.base_unit||''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000"          value="${fmtNum(o.multMod)}" readonly/>
+          <input class="inputSUM" style="width:86px;" placeholder="000 000"          value="${fmtNum(o.baseQty)}" readonly/>
           <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.priceBase)}" readonly/>
           <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.total)}" readonly/>
         </div>
@@ -658,9 +664,10 @@ function clearForm(){
         orderData.priceSel   = parseFloatSafe(orderData.field2);
         orderData.priceBase  = multMod ? orderData.priceSel / multMod : 0;
         orderData.total      = orderData.priceBase * multMod;
+        orderData.baseQty    = orderData.qtySel * multMod;
 
         try {
-          const { base_unit, multMod:_, priceSel:__, priceBase:___, total:____, qtySel:_____, ...dbData } = orderData;
+          const { base_unit, multMod:_, priceSel:__, priceBase:___, total:____, qtySel:_____, baseQty:_______, ...dbData } = orderData;
           await insertOrderToDB(dbData);                         // пишем только то, что есть в колонках
 
           const ordersContainer = document.querySelector('#modal1-container .modal-bottom .modalVNUT-content');
