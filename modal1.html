@@ -279,18 +279,6 @@
     font-weight: 700;
     margin-top: 18px;
   }
-
-  /* ====== анимация цифр счётчиков ====== */
-@keyframes digit-pop{
-  0%   {opacity:0; transform:translateY(0.6em) scale(0.8);}
-  60%  {opacity:1; transform:translateY(-0.1em) scale(1.05);}
-  100% {opacity:1; transform:translateY(0)      scale(1);}
-}
-#modal1-container .stat-value span{
-  display:inline-block;
-  animation:digit-pop .6s var(--delay,0s) cubic-bezier(.19,1,.22,1) both;
-}
-  
 </style>
 
 <!-- Основная разметка modal1 -->
@@ -326,8 +314,8 @@
       </button>
     </div>
     
-    <div class="modalRow" style="top: -30px;">
-      <div class="modalBLOCK" style="margin-left: 26px; margin-top: 0px;">
+    <div class="modalRow" style="top: -16px;">
+      <div class="modalBLOCK" style="margin-left: 26px; margin-top: -4px;">
         <div class="modalRow">
           <input class="inputT" style="width: 130px;" placeholder="RIV-0881"/>
           <input class="input"  style="width: 340px;" placeholder="наименование позиции"/>
@@ -707,4 +695,4 @@ function clearForm(){
   deleteSelectedBtn && deleteSelectedBtn.addEventListener('click', () => console.log('Удаление выбранного'));
 }
 
-</script> 
+</script>
