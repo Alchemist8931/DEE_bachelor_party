@@ -279,6 +279,19 @@
     font-weight: 700;
     margin-top: 18px;
   }
+
+  /* ===== Анимация обновления счётчиков ===== */
+@keyframes digit-glow{
+  0%   { opacity:0; transform:translateY(-0.4em); text-shadow:0 0 2px rgba(0,0,0,.15); }
+  60%  { opacity:1; transform:translateY(0);      text-shadow:0 0 8px rgba(0,0,0,.25); }
+  100% { opacity:1; text-shadow:none; }
+}
+
+#modal1-container .stat-value span{
+  display:inline-block;
+  animation:digit-glow .6s cubic-bezier(.19,1,.22,1) both;
+}
+  
 </style>
 
 <!-- Основная разметка modal1 -->
@@ -367,19 +380,40 @@ function initModal1 () {
   ); // 0 — количество, 1 — сумма
 
   /* обновить оба счётчика */
-  function recalcStats () {
-    const blocks    = ordersContainer.querySelectorAll('.modalBLOCK');
-    const totalQty  = blocks.length;
-    const totalCost = [...blocks].reduce(
-      (sum, el) => sum + parseFloat(el.dataset.price ?? '0'), 0
-    );
+function recalcStats () {
+  const blocks    = ordersContainer.querySelectorAll('.modalBLOCK');
+  const totalQty  = blocks.length;
 
-    countEl.textContent = totalQty .toLocaleString('ru-RU');
-    sumEl  .textContent = totalCost.toLocaleString('ru-RU');
-  }
+  const totalCost = [...blocks]
+    .reduce((sum, el) => sum + parseFloat(el.dataset.price ?? '0'), 0);
+
+  animateStat(countEl, totalQty);
+  animateStat(sumEl,   totalCost);
+}
 
   /* формат числа с пробелами‑тысячами */
-  const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
+  /* ---------- формат числа XX XXX XXX ---------- */
+const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
+
+/* ---------- плавная перерисовка счётчика ---------- */
+function animateStat(el, newVal){
+  const formatted = fmtNum(newVal);
+
+  /* если значение не изменилось — выходим */
+  if (el.dataset.value === formatted) return;
+  el.dataset.value = formatted;
+
+  /* стираем старое содержимое */
+  el.innerHTML = '';
+
+  /* заново кладём каждый символ в <span>  */
+  [...formatted].forEach((ch, idx) => {
+    const s = document.createElement('span');
+    s.textContent = ch === ' ' ? ' ' : ch;   // сохраняем пробел‑разделитель
+    s.style.animationDelay = `${idx*50}ms`;  // по 50 мс «ступенька»
+    el.appendChild(s);
+  });
+}
 
   /* аккуратный parseFloat для строк вида «1 234,56» */
   const parseFloatSafe = str =>
