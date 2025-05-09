@@ -453,6 +453,15 @@ function animateStat(el, newVal){
   }
   const unitsPromise = loadUnitsMeasure();
 
+  const hintsPromise = (async () => {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('orderCode, name, url, supplier, modification, field1, field2')
+    .eq('user_key', USER_KEY);      // уберите фильтр, если нужно ВСЁ
+  if (error) { console.error(error); return []; }
+  return data || [];
+})();
+
   function getBaseUnit (unitName, units) {
     const cur = units.find(u => u.unit_name === unitName);
     if (!cur) return unitName;
@@ -472,16 +481,6 @@ function animateStat(el, newVal){
 
   async function loadExistingOrders () {
     const units = await unitsPromise;
-
-    /* ----------  Справочник для автоподсказок  ---------- */
-const hintsPromise = (async () => {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('orderCode, name, url, supplier, modification, field1, field2')
-    .eq('user_key', USER_KEY);          // ← при необходимости убрать
-  if (error) { console.error(error); return []; }
-  return data || [];
-})();
 
     const { data: orders, error } = await supabase
      .from('orders')
