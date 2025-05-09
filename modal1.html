@@ -454,10 +454,11 @@ function animateStat(el, newVal){
     const units = await unitsPromise;
 
     const { data: orders, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_key', USER_KEY)
-      .order('created_at', { ascending: false });
+     .from('orders')
+     .select('*')
+     .eq('user_key', USER_KEY)      // ← ключ пользователя
+     .eq('status', 'заказано')      // ← показываем только «заказано»
+     .order('created_at', { ascending: false });
 
     if (error) { console.error(error); return; }
     if (!orders?.length) return;
