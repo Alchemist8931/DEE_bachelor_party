@@ -776,11 +776,10 @@ if (deleteSelectedBtn) {
   // ──────────────────────────────────────────────────────────
   // 6.  ПРОЧИЕ КНОПКИ
   // ──────────────────────────────────────────────────────────
-//  const moveWarehouseBtn  = document.getElementById('move-warehouse');
-//  const deleteSelectedBtn = document.getElementById('delete-selected');
-
-  moveWarehouseBtn  && moveWarehouseBtn.addEventListener('click', () => console.log('Перемещение на склад'));
-  deleteSelectedBtn && deleteSelectedBtn.addEventListener('click', () => console.log('Удаление выбранного'));
+const moveWarehouseBtn = document.getElementById('move-warehouse');   // ← единственная новая const
+moveWarehouseBtn?.addEventListener('click', () =>
+  console.log('Перемещение на склад')
+);
 }
 
 </script>
