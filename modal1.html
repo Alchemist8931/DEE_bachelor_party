@@ -164,6 +164,24 @@
 }
 #global-select-dropdown .select-option:hover{ background:rgba(0,0,0,.05); }
 
+
+  /* ---- dropdown автоподсказок ---- */
+#autocomplete-dropdown{
+  position:fixed;
+  max-height:160px; min-width:200px;
+  background:#f5f5f5; border:1px solid #E5E7E9;
+  border-radius:8px; box-shadow:0 4px 16px rgba(22,20,19,.25);
+  overflow-y:auto; opacity:0; visibility:hidden;
+  transform:translateY(-10px); transition:.25s;
+  z-index:9999;
+}
+#autocomplete-dropdown.show{ opacity:1; visibility:visible; transform:translateY(0); }
+#autocomplete-dropdown::-webkit-scrollbar{ width:4px; background:#e2e2e2; border-radius:20px; }
+#autocomplete-dropdown::-webkit-scrollbar-thumb{ background:#212121; border-radius:20px; }
+#autocomplete-dropdown .ac-option{ padding:6px 10px; font-size:12px; cursor:pointer; }
+#autocomplete-dropdown .ac-option:hover{ background:rgba(0,0,0,.05); }
+
+
 /* лёгкий затемнённый фон, чтобы закрывать по клику */
 #select-overlay{
   position:fixed; inset:0; background:transparent;
@@ -300,6 +318,8 @@
 <!-- ——— портальный контейнер для выпадающего списка ——— -->
 <div id="select-overlay"></div>
 <div id="global-select-dropdown"></div>
+  <!-- ——— dropdown для автоподсказок ——— -->
+<div id="autocomplete-dropdown"></div>
   
   <!-- Верхняя часть модального окна -->
   <div class="modal-top">
@@ -453,6 +473,16 @@ function animateStat(el, newVal){
   async function loadExistingOrders () {
     const units = await unitsPromise;
 
+    /* ----------  Справочник для автоподсказок  ---------- */
+const hintsPromise = (async () => {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('orderCode, name, url, supplier, modification, field1, field2')
+    .eq('user_key', USER_KEY);          // ← при необходимости убрать
+  if (error) { console.error(error); return []; }
+  return data || [];
+})();
+
     const { data: orders, error } = await supabase
      .from('orders')
      .select('*')
@@ -533,6 +563,88 @@ function animateStat(el, newVal){
       overlay.style.display = 'none';
     }
   }
+
+  /* -----------------------------------------------------------------------
+   3‑bis.  Автоподсказка для orderCode и name
+----------------------------------------------------------------------- */
+setupAutocomplete();
+async function setupAutocomplete(){
+  const hints     = await hintsPromise;          // все записи
+  const codeInput = document.querySelector('input[placeholder="RIV-0881"]');
+  const nameInput = document.querySelector('input[placeholder="наименование позиции"]');
+  const portal    = document.getElementById('autocomplete-dropdown');
+  const overlay   = document.getElementById('select-overlay');
+  if (!codeInput || !nameInput || !portal) return;
+
+  // общий обработчик «input»
+  function onType(e){
+    const src   = e.target;
+    const value = src.value.trim().toLowerCase();
+    if (value.length < 1){ closeAC(); return; }
+
+    // фильтруем варианты
+    const list = src === codeInput
+      ? hints.filter(h => (h.orderCode||'').toLowerCase().includes(value))
+             .map(h => ({ key:h.orderCode, record:h }))
+      : hints.filter(h => (h.name||'').toLowerCase().includes(value))
+             .map(h => ({ key:h.name, record:h }));
+
+    if (!list.length){ closeAC(); return; }
+
+    // заполняем dropdown
+    portal.innerHTML = '';
+    list.forEach(item=>{
+      const div = document.createElement('div');
+      div.className = 'ac-option';
+      div.textContent = item.key;
+      div.record = item.record;      // целиком кладём в div
+      portal.appendChild(div);
+    });
+
+    // позиционируем под полем
+    const rect = src.getBoundingClientRect();
+    portal.style.left = `${rect.left}px`;
+    portal.style.top  = `${rect.bottom + window.scrollY}px`;
+    portal.classList.add('show');
+    overlay.style.display = 'block';
+  }
+
+  // клик по подсказке
+  portal.addEventListener('click', e=>{
+    if (!e.target.classList.contains('ac-option')) return;
+    const r = e.target.record;
+    fillFormWithRecord(r);
+    closeAC();
+  });
+
+  overlay.addEventListener('click', closeAC);
+
+  codeInput.addEventListener('input', onType);
+  nameInput.addEventListener('input', onType);
+
+  function closeAC(){
+    portal.classList.remove('show');
+    overlay.style.display = 'none';
+  }
+}
+
+/* ---------- заполняем форму выбранной записью ---------- */
+function fillFormWithRecord(r){
+  const form = document.querySelector('#modal1-container .modal-top .modalBLOCK .modalRow');
+  if (!form) return;
+  const inputs = form.querySelectorAll('input');
+
+  inputs[0].value = r.orderCode || '';
+  inputs[1].value = r.name      || '';
+  inputs[2].value = r.url       || '';
+  inputs[3].value = r.supplier  || '';
+  // единица измерения
+  const selInp = form.querySelector('.select-input');
+  selInp.value = r.modification || '';
+  inputs[5].value = r.field1    || '';
+  inputs[6].value = r.field2    || '';
+}
+
 
   /* -----------------------------------------------------------------------
      4.  Шаблон контейнера одного заказа
