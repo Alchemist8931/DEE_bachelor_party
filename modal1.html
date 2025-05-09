@@ -343,336 +343,269 @@
 
 <!-- Скрипт (type="module") с инициализацией Supabase и функцией initModal1() -->
 <script type="module">
-  const supabase = window.supabase;
-  const USER_KEY = window.USER_KEY;
+/* ===== подключаем Supabase + ключ пользователя ===== */
+const supabase = window.supabase;
+const USER_KEY = window.USER_KEY;
 
-  initModal1();
+/* ─────────────────────────────────────────────────── */
+/*  ИНИЦИАЛИЗАЦИЯ МОДУЛЯ                              */
+/* ─────────────────────────────────────────────────── */
+initModal1();
 
-  function initModal1() {
-    console.log('[modal1.html] PAGE 1 активирован');
+function initModal1() {
+  console.log('[modal1.html] PAGE 1 активирован');
 
-const ordersContainer = document.querySelector(
-  '#modal1-container .modal-bottom .modalVNUT-content'
-);
-    
-/* ---------- 0. справочник единиц ---------- */
-    async function loadUnitsMeasure() {
-      const { data, error } = await supabase
-        .from('units_measure')
-        .select('unit_name, unit_group, multiplier')
-        .order('unit_group, multiplier');
-      if (error) { console.error(error); return []; }
-      return data || [];
-    }
-    const unitsPromise = loadUnitsMeasure();
-
-    /* helpers */
-const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
-    
-    function getBaseUnit(unitName, units) {
-      const cur = units.find(u => u.unit_name === unitName);
-      if (!cur) return unitName;
-      return units
-        .filter(u => u.unit_group === cur.unit_group)
-        .sort((a, b) => a.multiplier - b.multiplier)[0]
-        .unit_name;
-    }
-    function getMultiplier(unitName, units) {
-      const u = units.find(x => x.unit_name === unitName);
-      return u ? Number(u.multiplier) : 1;
-    }
-
-    /* аккуратно превращаем строку‑число (“1 234,56”) → 1234.56 */
-    function parseFloatSafe(str=''){
-    return parseFloat(
-       String(str).replace(/[\s ]/g,'').replace(',','.')
-      ) || 0;
-    }
-
-    /* ---------- 1. загрузка существующих заказов ---------- */
-    loadExistingOrders();
-
-    // ---------- insertOrderToDB: запись в Supabase и возврат id ----------
-async function insertOrderToDB(obj) {               //функция вставки данных
-  const { data, error } = await supabase
-        .from('orders')
-        .insert([obj])
-        .select('id');                              //возвращаем только id
-  if (error) throw error;
-  return data[0].id;                               //id новой строки
-}
-
-    async function loadExistingOrders() {
-      const units = await unitsPromise;
-      const ordersContainer = document.querySelector(
-        '#modal1-container .modal-bottom .modalVNUT-content'
-      );
-
-      /* ---------- пересчёт счётчиков количества и суммы ---------- */
-const [countEl, sumEl] = document.querySelectorAll(
-  '#modal1-container .stats .stat-value'
-);          // 0‑й элемент — количество, 1‑й — сумма
-
-function recalcStats () {
-  const blocks = ordersContainer.querySelectorAll('.modalBLOCK');
-  const totalCount = blocks.length;
-
-  const totalSum = [...blocks].reduce((acc, block) =>
-    acc + parseFloat(block.dataset.price || '0'), 0
+  /* ---------- основные DOM‑ссылки ---------- */
+  const ordersContainer = document.querySelector(
+    '#modal1-container .modal-bottom .modalVNUT-content'
   );
+  const [countEl, sumEl] = document.querySelectorAll(
+    '#modal1-container .stats .stat-value'
+  ); // 0 — кол-во, 1 — сумма
 
-  countEl.textContent = totalCount.toLocaleString('ru-RU');
-  sumEl.textContent   = totalSum.toLocaleString('ru-RU');
-}
+  /* ---------- универсальный пересчёт статистики ---------- */
+  function recalcStats() {
+    const blocks = ordersContainer.querySelectorAll('.modalBLOCK');
+    const totalCount = blocks.length;
 
-      const { data: orders, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_key', USER_KEY)
-        .order('created_at', { ascending: false });
+    const totalSum = [...blocks].reduce(
+      (acc, block) => acc + parseFloat(block.dataset.price ?? '0'),
+      0
+    );
 
-      if (error) { console.error(error); return; }
-      if (!orders?.length) return;
+    countEl.textContent = totalCount.toLocaleString('ru-RU');
+    sumEl.textContent   = totalSum.toLocaleString('ru-RU');
+  }
 
-      orders.forEach(order => {
-        order.base_unit = getBaseUnit(order.modification, units);
-        order.qtySel       = Number(order.field1 || 0);
-        const multMod       = getMultiplier(order.modification, units);
-        order.multMod       = multMod;                    /* A */
-        order.priceSel   = parseFloatSafe(order.field2);
-        order.baseQty    = order.qtySel * multMod;
-        order.priceBase     = multMod ? order.priceSel / multMod : 0; /* E */
-        order.total         = order.priceBase * multMod;  /* F */
+  /* ---------- утилиты ---------- */
+  const fmtNum = n => Number(n || 0).toLocaleString('ru-RU');
 
-        ordersContainer.insertAdjacentHTML('beforeend', createOrderElement(order));
+  function parseFloatSafe(str = '') {
+    return parseFloat(String(str).replace(/[\s ]/g, '').replace(',', '.')) || 0;
+  }
 
-        if (order.url) {
-          ordersContainer.lastElementChild
-            .querySelector('.spec-icon')
-            .addEventListener('click', () => window.open(order.url, '_blank'));
-        }
+  /* ---------- загрузка справочника единиц ---------- */
+  async function loadUnitsMeasure() {
+    const { data, error } = await supabase
+      .from('units_measure')
+      .select('unit_name, unit_group, multiplier')
+      .order('unit_group, multiplier');
+    if (error) { console.error(error); return []; }
+    return data || [];
+  }
+  const unitsPromise = loadUnitsMeasure();
 
-        recalcStats();
+  function getBaseUnit(name, units) {
+    const cur = units.find(u => u.unit_name === name);
+    if (!cur) return name;
+    return units
+      .filter(u => u.unit_group === cur.unit_group)
+      .sort((a, b) => a.multiplier - b.multiplier)[0]
+      .unit_name;
+  }
+  function getMultiplier(name, units) {
+    return Number(units.find(u => u.unit_name === name)?.multiplier || 1);
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /*  ЗАГРУЗКА СУЩЕСТВУЮЩИХ ЗАКАЗОВ                     */
+  /* ─────────────────────────────────────────────────── */
+  loadExistingOrders();
+
+  async function loadExistingOrders() {
+    const units = await unitsPromise;
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_key', USER_KEY)
+      .order('created_at', { ascending: false });
+
+    if (error) { console.error(error); return; }
+    if (!orders?.length) return;
+
+    orders.forEach(order => {
+      order.base_unit = getBaseUnit(order.modification, units);
+      order.qtySel    = Number(order.field1 || 0);
+
+      const multMod   = getMultiplier(order.modification, units);
+      order.priceSel  = parseFloatSafe(order.field2);
+      order.baseQty   = order.qtySel * multMod;
+      order.priceBase = multMod ? order.priceSel / multMod : 0;
+      order.total     = order.priceBase * multMod;
+
+      ordersContainer.insertAdjacentHTML('beforeend', createOrderElement(order));
+
+      if (order.url) {
+        ordersContainer.lastElementChild
+          .querySelector('.spec-icon')
+          .addEventListener('click', () => window.open(order.url, '_blank'));
+      }
+    });
+
+    recalcStats();
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /*  CRUD: вставка и шаблон                            */
+  /* ─────────────────────────────────────────────────── */
+  async function insertOrderToDB(obj) {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([obj])
+      .select('id');
+    if (error) throw error;
+    return data[0].id;
+  }
+
+  function createOrderElement(o) {
+    return /*html*/ `
+      <div class="modalBLOCK"
+           data-id="${o.id ?? ''}"
+           data-price="${o.priceSel ?? 0}">
+        <label>
+          <input type="checkbox" class="input">
+          <span class="custom-checkbox" style="margin-top:5px;margin-left:-8px;"></span>
+        </label>
+
+        <div class="modalRow">
+          <input class="inputT"  style="width:130px;" placeholder="RIV‑0881"
+                 value="${o.orderCode ?? ''}" readonly/>
+          <input class="input"   style="width:340px;" placeholder="наименование"
+                 value="${o.name ?? ''}" readonly/>
+          <input class="input"   style="width:150px;" placeholder="статус"
+                 value="заказано" readonly/>
+          <span  class="spec-icon" style="margin-left:30px;" data-url="${o.url ?? ''}">
+            <i class="material-symbols-outlined">captive_portal</i>
+          </span>
+          <input class="inputT"  style="width:270px;" placeholder="поставщик"
+                 value="${o.supplier ?? ''}" readonly/>
+          <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм."
+                 value="${o.modification ?? ''}" readonly/>
+          <input class="inputSUM" style="width:86px;"
+                 value="${fmtNum(o.qtySel)}" readonly/>
+          <input class="inputSUM"
+                 value="${fmtNum(o.priceSel)}" readonly/>
+        </div>
+
+        <div class="modalRow" style="margin-left:30px;">
+          <input class="input"     style="width:90px;"
+                 value="${o.base_unit ?? ''}" readonly/>
+          <input class="inputSUM"  style="width:86px;"
+                 value="${fmtNum(o.baseQty)}" readonly/>
+          <input class="inputSUM"
+                 value="${fmtNum(o.priceBase)}" readonly/>
+          <input class="inputSUM"
+                 value="${fmtNum(o.total)}" readonly/>
+        </div>
+      </div>`;
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /*  КАСТОМНЫЙ SELECT «изм.»                           */
+  /* ─────────────────────────────────────────────────── */
+  setupCustomSelect();
+
+  async function setupCustomSelect() {
+    const units = await unitsPromise;
+    const localInput = document.querySelector('#modal1-container .select-input');
+    const portal     = document.getElementById('global-select-dropdown');
+    const overlay    = document.getElementById('select-overlay');
+    if (!localInput || !portal || !overlay) return;
+
+    if (!portal.hasChildNodes()) {
+      const frag = document.createDocumentFragment();
+      units.forEach(u => {
+        const o = document.createElement('div');
+        o.className       = 'select-option';
+        o.textContent     = u.unit_name;
+        o.dataset.group   = u.unit_group;
+        o.dataset.multiplier = u.multiplier;
+        frag.appendChild(o);
+      });
+      portal.appendChild(frag);
+    }
+
+    localInput.addEventListener('click', e => {
+      e.stopPropagation();
+      const r = localInput.getBoundingClientRect();
+      portal.style.left = `${r.left}px`;
+      portal.style.top  = `${r.bottom + window.scrollY}px`;
+      portal.classList.add('show');
+      overlay.style.display = 'block';
+    });
+
+    portal.addEventListener('click', e => {
+      if (!e.target.classList.contains('select-option')) return;
+      localInput.value = e.target.textContent;
+      closeDropdown();
+    });
+
+    overlay.addEventListener('click', closeDropdown);
+
+    function closeDropdown() {
+      portal.classList.remove('show');
+      overlay.style.display = 'none';
+    }
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /*  АНИМАЦИЯ КНОПОК действия                          */
+  /* ─────────────────────────────────────────────────── */
+  const actionRow = document.querySelector('#modal1-container .action-buttons');
+  function updateActionButtons() {
+    const checked = ordersContainer.querySelector('input[type="checkbox"]:checked');
+    actionRow.classList.toggle('visible', !!checked);
+  }
+
+  ordersContainer.addEventListener('change', e => {
+    if (e.target.matches('input[type="checkbox"]')) updateActionButtons();
+  });
+  updateActionButtons();
+
+  /* ─────────────────────────────────────────────────── */
+  /*  ФОРМАТИРОВАНИЕ .inputSUM                          */
+  /* ─────────────────────────────────────────────────── */
+  (function attachSumFormatters() {
+    const fmt = n => Math.round(n).toLocaleString('ru-RU');
+    const parseNum = s => parseFloat(String(s).replace(/[\s ]/g, '').replace(',', '.'));
+
+    function bind(el) {
+      if (el.dataset.bindSum) return;
+
+      el.addEventListener('focus', () => {
+        const raw = el.dataset.raw ?? parseNum(el.value);
+        if (!isNaN(raw)) el.value = Number(raw).toFixed(2);
       });
 
-      const totalCounter = document.querySelector('#modal1-container .stats .stat-value');
-      if (totalCounter) totalCounter.textContent = orders.length.toLocaleString();
+      el.addEventListener('blur', () => {
+        const raw = parseNum(el.value);
+        if (isNaN(raw)) { el.value = ''; el.dataset.raw = ''; return; }
+        el.dataset.raw = raw;
+        el.value = fmt(raw);
+      });
+
+      el.dataset.bindSum = '1';
+      if (el.value) el.dispatchEvent(new Event('blur'));
     }
 
-  // ──────────────────────────────────────────────────────────
-  // 2.  КАСТОМНЫЙ SELECT "изм."         // +++ новый код +++
-  // ──────────────────────────────────────────────────────────
-  setupCustomSelect();                                      // //инициализация select
-
-  async function setupCustomSelect(){
-  const units = await unitsPromise;
-
-  const localInput = document.querySelector('#modal1-container .select-input');
-  const portal     = document.getElementById('global-select-dropdown');
-  const overlay    = document.getElementById('select-overlay');
-  if(!localInput || !portal || !overlay) return;
-
-  /* заполняем список (один раз) */
-  if(!portal.hasChildNodes()){
-    const frag=document.createDocumentFragment();
-    units.forEach(u=>{
-      const o=document.createElement('div');
-      o.className='select-option';
-      o.textContent=u.unit_name;
-      o.dataset.group=u.unit_group;
-      o.dataset.multiplier=u.multiplier;
-      frag.appendChild(o);
-    });
-    portal.appendChild(frag);
-  }
-
-  /* показать */
-  localInput.addEventListener('click',e=>{
-    e.stopPropagation();
-    const rect = localInput.getBoundingClientRect();
-    portal.style.left = rect.left + 'px';
-    portal.style.top  = (rect.bottom + window.scrollY) + 'px';
-    portal.classList.add('show');
-    overlay.style.display='block';
-  });
-
-  /* выбор */
-  portal.addEventListener('click',e=>{
-    if(!e.target.classList.contains('select-option')) return;
-    localInput.value = e.target.textContent;
-    closeDropdown();
-  });
-
-  /* клик по фону — закрыть */
-  overlay.addEventListener('click', closeDropdown);
-
-  function closeDropdown(){
-    portal.classList.remove('show');
-    overlay.style.display='none';
-  }
-}
-
-    /*────────────────────────────────────────────────────────────
-  3.  Кнопки «переместить / удалить» показываем,
-      только когда выбран хотя бы один чекбокс
-────────────────────────────────────────────────────────────*/
-/* === НОВАЯ плавная анимация кнопок === */
-const actionRow = document.querySelector('#modal1-container .action-buttons'); // div с двумя кнопками
-
-// ---------- плавное появление/скрытие action‑buttons ----------
-function updateActionButtons() {
-  const checked = ordersContainer.querySelector(
-    'input[type="checkbox"]:checked'
-  );
-  actionRow.classList.toggle('visible', !!checked);
-}
-
-document.querySelector('#modal1-container .modalVNUT-content')
-        .addEventListener('change', e=>{
-          if(e.target.matches('input[type="checkbox"]')) updateActionButtons();
-        });
-
-updateActionButtons();   // первый запуск
-
-
-
-    /*───────────────────────────────────────────────────────────
-  3‑bis.  Форматирование полей .inputSUM (тысячи + округление)
-───────────────────────────────────────────────────────────*/
-(function attachSumFormatters(){
-  /** helper: красивый вывод (разделители тысяч, без копеек) */
-  const fmt = n => Math.round(n).toLocaleString('ru-RU');
-
-  /** helper: парсим строку → число */
-  const parseNum = s => parseFloat(
-    String(s).replace(/[\s ]/g,'').replace(',','.')
-  );
-
-  /** ставим обработчики focus / blur на один элемент */
-  function bind(el){
-    if(el.dataset.bindSum==='1') return;         // уже привязан
-
-    // ► при фокусе показываем «сырое» значение с копейками
-    el.addEventListener('focus', ()=>{
-      const raw = el.dataset.raw ?? parseNum(el.value);
-      if(!isNaN(raw)) el.value = Number(raw).toFixed(2);
-    });
-
-    // ► при уходе с поля форматируем и запоминаем raw‑число
-    el.addEventListener('blur', ()=>{
-      const raw = parseNum(el.value);
-      if(isNaN(raw)){ el.value=''; el.dataset.raw=''; return; }
-      el.dataset.raw = raw;                     // сохраняем как есть
-      el.value = fmt(raw);                      // округляем и добавляем пробелы
-    });
-
-    // помечаем, что обработчики уже добавлены
-    el.dataset.bindSum = '1';
-    // если изначально есть значение — сразу форматируем
-    if(el.value) el.dispatchEvent(new Event('blur'));
-  }
-
-  /** привязать форматирование к всем .inputSUM внутри node */
-  function bindInside(node=document){
-    node.querySelectorAll('.inputSUM').forEach(bind);
-  }
-
-  // 1) существующие поля
-  bindInside();
-
-  // 2) новые поля при загрузке заказов
-  const origCreate = createOrderElement;              // перехватываем генерацию
-  createOrderElement = (...args)=>{
-    const html = origCreate(...args);
-    // маленькая хитрость: после вставки HTML привяжем форматирование
-    setTimeout(()=> bindInside(ordersContainer), 0);
-    return html;
-  };
-})();
-
-
-
- /* ---------- 4. шаблон контейнера заказа ---------- */
-function createOrderElement(o) {
-  return /*html*/ `
-    <div class="modalBLOCK"
-         data-id="${o.id ?? ''}"
-         data-price="${o.priceSel ?? 0}">
-      <!-- чекбокс выбора позиции -->
-      <label>
-        <input type="checkbox" class="input">
-        <span class="custom-checkbox" style="margin-top:5px;margin-left:-8px;"></span>
-      </label>
-
-      <!-- основная строка -->
-      <div class="modalRow">
-        <input class="inputT"  style="width:130px;" placeholder="RIV‑0881"
-               value="${o.orderCode ?? ''}" readonly/>
-        <input class="input"   style="width:340px;" placeholder="наименование"
-               value="${o.name ?? ''}" readonly/>
-        <input class="input"   style="width:150px;" placeholder="статус"
-               value="заказано" readonly/>
-        <span  class="spec-icon" style="margin-left:30px;" data-url="${o.url ?? ''}">
-          <i class="material-symbols-outlined">captive_portal</i>
-        </span>
-        <input class="inputT"  style="width:270px;" placeholder="поставщик"
-               value="${o.supplier ?? ''}" readonly/>
-        <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм."
-               value="${o.modification ?? ''}" readonly/>
-        <input class="inputSUM" style="width:86px;" placeholder="000 000"
-               value="${fmtNum(o.qtySel)}" readonly/>
-        <input class="inputSUM" placeholder="000 000 000"
-               value="${fmtNum(o.priceSel)}" readonly/>
-      </div>
-
-      <!-- строка в базовых единицах -->
-      <div class="modalRow" style="margin-left:30px;">
-        <input class="input"    style="width:90px;"  placeholder="изм."
-               value="${o.base_unit ?? ''}" readonly/>
-        <input class="inputSUM" style="width:86px;"  placeholder="000 000"
-               value="${fmtNum(o.baseQty)}" readonly/>
-        <input class="inputSUM" placeholder="000 000 000"
-               value="${fmtNum(o.priceBase)}" readonly/>
-        <input class="inputSUM" placeholder="000 000 000"
-               value="${fmtNum(o.total)}" readonly/>
-      </div>
-    </div>
-  `;
-}
-
-
-
-  /* ──────────────────────────────────────────────
-   ОЧИСТКА ВЕРХНЕЙ ФОРМЫ после создания позиции
-────────────────────────────────────────────── */
-function clearForm(){
-  const formBlock = document.querySelector(
-    '#modal1-container .modal-top .modalBLOCK'
-  );
-  if(!formBlock) return;
-
-  const inputs = formBlock.querySelectorAll('.modalRow input');
-  inputs.forEach(inp=>{
-    inp.value = '';
-
-    /* если это поле суммы — забудем прежний raw‑кеш */
-    if(inp.classList.contains('inputSUM')){
-      delete inp.dataset.raw;          //  <‑‑ ключевой момент
+    function bindInside(node = document) {
+      node.querySelectorAll('.inputSUM').forEach(bind);
     }
-  });
 
-  /* очистим select «изм.» */
-  const sel = formBlock.querySelector('.select-input');
-  if(sel) sel.value='';
-}
+    bindInside();
 
+    const originalCreate = createOrderElement;
+    createOrderElement = (...args) => {
+      const html = originalCreate(...args);
+      setTimeout(() => bindInside(ordersContainer), 0);
+      return html;
+    };
+  })();
 
-  /* ---------- 6. создание новой позиции ---------- */
-    // ---------- обработчик create-order ----------
-const createOrderBtn = document.getElementById('create-order');
-if (createOrderBtn) {
-  createOrderBtn.addEventListener('click', async () => {
-    /* 1. собираем данные формы */
+  /* ─────────────────────────────────────────────────── */
+  /*  СОЗДАНИЕ НОВОГО ЗАКАЗА                            */
+  /* ─────────────────────────────────────────────────── */
+  document.getElementById('create-order')?.addEventListener('click', async () => {
     const formBlock = document.querySelector('#modal1-container .modal-top .modalBLOCK');
     if (!formBlock) return;
 
@@ -686,8 +619,8 @@ if (createOrderBtn) {
       url:          inputs[2].value.trim(),
       supplier:     inputs[3].value.trim(),
       modification: inputs[4].value.trim(),
-      field1:       inputs[5].value.trim(),   //кол‑во в выбранной единице
-      field2:       inputs[6].value.trim(),   //цена в выбранной единице
+      field1:       inputs[5].value.trim(),
+      field2:       inputs[6].value.trim(),
       status:      'заказано'
     };
 
@@ -696,90 +629,79 @@ if (createOrderBtn) {
       return;
     }
 
-    /* 2. вычисляем производные поля для отображения */
     const multMod         = getMultiplier(orderData.modification, units);
     orderData.base_unit   = getBaseUnit(orderData.modification, units);
     orderData.qtySel      = Number(orderData.field1 || 0);
     orderData.priceSel    = parseFloatSafe(orderData.field2);
-    orderData.multMod     = multMod;
     orderData.priceBase   = multMod ? orderData.priceSel / multMod : 0;
     orderData.baseQty     = orderData.qtySel * multMod;
     orderData.total       = orderData.priceBase * multMod;
 
     try {
-      /* 3. пишем только реальные колонки в таблице orders */
-      const { base_unit, multMod:_, priceSel:__, priceBase:___,
-              total:____, qtySel:_____, baseQty:_______, ...dbData } = orderData;
+      const { base_unit, priceBase, total, qtySel, ...dbData } = orderData;
+      orderData.id = await insertOrderToDB(dbData);
 
-      orderData.id = await insertOrderToDB(dbData);     //id новой строки
-
-      /* 4. добавляем элемент в DOM */
       ordersContainer.insertAdjacentHTML('afterbegin', createOrderElement(orderData));
-
       const newEl = ordersContainer.firstElementChild;
-      newEl.classList.add('appear');                    //эффект появления
+      newEl.classList.add('appear');
       requestAnimationFrame(() => newEl.classList.remove('appear'));
 
-      /* 5. ссылки, UI‑обновления */
       if (orderData.url) {
-        newEl.querySelector('.spec-icon').addEventListener('click',
-          () => window.open(orderData.url, '_blank'));
+        newEl.querySelector('.spec-icon')
+             .addEventListener('click', () => window.open(orderData.url, '_blank'));
       }
 
-      updateActionButtons();    //показываем/прячем панель
-      recalcStats();            //обновляем счётчики
-      clearForm();              //очищаем поля формы
-
+      updateActionButtons();
+      recalcStats();
+      clearForm();
     } catch (err) {
       alert('Ошибка при создании заказа: ' + err.message);
       console.error(err);
     }
   });
-}
 
-    // ---------- обработчик delete-selected ----------
-const deleteSelectedBtn = document.getElementById('delete-selected');
-if (deleteSelectedBtn) {
-  deleteSelectedBtn.addEventListener('click', async () => {
+  /* очистка формы после вставки */
+  function clearForm() {
+    const form = document.querySelector('#modal1-container .modal-top .modalBLOCK');
+    if (!form) return;
+    form.querySelectorAll('.modalRow input').forEach(el => {
+      el.value = '';
+      if (el.classList.contains('inputSUM')) delete el.dataset.raw;
+    });
+    form.querySelector('.select-input')?.value = '';
+  }
+
+  /* ─────────────────────────────────────────────────── */
+  /*  УДАЛЕНИЕ ВЫБРАННЫХ ЗАКАЗОВ                        */
+  /* ─────────────────────────────────────────────────── */
+  document.getElementById('delete-selected')?.addEventListener('click', async () => {
     const checked = ordersContainer.querySelectorAll('input[type="checkbox"]:checked');
     if (!checked.length) return;
 
-    // собираем id отмеченных заказов
     const ids = [...checked]
       .map(cb => cb.closest('.modalBLOCK').dataset.id)
-      .filter(Boolean);                             //может быть '' у локальных
+      .filter(Boolean);
 
     try {
-      /* 1. удаляем из Supabase */
       if (ids.length) {
-        const { error } = await supabase
-              .from('orders')
-              .delete()
-              .in('id', ids);
+        const { error } = await supabase.from('orders').delete().in('id', ids);
         if (error) throw error;
       }
 
-      /* 2. удаляем из интерфейса */
       checked.forEach(cb => cb.closest('.modalBLOCK').remove());
-
-      updateActionButtons();  //скрываем панель, если надо
-      recalcStats();          //пересчитываем счётчики
-
+      updateActionButtons();
+      recalcStats();
     } catch (err) {
       alert('Ошибка удаления: ' + err.message);
       console.error(err);
     }
   });
+
+  /* ─────────────────────────────────────────────────── */
+  /*  ПРОЧИЕ КНОПКИ                                     */
+  /* ─────────────────────────────────────────────────── */
+  document.getElementById('move-warehouse')
+          ?.addEventListener('click', () => console.log('Перемещение на склад'));
 }
-
-
-  // ──────────────────────────────────────────────────────────
-  // 6.  ПРОЧИЕ КНОПКИ
-  // ──────────────────────────────────────────────────────────
-const moveWarehouseBtn = document.getElementById('move-warehouse');   // ← единственная новая const
-moveWarehouseBtn?.addEventListener('click', () =>
-  console.log('Перемещение на склад')
-);
-}
-
 </script>
+
