@@ -569,34 +569,51 @@ updateActionButtons();   // первый запуск
 
 
  /* ---------- 4. шаблон контейнера заказа ---------- */
-    function createOrderElement(o) {
-      return; 
-      <div class="modalBLOCK">
-        <label>
-          <input type="checkbox" class="input">
-          <span class="custom-checkbox" style="margin-top:5px;margin-left:-8px;"></span>
-        </label>
-        <div class="modalRow">
-          <input class="inputT"  style="width:130px;" placeholder="RIV-0881"    value="${o.orderCode||''}" readonly/>
-          <input class="input"   style="width:340px;" placeholder="наименование" value="${o.name||''}"      readonly/>
-          <input class="input"   style="width:150px;" placeholder="статус"       value="заказано"            readonly/>
-          <span  class="spec-icon" style="margin-left: 30px;" data-url="${o.url||''}">
-            <i class="material-symbols-outlined">captive_portal</i>
-          </span>
-          <input class="inputT"  style="width:270px;" placeholder="поставщик"    value="${o.supplier||''}"   readonly/>
-          <input class="input"   style="width:90px;margin-left: 30px;" placeholder="изм." value="${o.modification||''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000" value="${fmtNum(o.qtySel)}" readonly/>
-          <input class="inputSUM" placeholder="000 000 000" value="${fmtNum(o.priceSel)}" readonly/>  
-        </div>
+    // ---------- createOrderElement(o): шаблон одного заказа ----------
+function createOrderElement(o) {
+  return /*html*/ `
+    <div class="modalBLOCK">
+      <!-- чекбокс выбора позиции -->
+      <label>
+        <input type="checkbox" class="input">
+        <span class="custom-checkbox" style="margin-top:5px;margin-left:-8px;"></span>
+      </label>
 
-        <div class="modalRow" style="margin-left:30px;">
-          <input class="input" style="width:90px;" placeholder="изм." value="${o.base_unit||''}" readonly/>
-          <input class="inputSUM" style="width:86px;" placeholder="000 000"          value="${fmtNum(o.baseQty)}" readonly/>
-          <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.priceBase)}" readonly/>
-          <input class="inputSUM"                 placeholder="000 000 000"           value="${fmtNum(o.total)}" readonly/>
-        </div>
-      </div>;
-    }
+      <!-- основная строка с ключевыми полями -->
+      <div class="modalRow">
+        <input class="inputT"  style="width:130px;" placeholder="RIV-0881"
+               value="${o.orderCode ?? ''}" readonly/>                 <!--код-->
+        <input class="input"   style="width:340px;" placeholder="наименование"
+               value="${o.name ?? ''}" readonly/>                     <!--наименование-->
+        <input class="input"   style="width:150px;" placeholder="статус"
+               value="заказано" readonly/>                            <!--статус-->
+        <span  class="spec-icon" style="margin-left:30px;" data-url="${o.url ?? ''}">
+          <i class="material-symbols-outlined">captive_portal</i>     <!--ссылка-->
+        </span>
+        <input class="inputT"  style="width:270px;" placeholder="поставщик"
+               value="${o.supplier ?? ''}" readonly/>                 <!--поставщик-->
+        <input class="input"   style="width:90px;margin-left:30px;" placeholder="изм."
+               value="${o.modification ?? ''}" readonly/>             <!--ед. изм.-->
+        <input class="inputSUM" style="width:86px;" placeholder="000 000"
+               value="${fmtNum(o.qtySel)}" readonly/>                 <!--кол‑во (изм.)-->
+        <input class="inputSUM" placeholder="000 000 000"
+               value="${fmtNum(o.priceSel)}" readonly/>               <!--цена (изм.)-->
+      </div>
+
+      <!-- дополнительная строка: перевод в базовые единицы -->
+      <div class="modalRow" style="margin-left:30px;">
+        <input class="input"     style="width:90px;" placeholder="изм."
+               value="${o.base_unit ?? ''}" readonly/>                <!--баз. ед.-->
+        <input class="inputSUM"  style="width:86px;" placeholder="000 000"
+               value="${fmtNum(o.baseQty)}" readonly/>                <!--кол‑во (баз.)-->
+        <input class="inputSUM"  placeholder="000 000 000"
+               value="${fmtNum(o.priceBase)}" readonly/>              <!--цена (баз.)-->
+        <input class="inputSUM"  placeholder="000 000 000"
+               value="${fmtNum(o.total)}" readonly/>                  <!--сумма-->
+      </div>
+    </div>
+  `;
+}
 
   /* ──────────────────────────────────────────────
    ОЧИСТКА ВЕРХНЕЙ ФОРМЫ после создания позиции
