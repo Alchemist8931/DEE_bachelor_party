@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEE Bachelor Party</title>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>   
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100&display=swap" rel="stylesheet">
+    <style>  
 body {
     font-family: "Be Vietnam Pro", sans-serif;
     margin: 0;
@@ -30,9 +31,10 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://unsplash.it/1800/800?image=893");
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://unsplash.it/1800/800?image=893");
     background-size: cover;
     background-position: center;
+    filter: blur(5px); /* РАЗМЫТИЕ ФОНА */
     z-index: -1;
 }
 
@@ -152,25 +154,211 @@ h1 {
     padding: 4px;
     text-align: left;
 }
+
+/* ________________glitch ССТИЛИ_____________  */
+        .glitch {
+    position: relative;
+    color: #fff;
+    font-size: 144px;
+    letter-spacing: .1em;
+    animation: glitch-skew 1s infinite linear alternate-reverse;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim2 1s infinite linear alternate-reverse;
+}
+
+.sub {
+    color: rgb(100,220,220);
+    letter-spacing: 1em;
+    display: block;
+    margin-top: 20px;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(42px,9999px,44px,0); }
+    10% { clip: rect(12px,9999px,80px,0); }
+    20% { clip: rect(72px,9999px,100px,0); }
+    30% { clip: rect(24px,9999px,60px,0); }
+    40% { clip: rect(60px,9999px,70px,0); }
+    50% { clip: rect(20px,9999px,40px,0); }
+    60% { clip: rect(80px,9999px,90px,0); }
+    70% { clip: rect(32px,9999px,44px,0); }
+    80% { clip: rect(12px,9999px,40px,0); }
+    90% { clip: rect(52px,9999px,64px,0); }
+    100% { clip: rect(42px,9999px,58px,0); }
+}
+
+@keyframes glitch-anim2 {
+    0% { clip: rect(12px,9999px,60px,0); }
+    10% { clip: rect(72px,9999px,80px,0); }
+    20% { clip: rect(24px,9999px,40px,0); }
+    30% { clip: rect(52px,9999px,70px,0); }
+    40% { clip: rect(64px,9999px,90px,0); }
+    50% { clip: rect(20px,9999px,50px,0); }
+    60% { clip: rect(30px,9999px,70px,0); }
+    70% { clip: rect(10px,9999px,30px,0); }
+    80% { clip: rect(72px,9999px,90px,0); }
+    90% { clip: rect(42px,9999px,62px,0); }
+    100% { clip: rect(24px,9999px,44px,0); }
+}
+
+@keyframes glitch-skew {
+    0% { transform: skew(2deg); }
+    20% { transform: skew(-2deg); }
+    40% { transform: skew(2deg); }
+    60% { transform: skew(-1deg); }
+    80% { transform: skew(1deg); }
+    100% { transform: skew(0deg); }
+}
+
+
+/* ________________glitch СТИЛИ КНОПКИ_____________  */
+        #start-btn,
+#start-btn::after {
+    padding: 10px 50px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: transparent;
+    position: relative;
+}
+
+#start-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+#start-btn::after {
+    --move1: inset(50% 50% 50% 50%);
+    --move2: inset(31% 0 40% 0);
+    --move3: inset(39% 0 15% 0);
+    --move4: inset(45% 0 40% 0);
+    --move5: inset(45% 0 6% 0);
+    --move6: inset(14% 0 61% 0);
+    clip-path: var(--move1);
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+}
+
+#start-btn:hover::after {
+    animation: glitch_4011 1s;
+    text-shadow: -3px -3px 0px #1df2f0, 3px 3px 0px #E94BE8;
+    background-color: transparent;
+    border: 3px solid rgb(0, 255, 213);
+}
+
+#start-btn:hover {
+    text-shadow: -1px -1px 0px #1df2f0, 1px 1px 0px #E94BE8;
+    background-color: transparent;
+    border: 1px solid rgb(0, 255, 213);
+    box-shadow: 0px 10px 10px -10px rgb(0, 255, 213);
+}
+
+@keyframes glitch_4011 {
+    0% {
+        clip-path: var(--move1);
+        transform: translate(0px,-10px);
+    }
+
+    10% {
+        clip-path: var(--move2);
+        transform: translate(-10px,10px);
+    }
+
+    20% {
+        clip-path: var(--move3);
+        transform: translate(10px,0px);
+    }
+
+    30% {
+        clip-path: var(--move4);
+        transform: translate(-10px,10px);
+    }
+
+    40% {
+        clip-path: var(--move5);
+        transform: translate(10px,-10px);
+    }
+
+    50% {
+        clip-path: var(--move6);
+        transform: translate(-10px,10px);
+    }
+
+    60% {
+        clip-path: var(--move1);
+        transform: translate(10px,-10px);
+    }
+
+    70% {
+        clip-path: var(--move3);
+        transform: translate(-10px,10px);
+    }
+
+    80% {
+        clip-path: var(--move2);
+        transform: translate(10px,-10px);
+    }
+
+    90% {
+        clip-path: var(--move4);
+        transform: translate(-10px,10px);
+    }
+
+    100% {
+        clip-path: var(--move1);
+        transform: translate(0);
+    }
+}
     </style>
 </head>
 <body>
    <section class="mast">
         <div class="mast__bg"></div>
-        <header class="mast__header">
-            <h1 class="mast__title">DEE Bachelor Party</h1>
-            <p class="mast__text">Добро пожаловать в викторину!</p>
-            <button id="start-btn" class="button hidden">Начать игру</button>
+       <header class="mast__header" id="intro">
+            <h1 class="glitch" data-text="DEE Bachelor Party">DEE Bachelor Party</h1>
+            <span class="sub">мальчишник нашего пирожочка</span>
         </header>
-        <div class="container">
-            <div class="container__inner">
-            <div id="round" class="round"></div>
-            <h1 id="question"></h1>
-            <div id="options" class="options"></div>
-            <div id="score" class="score">Счёт: 0</div>
-                </div>
+        <button id="start-btn" class="hidden" data-text="НАЧАТЬ ИГРУ">НАЧАТЬ ИГРУ</button>
+        <div id="quiz-content" class="hidden">
+            <div class="container">
+                <div class="container__inner">
+                <div id="round" class="round"></div>
+                <h1 id="question"></h1>
+                <div id="options" class="options"></div>
+                <div id="score" class="score">Счёт: 0</div>
+                    </div>
+            </div>
+            <div id="round-start" class="round-start hidden"></div>
         </div>
-        <div id="round-start" class="round-start hidden"></div>
     </section>
     <div id="results" class="hidden">
         <table id="results-table"><tbody></tbody></table>
@@ -491,6 +679,8 @@ const roundStartEl = document.getElementById('round-start');
 const scoreEl = document.getElementById('score');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const introEl = document.getElementById('intro');
+const quizContentEl = document.getElementById('quiz-content');
 
 function startQuiz() {
     userAnswers = [];
@@ -499,6 +689,8 @@ function startQuiz() {
     scoreEl.textContent = 'Счёт: 0';
     document.getElementById('results').classList.add('hidden');
     startBtn.classList.add('hidden');
+    introEl.classList.add('hidden');
+    quizContentEl.classList.remove('hidden');
     showQuestion();
 }
 
@@ -591,6 +783,8 @@ if (restartBtn) {
 
 document.addEventListener('DOMContentLoaded', () => {
     startBtn.classList.remove('hidden');
+    introEl.classList.remove('hidden');
+    quizContentEl.classList.add('hidden');
 });
     </script>
 </body>
