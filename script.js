@@ -52,12 +52,13 @@ async function showQuestion() {
 
     optionsEl.innerHTML = '';
     q.options.forEach((opt, idx) => {
-        const li = document.createElement('li');
-        li.textContent = opt;
-        li.className = 'fade-in';
-        li.addEventListener('click', () => selectAnswer(idx));
-        optionsEl.appendChild(li);
-        setTimeout(() => li.classList.remove('fade-in'), 500);
+       const btn = document.createElement('button');
+        btn.setAttribute('role', 'button');
+        btn.textContent = opt;
+        btn.className = 'fade-in';
+        btn.addEventListener('click', () => selectAnswer(idx));
+        optionsEl.appendChild(btn);
+        setTimeout(() => btn.classList.remove('fade-in'), 500);
     });
 }
 
