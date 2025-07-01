@@ -7,6 +7,7 @@ for (let i = 1; i <= 30; i++) {
     });
 }
 
+
 let current = 0;
 let score = 0;
 const questionEl = document.getElementById('question');
