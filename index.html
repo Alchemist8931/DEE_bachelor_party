@@ -6,6 +6,7 @@
     <title>DEE Bachelor Party</title>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
     <style>  
 body {
     font-family: "Be Vietnam Pro", sans-serif;
@@ -34,7 +35,7 @@ body {
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://unsplash.it/1800/800?image=893");
     background-size: cover;
     background-position: center;
-    filter: blur(5px); /* РАЗМЫТИЕ ФОНА */
+    filter: blur(15px); /* РАЗМЫТИЕ ФОНА */
     z-index: -1;
 }
 
@@ -43,7 +44,7 @@ body {
 }
 
 .mast__title {
-    font-size: 48px;
+    font-size: 50px;
     margin: 0;
 }
 
@@ -161,7 +162,9 @@ h1 {
     color: #fff;
     font-size: 144px;
     letter-spacing: .1em;
+    font-weight: 400;
     animation: glitch-skew 1s infinite linear alternate-reverse;
+          font-family: 'Comfortaa', sans-serif;
 }
 
 .glitch::before,
@@ -189,10 +192,13 @@ h1 {
 }
 
 .sub {
-    color: rgb(100,220,220);
-    letter-spacing: 1em;
+    color: #9500FF;
+    letter-spacing: .05em;
     display: block;
-    margin-top: 20px;
+    margin-top: -130px;
+  font-size: 50px;
+  font-weight: 800;
+  font-family: 'Comfortaa', sans-serif;
 }
 
 @keyframes glitch-anim {
@@ -270,16 +276,16 @@ h1 {
 
 #start-btn:hover::after {
     animation: glitch_4011 1s;
-    text-shadow: -3px -3px 0px #1df2f0, 3px 3px 0px #E94BE8;
+    text-shadow: -3px -3px 0px #9500FF, 3px 3px 0px #E94BE8;
     background-color: transparent;
-    border: 3px solid rgb(0, 255, 213);
+    border: 3px solid #9500FF;
 }
 
 #start-btn:hover {
-    text-shadow: -1px -1px 0px #1df2f0, 1px 1px 0px #E94BE8;
+    text-shadow: -1px -1px 0px #9500FF, 1px 1px 0px #E94BE8;
     background-color: transparent;
-    border: 1px solid rgb(0, 255, 213);
-    box-shadow: 0px 10px 10px -10px rgb(0, 255, 213);
+    border: 1px solid #9500FF;
+    box-shadow: 0px 10px 10px -10px #9500FF;
 }
 
 @keyframes glitch_4011 {
