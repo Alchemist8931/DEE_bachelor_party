@@ -10,11 +10,43 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background: #f0f0f0;
+}
+
+.mast {
+    position: relative;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: #f0f0f0;
+    text-align: center;
+    color: #fff;
+}
+
+.mast__bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://unsplash.it/1800/800?image=893');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.mast__header {
+    margin-bottom: 20px;
+}
+
+.mast__title {
+    font-size: 48px;
+    margin: 0;
+}
+
+.mast__text {
+    margin: 0;
 }
 
 .container {
@@ -106,13 +138,20 @@ h1 {
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="round" class="round"></div>
-        <h1 id="question"></h1>
-        <div id="options" class="options"></div>
-        <div id="score" class="score">Счёт: 0</div>
-    </div>
-    <div id="round-start" class="round-start hidden"></div>
+   <section class="mast">
+        <div class="mast__bg"></div>
+        <header class="mast__header">
+            <h1 class="mast__title">DEE Bachelor Party</h1>
+            <p class="mast__text">Добро пожаловать в викторину!</p>
+        </header>
+        <div class="container">
+            <div id="round" class="round"></div>
+            <h1 id="question"></h1>
+            <div id="options" class="options"></div>
+            <div id="score" class="score">Счёт: 0</div>
+        </div>
+        <div id="round-start" class="round-start hidden"></div>
+    </section>
     <div id="results" class="hidden">
         <table id="results-table"><tbody></tbody></table>
     </div>
