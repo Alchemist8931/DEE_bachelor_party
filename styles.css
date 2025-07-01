@@ -8,7 +8,6 @@ body {
     height: 100vh;
     background: #f0f0f0;
 }
-
 .container {
     position: relative;
     background: #fff;
@@ -56,11 +55,9 @@ h1 {
     font-weight: bold;
     margin-bottom: 10px;
 }
-
 .score {
     margin-top: 20px;
 }
-
 .round-start {
     position: absolute;
     top: 0;
