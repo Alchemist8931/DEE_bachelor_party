@@ -86,6 +86,19 @@ h1 {
 .options button:hover {
     background: #d0d0d0;
 }
+.button {
+    margin: 10px 0;
+    padding: 10px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.button:hover {
+    background: #d0d0d0;
+}
 
 .fade-in {
     animation: fadeIn 0.5s ease;
@@ -147,6 +160,7 @@ h1 {
         <header class="mast__header">
             <h1 class="mast__title">DEE Bachelor Party</h1>
             <p class="mast__text">Добро пожаловать в викторину!</p>
+            <button id="start-btn" class="button hidden">Начать игру</button>
         </header>
         <div class="container">
             <div class="container__inner">
@@ -160,6 +174,7 @@ h1 {
     </section>
     <div id="results" class="hidden">
         <table id="results-table"><tbody></tbody></table>
+        <button id="restart-btn" class="button">Повторить</button>
     </div>
     <script>
 let questions = [
@@ -474,6 +489,18 @@ const optionsEl = document.getElementById('options');
 const roundEl = document.getElementById('round');
 const roundStartEl = document.getElementById('round-start');
 const scoreEl = document.getElementById('score');
+const startBtn = document.getElementById('start-btn');
+const restartBtn = document.getElementById('restart-btn');
+
+function startQuiz() {
+    userAnswers = [];
+    current = 0;
+    score = 0;
+    scoreEl.textContent = 'Счёт: 0';
+    document.getElementById('results').classList.add('hidden');
+    startBtn.classList.add('hidden');
+    showQuestion();
+}
 
 function showRoundInfo() {
     const round = Math.floor(current / 10) + 1;
@@ -557,7 +584,14 @@ function showResults() {
     resultsEl.classList.remove('hidden');
 }
 
-document.addEventListener('DOMContentLoaded', showQuestion);
+startBtn.addEventListener('click', startQuiz);
+if (restartBtn) {
+    restartBtn.addEventListener('click', startQuiz);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    startBtn.classList.remove('hidden');
+});
     </script>
 </body>
 </html>
