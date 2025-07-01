@@ -4,7 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEE Bachelor Party</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f0f0f0;
+}
+
+.container {
+    position: relative;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.options {
+    list-style: none;
+    padding: 0;
+}
+
+.options button {
+    margin: 10px 0;
+    padding: 10px;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.options button:hover {
+    background: #d0d0d0;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.round {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.score {
+    margin-top: 20px;
+}
+
+.round-start {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 48px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
+
+#results {
+    margin-top: 20px;
+}
+
+#results table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#results th, #results td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    text-align: left;
+}
+    </style>
 </head>
 <body>
     <div class="container">
@@ -15,6 +113,403 @@
 
         
     </div>
-    <script src="script.js"></script>
+    <script>
+let questions = [
+  {
+    "text": "Вопрос 1?",
+    "options": [
+      "Ответ A1",
+      "Ответ B1",
+      "Ответ C1",
+      "Ответ D1"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 2?",
+    "options": [
+      "Ответ A2",
+      "Ответ B2",
+      "Ответ C2",
+      "Ответ D2"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 3?",
+    "options": [
+      "Ответ A3",
+      "Ответ B3",
+      "Ответ C3",
+      "Ответ D3"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 4?",
+    "options": [
+      "Ответ A4",
+      "Ответ B4",
+      "Ответ C4",
+      "Ответ D4"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 5?",
+    "options": [
+      "Ответ A5",
+      "Ответ B5",
+      "Ответ C5",
+      "Ответ D5"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 6?",
+    "options": [
+      "Ответ A6",
+      "Ответ B6",
+      "Ответ C6",
+      "Ответ D6"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 7?",
+    "options": [
+      "Ответ A7",
+      "Ответ B7",
+      "Ответ C7",
+      "Ответ D7"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 8?",
+    "options": [
+      "Ответ A8",
+      "Ответ B8",
+      "Ответ C8",
+      "Ответ D8"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 9?",
+    "options": [
+      "Ответ A9",
+      "Ответ B9",
+      "Ответ C9",
+      "Ответ D9"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 10?",
+    "options": [
+      "Ответ A10",
+      "Ответ B10",
+      "Ответ C10",
+      "Ответ D10"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 11?",
+    "options": [
+      "Ответ A11",
+      "Ответ B11",
+      "Ответ C11",
+      "Ответ D11"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 12?",
+    "options": [
+      "Ответ A12",
+      "Ответ B12",
+      "Ответ C12",
+      "Ответ D12"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 13?",
+    "options": [
+      "Ответ A13",
+      "Ответ B13",
+      "Ответ C13",
+      "Ответ D13"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 14?",
+    "options": [
+      "Ответ A14",
+      "Ответ B14",
+      "Ответ C14",
+      "Ответ D14"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 15?",
+    "options": [
+      "Ответ A15",
+      "Ответ B15",
+      "Ответ C15",
+      "Ответ D15"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 16?",
+    "options": [
+      "Ответ A16",
+      "Ответ B16",
+      "Ответ C16",
+      "Ответ D16"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 17?",
+    "options": [
+      "Ответ A17",
+      "Ответ B17",
+      "Ответ C17",
+      "Ответ D17"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 18?",
+    "options": [
+      "Ответ A18",
+      "Ответ B18",
+      "Ответ C18",
+      "Ответ D18"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 19?",
+    "options": [
+      "Ответ A19",
+      "Ответ B19",
+      "Ответ C19",
+      "Ответ D19"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 20?",
+    "options": [
+      "Ответ A20",
+      "Ответ B20",
+      "Ответ C20",
+      "Ответ D20"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 21?",
+    "options": [
+      "Ответ A21",
+      "Ответ B21",
+      "Ответ C21",
+      "Ответ D21"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 22?",
+    "options": [
+      "Ответ A22",
+      "Ответ B22",
+      "Ответ C22",
+      "Ответ D22"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 23?",
+    "options": [
+      "Ответ A23",
+      "Ответ B23",
+      "Ответ C23",
+      "Ответ D23"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 24?",
+    "options": [
+      "Ответ A24",
+      "Ответ B24",
+      "Ответ C24",
+      "Ответ D24"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 25?",
+    "options": [
+      "Ответ A25",
+      "Ответ B25",
+      "Ответ C25",
+      "Ответ D25"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 26?",
+    "options": [
+      "Ответ A26",
+      "Ответ B26",
+      "Ответ C26",
+      "Ответ D26"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 27?",
+    "options": [
+      "Ответ A27",
+      "Ответ B27",
+      "Ответ C27",
+      "Ответ D27"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 28?",
+    "options": [
+      "Ответ A28",
+      "Ответ B28",
+      "Ответ C28",
+      "Ответ D28"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 29?",
+    "options": [
+      "Ответ A29",
+      "Ответ B29",
+      "Ответ C29",
+      "Ответ D29"
+    ],
+    "correct": 0
+  },
+  {
+    "text": "Вопрос 30?",
+    "options": [
+      "Ответ A30",
+      "Ответ B30",
+      "Ответ C30",
+      "Ответ D30"
+    ],
+    "correct": 0
+  }
+];
+
+let userAnswers = [];
+
+let current = 0;
+let score = 0;
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const roundEl = document.getElementById('round');
+const roundStartEl = document.getElementById('round-start');
+const scoreEl = document.getElementById('score');
+
+function showRoundInfo() {
+    const round = Math.floor(current / 10) + 1;
+    roundEl.textContent = `Раунд ${round}`;
+}
+
+function showRoundScreen() {
+    return new Promise(resolve => {
+        const round = Math.floor(current / 10) + 1;
+        roundStartEl.textContent = `Раунд ${round}`;
+        roundStartEl.classList.remove('hidden');
+        setTimeout(() => {
+            roundStartEl.classList.add('hidden');
+            resolve();
+        }, 2000);
+    });
+}
+
+async function showQuestion() {
+    if (current >= questions.length) {
+       showResults();
+        return;
+    }
+
+    if (current % 10 === 0) {
+        await showRoundScreen();
+    }
+
+    showRoundInfo();
+
+    const q = questions[current];
+    questionEl.textContent = q.text;
+    questionEl.classList.add('fade-in');
+    setTimeout(() => questionEl.classList.remove('fade-in'), 500);
+
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+       const btn = document.createElement('button');
+        btn.setAttribute('role', 'button');
+        btn.textContent = opt;
+        btn.className = 'fade-in';
+        btn.addEventListener('click', () => selectAnswer(idx));
+        optionsEl.appendChild(btn);
+        setTimeout(() => btn.classList.remove('fade-in'), 500);
+    });
+}
+
+function selectAnswer(index) {
+    userAnswers.push(index);
+    if (index === questions[current].correct) {
+        score++;
+    }
+    current++;
+    scoreEl.textContent = `Счёт: ${score}`;
+    showQuestion();
+}
+
+function showResults() {
+    questionEl.textContent = `Игра окончена! Верных ответов: ${score} из ${questions.length}`;
+    optionsEl.innerHTML = "";
+    roundEl.textContent = "";
+
+    const resultsEl = document.getElementById('results');
+    const tbody = document.querySelector('#results-table tbody');
+    tbody.innerHTML = '';
+    questions.forEach((q, idx) => {
+        const tr = document.createElement('tr');
+        const tdQ = document.createElement('td');
+        tdQ.textContent = q.text;
+        const tdUser = document.createElement('td');
+        const userIdx = userAnswers[idx];
+        tdUser.textContent = userIdx !== undefined ? q.options[userIdx] : '—';
+        const tdCorrect = document.createElement('td');
+        tdCorrect.textContent = q.options[q.correct];
+        tr.appendChild(tdQ);
+        tr.appendChild(tdUser);
+        tr.appendChild(tdCorrect);
+        tbody.appendChild(tr);
+    });
+
+    resultsEl.classList.remove('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', showQuestion);
+    </script>
 </body>
 </html>
