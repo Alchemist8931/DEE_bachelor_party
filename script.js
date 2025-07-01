@@ -1,4 +1,5 @@
 let questions = [];
+let userAnswers = [];
 
 let current = 0;
 let score = 0;
@@ -27,15 +28,7 @@ function showRoundScreen() {
 
 async function showQuestion() {
     if (current >= questions.length) {
-        questionEl.textContent = `Игра окончена! Верных ответов: ${score} из ${questions.length}`;
-        optionsEl.innerHTML = "";
-        roundEl.textContent = "";
-        return;
-    }
-    if (current >= questions.length) {
-        questionEl.textContent = `Игра окончена! Верных ответов: ${score} из ${questions.length}`;
-        optionsEl.innerHTML = "";
-        roundEl.textContent = "";
+       showResults();
         return;
     }
 
@@ -63,12 +56,39 @@ async function showQuestion() {
 }
 
 function selectAnswer(index) {
+    userAnswers.push(index);
     if (index === questions[current].correct) {
         score++;
     }
     current++;
     scoreEl.textContent = `Счёт: ${score}`;
     showQuestion();
+}
+
+function showResults() {
+    questionEl.textContent = `Игра окончена! Верных ответов: ${score} из ${questions.length}`;
+    optionsEl.innerHTML = "";
+    roundEl.textContent = "";
+
+    const resultsEl = document.getElementById('results');
+    const tbody = document.querySelector('#results-table tbody');
+    tbody.innerHTML = '';
+    questions.forEach((q, idx) => {
+        const tr = document.createElement('tr');
+        const tdQ = document.createElement('td');
+        tdQ.textContent = q.text;
+        const tdUser = document.createElement('td');
+        const userIdx = userAnswers[idx];
+        tdUser.textContent = userIdx !== undefined ? q.options[userIdx] : '—';
+        const tdCorrect = document.createElement('td');
+        tdCorrect.textContent = q.options[q.correct];
+        tr.appendChild(tdQ);
+        tr.appendChild(tdUser);
+        tr.appendChild(tdCorrect);
+        tbody.appendChild(tr);
+    });
+
+    resultsEl.classList.remove('hidden');
 }
 
 async function loadQuestions() {
