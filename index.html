@@ -770,6 +770,7 @@ const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
+        let selectedIndex = null;
 
 function startQuiz() {
     userAnswers = [];
@@ -818,15 +819,27 @@ async function showQuestion() {
     setTimeout(() => questionEl.classList.remove('fade-in'), 500);
 
     optionsEl.innerHTML = '';
+    selectedIndex = null;
     q.options.forEach((opt, idx) => {
-       const btn = document.createElement('button');
+        const btn = document.createElement('button');
         btn.setAttribute('role', 'button');
         btn.textContent = opt;
         btn.className = 'fade-in';
-        btn.addEventListener('click', () => selectAnswer(idx));
+        btn.addEventListener('click', () => handleOptionClick(idx, btn));
         optionsEl.appendChild(btn);
         setTimeout(() => btn.classList.remove('fade-in'), 500);
     });
+}
+
+function handleOptionClick(index, button) {
+    if (selectedIndex === index) {
+        selectAnswer(index);
+        return;
+    }
+    selectedIndex = index;
+    const prev = optionsEl.querySelector('.selected');
+    if (prev) prev.classList.remove('selected');
+    button.classList.add('selected');
 }
 
 function selectAnswer(index) {
