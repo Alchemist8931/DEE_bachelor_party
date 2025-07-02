@@ -56,7 +56,7 @@ body {
     position: relative;
     display: flex;
     justify-content: center;
-    max-width: 720px;
+    max-width: 1020px;
     width: 100%;
     text-align: center;
 }
@@ -65,7 +65,7 @@ body {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
-    padding: 20px;
+    padding: 60px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     width: 100%;
@@ -74,12 +74,13 @@ h1 {
     margin-top: 0;
 }
 
+
 .options {
     list-style: none;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 20px;
 }
 
 .options button {
@@ -91,10 +92,10 @@ h1 {
   box-shadow: 0 0 0 0 transparent;
   transition: all 0.3s ease-in-out;
 
-  width: 100%;
+  width: 420px;
   height: auto;
   margin: 0;
-  padding: 10px;
+  padding: 20px;
   font-family: 'Comfortaa', sans-serif;
   font-size: 30px;
   color: #fff;
@@ -131,6 +132,28 @@ h1 {
 
 .options button:hover::before {
   animation: neon-shine 0.6s 0s linear;
+}
+
+@keyframes neon-shine {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+.optionsbutton:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 0 0 transparent;
+  transition: all 0.2s ease-in;
 }
 
 @keyframes neon-shine {
