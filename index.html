@@ -539,11 +539,18 @@ class Particle {
 }
 
 function startParticleAnimation(btn) {
+    // останавливаем текущую анимацию и чистим массив частиц
+    animationActive = false;
+    particles = [];
+
+    // вычисляем новые координаты для эффекта
     const rect = btn.getBoundingClientRect();
     modalX = rect.left;
     modalY = rect.top;
     buttonWidth = rect.width;
     buttonHeight = rect.height;
+
+    // запускаем анимацию
     animationActive = true;
     setTimeout(() => {
         animationActive = false;
