@@ -198,6 +198,19 @@ h1 {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes blinkEffect {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.blink-slow {
+    animation: blinkEffect 1s step-start infinite;
+}
+
+.blink-fast {
+    animation: blinkEffect 0.3s step-start infinite;
+}
+
 .round {
     font-weight: bold;
     margin-bottom: 10px;
@@ -944,7 +957,8 @@ musicToggleEl.addEventListener('change', () => {
 });
 
 let selectedIndex = null;
-        
+let confirmationInProgress = false;
+
 function playIntrigue() {
     const sound = intrigueBaseSound.cloneNode();
     sound.volume = 0;
@@ -1022,9 +1036,11 @@ async function showQuestion() {
 }
 
 function handleOptionClick(index, button) {
+    if (confirmationInProgress) {
+        return;
+    }
     if (selectedIndex === index) {
-        playIntrigue();
-        selectAnswer(index);
+        confirmAnswer(index, button);
         return;
     }
 
@@ -1035,8 +1051,28 @@ function handleOptionClick(index, button) {
 
     selectedIndex = index;
     button.classList.add('selected');
-    playIntrigue();
+     playIntrigue();
     startParticleAnimation(button);
+}
+
+function confirmAnswer(index, button) {
+    confirmationInProgress = true;
+    playIntrigue();
+    button.classList.add('blink-slow');
+    setTimeout(() => {
+        button.classList.remove('blink-slow');
+        const correctButton = optionsEl.children[questions[current].correct];
+        if (correctButton) {
+            correctButton.classList.add('blink-fast');
+        }
+        setTimeout(() => {
+            if (correctButton) {
+                correctButton.classList.remove('blink-fast');
+            }
+            confirmationInProgress = false;
+            selectAnswer(index);
+        }, 4000);
+    }, 4000);
 }
         
 function selectAnswer(index) {
