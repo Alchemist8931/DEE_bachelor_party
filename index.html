@@ -864,26 +864,21 @@ const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
-const intrigueSound = new Audio("audio/intrigue.mp3");
-intrigueSound.preload = "auto";
-        
-let fadeInterval;
+const intrigueBaseSound = new Audio("audio/intrigue.mp3");
+intrigueBaseSound.preload = "auto";
+
 let selectedIndex = null;
         
 function playIntrigue() {
-    if (fadeInterval) {
-        clearInterval(fadeInterval);
-    }
-    intrigueSound.pause();
-    intrigueSound.currentTime = 0;
-    intrigueSound.volume = 0;
-    intrigueSound.play();
-    fadeInterval = setInterval(() => {
-        if (intrigueSound.volume >= 1) {
-            clearInterval(fadeInterval);
-            fadeInterval = null;
+    const sound = intrigueBaseSound.cloneNode();
+    sound.volume = 0;
+    sound.play();
+
+    const interval = setInterval(() => {
+        if (sound.volume >= 1) {
+            clearInterval(interval);
         } else {
-            intrigueSound.volume = Math.min(1, intrigueSound.volume + 0.05);
+            sound.volume = Math.min(1, sound.volume + 0.05);
         }
     }, 200);
 }
@@ -1010,7 +1005,7 @@ if (restartBtn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    intrigueSound.load();
+   intrigueBaseSound.load();
     startBtn.classList.remove('hidden');
     introEl.classList.remove('hidden');
     quizContentEl.classList.add('hidden');
