@@ -455,8 +455,12 @@ h1 {
         <button id="restart-btn" class="button">Повторить</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-    <script>
+   <script>
       let particles = [];
+      let modalX = 0;
+      let modalY = 0;
+      let buttonWidth = 0;
+      let animationActive = false;
 let layers = [
     { color: "#dbded9", size: 1, height: 125, speed: 1.2, frequency: 10 },
     { color: "#838c7c", size: 2, height: 100, speed: 1.1, frequency: 15 },
@@ -526,6 +530,17 @@ class Particle {
     isFinished() {
         return this.alpha < 0;
     }
+}
+
+function startParticleAnimation(btn) {
+    const rect = btn.getBoundingClientRect();
+    modalX = rect.left;
+    modalY = rect.top;
+    buttonWidth = rect.width;
+    animationActive = true;
+    setTimeout(() => {
+        animationActive = false;
+    }, 600);
 }
 
     </script>
