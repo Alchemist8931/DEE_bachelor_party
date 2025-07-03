@@ -534,6 +534,22 @@ input:checked + .slider:before {
 #eminem-photo.visible {
   transform: translateY(3%);
 }
+
+        #next-btn:hover::after {
+    animation: glitch_4011 1s;
+    text-shadow: -3px -3px 0px #4f5b45, 3px 3px 0px #E94BE8;
+    background-color: transparent;
+    border: 3px solid #4f5b45;
+}
+
+#next-btn:hover {
+    text-shadow: -1px -1px 0px #4f5b45, 1px 1px 0px #E94BE8;
+    background-color: transparent;
+    border: 1px solid #4f5b45;
+    box-shadow: 0px 10px 10px -10px #4f5b45;
+}
+
+        
     </style>
 </head>
 <body>
@@ -1137,6 +1153,10 @@ function selectAnswer(index) {
 }
 
 function showNextButton() {
+    animationActive = false;
+    particles = [];
+    optionsEl.querySelectorAll('button').forEach(b => 
+        b.classList.remove('selected', 'blink-slow', 'blink-fast'));
     quizContentEl.classList.add('fade-out');
     setTimeout(() => {
         quizContentEl.classList.add('hidden');
