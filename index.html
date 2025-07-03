@@ -454,6 +454,78 @@ h1 {
         <table id="results-table"><tbody></tbody></table>
         <button id="restart-btn" class="button">Повторить</button>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script>
+        let particles = [];
+        let layers = 3;
+        let modalX = 0;
+        let modalY = 0;
+        let buttonWidth = 0;
+        let animationActive = false;
+
+        function setup() {
+            const canvas = createCanvas(windowWidth, windowHeight);
+            canvas.style('pointer-events', 'none');
+            canvas.position(0, 0);
+            noStroke();
+        }
+
+        function draw() {
+            clear();
+            if (animationActive) {
+                const startX = modalX - buttonWidth / 2;
+                const endX = modalX + buttonWidth / 2;
+                for (let i = 0; i < layers; i++) {
+                    particles.push(new Particle(random(startX, endX), modalY, i));
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].display();
+                if (particles[i].isFinished()) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, layer) {
+                this.x = x;
+                this.y = y;
+                this.layer = layer;
+                this.vx = random(-1, 1);
+                this.vy = random(-4, -1);
+                this.alpha = 255;
+                this.size = random(4, 7);
+                this.col = color(random(255), random(255), random(255));
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 4;
+            }
+
+            display() {
+                fill(red(this.col), green(this.col), blue(this.col), this.alpha);
+                ellipse(this.x, this.y, this.size);
+            }
+
+            isFinished() {
+                return this.alpha <= 0;
+            }
+        }
+
+        function startParticleAnimation(btn) {
+            const rect = btn.getBoundingClientRect();
+            modalX = rect.left + rect.width / 2;
+            modalY = rect.top;
+            buttonWidth = rect.width;
+            animationActive = true;
+            setTimeout(() => (animationActive = false), 600);
+        }
+    </script>
     <script>
 let questions = [
   {
@@ -841,6 +913,7 @@ function handleOptionClick(index, button) {
     const prev = optionsEl.querySelector('.selected');
     if (prev) prev.classList.remove('selected');
     button.classList.add('selected');
+    startParticleAnimation(button);
 }
 
 function selectAnswer(index) {
