@@ -197,6 +197,15 @@ h1 {
     animation: fadeOut 0.5s ease forwards;
 }
 
+/* animations for centered "next" button */
+.fade-in-center {
+    animation: fadeInCenter 1s ease;
+}
+
+.fade-out-center {
+    animation: fadeOutCenter 1s ease forwards;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -205,6 +214,16 @@ h1 {
 @keyframes fadeOut {
     from { opacity: 1; transform: translateY(0); }
     to { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes fadeInCenter {
+    from { opacity: 0; transform: translate(-50%, -50%) translateY(10px); }
+    to { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+}
+
+@keyframes fadeOutCenter {
+    from { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+    to { opacity: 0; transform: translate(-50%, -50%) translateY(-10px); }
 }
 
 @keyframes blinkEffect {
@@ -1163,8 +1182,8 @@ function showNextButton() {
         quizContentEl.classList.add('hidden');
         quizContentEl.classList.remove('fade-out');
         nextBtn.classList.remove('hidden');
-        nextBtn.classList.add('fade-in');
-        setTimeout(() => nextBtn.classList.remove('fade-in'), 500);
+        nextBtn.classList.add('fade-in-center');
+        setTimeout(() => nextBtn.classList.remove('fade-in-center'), 1000);
     }, 500);
 }
 
