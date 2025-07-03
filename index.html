@@ -569,9 +569,14 @@ input:checked + .slider:before {
     box-shadow: 0px 10px 10px -10px #4f5b45;
 }
 
+        .typed-letter {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
         #question {
     white-space: pre-line;
-      text-align: left;      
+      text-align: left;
 }
 
 
@@ -1009,6 +1014,7 @@ let userAnswers = [];
 
 let current = 0;
 let score = 0;
+const typingSpeed = 50; // скорость печати символов в мс
 const questionEl = document.getElementById('question');
 const optionsEl = document.getElementById('options');
 const roundEl = document.getElementById('round');
@@ -1058,6 +1064,42 @@ function playIntrigue() {
     }, 200);
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function typeText(el, text, speed) {
+    el.innerHTML = '';
+    for (const char of text) {
+        if (char === '\n') {
+            el.appendChild(document.createElement('br'));
+        } else {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.className = 'typed-letter';
+            el.appendChild(span);
+            requestAnimationFrame(() => { span.style.opacity = '1'; });
+        }
+        await sleep(speed);
+    }
+}
+
+async function showOptionsSequential(options) {
+    optionsEl.innerHTML = '';
+    selectedIndex = null;
+    await sleep(2000);
+    for (const [idx, opt] of options.entries()) {
+        const btn = document.createElement('button');
+        btn.setAttribute('role', 'button');
+        btn.textContent = opt;
+        btn.className = 'fade-in';
+        btn.addEventListener('click', () => handleOptionClick(idx, btn));
+        optionsEl.appendChild(btn);
+        setTimeout(() => btn.classList.remove('fade-in'), 500);
+        await sleep(300);
+    }
+}
+
 function startQuiz() {
     userAnswers = [];
     current = 0;
@@ -1104,21 +1146,8 @@ async function showQuestion() {
     showRoundInfo();
 
     const q = questions[current];
-    questionEl.textContent = q.text;
-    questionEl.classList.add('fade-in');
-    setTimeout(() => questionEl.classList.remove('fade-in'), 500);
-
-    optionsEl.innerHTML = '';
-    selectedIndex = null;
-    q.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.setAttribute('role', 'button');
-        btn.textContent = opt;
-        btn.className = 'fade-in';
-        btn.addEventListener('click', () => handleOptionClick(idx, btn));
-        optionsEl.appendChild(btn);
-        setTimeout(() => btn.classList.remove('fade-in'), 500);
-    });
+    await typeText(questionEl, q.text, typingSpeed);
+    await showOptionsSequential(q.options);
 }
 
 function handleOptionClick(index, button) {
