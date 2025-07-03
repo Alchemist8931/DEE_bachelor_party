@@ -865,6 +865,7 @@ const restartBtn = document.getElementById('restart-btn');
 const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
 const intrigueSound = new Audio("audio/intrigue.mp3");
+intrigueSound.preload = "auto";
         
 let fadeInterval;
 let selectedIndex = null;
@@ -1009,6 +1010,7 @@ if (restartBtn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    intrigueSound.load();
     startBtn.classList.remove('hidden');
     introEl.classList.remove('hidden');
     quizContentEl.classList.add('hidden');
