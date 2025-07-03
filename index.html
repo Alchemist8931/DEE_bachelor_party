@@ -193,9 +193,18 @@ h1 {
     animation: fadeIn 0.5s ease;
 }
 
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
 }
 
 @keyframes blinkEffect {
@@ -341,16 +350,18 @@ h1 {
 
 
 /* ________________glitch СТИЛИ КНОПКИ_____________  */
-        #start-btn,
-#start-btn::after {
-    padding: 10px 50px;
-    font-size: 20px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    background-color: transparent;
-    position: relative;
-}
+       #start-btn,
+        #next-btn,
+#start-btn::after,
+#next-btn::after {
+            padding: 10px 50px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: transparent;
+            position: relative;
+        }
 
 #start-btn {
     position: fixed;
@@ -358,7 +369,15 @@ h1 {
     right: 20px;
 }
 
-#start-btn::after {
+#next-btn {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#start-btn::after,
+#next-btn::after {
     --move1: inset(50% 50% 50% 50%);
     --move2: inset(31% 0 40% 0);
     --move3: inset(39% 0 15% 0);
@@ -525,6 +544,7 @@ input:checked + .slider:before {
             <span class="sub">мальчишник нашего пирожочка</span>
         </header>
         <button id="start-btn" class="hidden" data-text="НАЧАТЬ ИГРУ">НАЧАТЬ ВИКТОРИНУ</button>
+        <button id="next-btn" class="hidden" data-text="ДАЛЕЕ">ДАЛЕЕ</button>
         <div id="quiz-content" class="hidden">
             <div class="container">
                 <div class="container__inner">
@@ -953,6 +973,7 @@ const roundEl = document.getElementById('round');
 const roundStartEl = document.getElementById('round-start');
 const scoreEl = document.getElementById('score');
 const startBtn = document.getElementById('start-btn');
+const nextBtn = document.getElementById('next-btn');
 const restartBtn = document.getElementById('restart-btn');
 const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
@@ -1000,6 +1021,7 @@ function startQuiz() {
     startBtn.classList.add('hidden');
     introEl.classList.add('hidden');
     quizContentEl.classList.remove('hidden');
+    nextBtn.classList.add('hidden');
     showQuestion();
 }
 
@@ -1100,7 +1122,18 @@ function selectAnswer(index) {
     }
     current++;
     scoreEl.textContent = `Счёт: ${score}`;
-    showQuestion();
+    showNextButton();
+}
+
+function showNextButton() {
+    quizContentEl.classList.add('fade-out');
+    setTimeout(() => {
+        quizContentEl.classList.add('hidden');
+        quizContentEl.classList.remove('fade-out');
+        nextBtn.classList.remove('hidden');
+        nextBtn.classList.add('fade-in');
+        setTimeout(() => nextBtn.classList.remove('fade-in'), 500);
+    }, 500);
 }
 
 function showResults() {
@@ -1126,10 +1159,22 @@ function showResults() {
         tbody.appendChild(tr);
     });
 
-    resultsEl.classList.remove('hidden');
+   resultsEl.classList.remove('hidden');
+    nextBtn.classList.add('hidden');
 }
 
 startBtn.addEventListener('click', startQuiz);
+nextBtn.addEventListener('click', () => {
+    nextBtn.classList.add('fade-out');
+    setTimeout(() => {
+        nextBtn.classList.add('hidden');
+        nextBtn.classList.remove('fade-out');
+        quizContentEl.classList.remove('hidden');
+        quizContentEl.classList.add('fade-in');
+        setTimeout(() => quizContentEl.classList.remove('fade-in'), 500);
+        showQuestion();
+    }, 500);
+});
 if (restartBtn) {
     restartBtn.addEventListener('click', startQuiz);
 }
