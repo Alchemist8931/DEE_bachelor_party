@@ -901,6 +901,9 @@ async function showQuestion() {
         return;
     }
 
+    animationActive = false;
+    particles = [];
+
     if (current % 10 === 0) {
         await showRoundScreen();
     }
