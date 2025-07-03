@@ -469,6 +469,8 @@ let layers = [
 
 function setup() {
     let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.style('pointer-events', 'none');
+    canvas.position(0, 0);
     canvas.style('z-index', '998');
     const btn = document.getElementById('start-btn');
     const btnRect = btn.getBoundingClientRect();
