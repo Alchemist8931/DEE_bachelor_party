@@ -864,15 +864,23 @@ const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
-        const intrigueSound = new Audio("audio/intrigue.mp3");
-        let selectedIndex = null;
-
-        function playIntrigue() {
+const intrigueSound = new Audio("audio/intrigue.mp3");
+        
+let fadeInterval;
+let selectedIndex = null;
+        
+function playIntrigue() {
+    if (fadeInterval) {
+        clearInterval(fadeInterval);
+    }
+    intrigueSound.pause();
+    intrigueSound.currentTime = 0;
     intrigueSound.volume = 0;
     intrigueSound.play();
-    const fade = setInterval(() => {
+    fadeInterval = setInterval(() => {
         if (intrigueSound.volume >= 1) {
-            clearInterval(fade);
+            clearInterval(fadeInterval);
+            fadeInterval = null;
         } else {
             intrigueSound.volume = Math.min(1, intrigueSound.volume + 0.05);
         }
