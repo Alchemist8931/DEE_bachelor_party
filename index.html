@@ -7,7 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
-    <style>  
+    <style>
+:root {
+    --black-color: #000;
+    --white-color2: #fff;
+}
 body {
     font-family: 'Comfortaa', sans-serif;
     margin: 0;
@@ -423,10 +427,65 @@ h1 {
         transform: translate(-10px,10px);
     }
 
-    100% {
+   100% {
         clip-path: var(--move1);
         transform: translate(0);
     }
+}
+
+/* ---------- music switch styles ---------- */
+.switch {
+  font-size: 0.7vw;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  display: inline-block;
+  width: 2.3vw;
+  height: 1.3vw;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  margin: 0.1vw;
+  z-index: 9999;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--black-color);
+  transition: .4s;
+  border-radius: 6px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 0.8vw;
+  width: 0.18vw;
+  border-radius: 10px;
+  left: 0.2vw;
+  bottom: 0.2vw;
+  background-color: var(--white-color2);
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--white-color2);
+  box-shadow: inset 4px rgb(0, 0, 0);
+}
+
+input:checked + .slider:before {
+  transform: translateX(1.55vw) rotate(360deg);
+  background-color: var(--black-color);
 }
     </style>
 </head>
@@ -454,6 +513,10 @@ h1 {
         <table id="results-table"><tbody></tbody></table>
         <button id="restart-btn" class="button">Повторить</button>
     </div>
+    <label class="switch">
+        <input type="checkbox" id="music-toggle">
+        <span class="slider"></span>
+    </label>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
    <script>
       let particles = [];
@@ -866,6 +929,18 @@ const introEl = document.getElementById('intro');
 const quizContentEl = document.getElementById('quiz-content');
 const intrigueBaseSound = new Audio("audio/intrigue.mp3");
 intrigueBaseSound.preload = "auto";
+const eminemSound = new Audio("audio/Eminem - No Afraid.mp3");
+eminemSound.preload = "auto";
+const musicToggleEl = document.getElementById('music-toggle');
+musicToggleEl.addEventListener('change', () => {
+    if (musicToggleEl.checked) {
+        eminemSound.currentTime = 0;
+        eminemSound.play();
+    } else {
+        eminemSound.pause();
+        eminemSound.currentTime = 0;
+    }
+});
 
 let selectedIndex = null;
         
@@ -1006,6 +1081,7 @@ if (restartBtn) {
 
 document.addEventListener('DOMContentLoaded', () => {
    intrigueBaseSound.load();
+   eminemSound.load();
     startBtn.classList.remove('hidden');
     introEl.classList.remove('hidden');
     quizContentEl.classList.add('hidden');
