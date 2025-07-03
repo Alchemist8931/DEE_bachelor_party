@@ -458,6 +458,7 @@ h1 {
    <script>
       let particles = [];
       let modalX, modalY, buttonWidth, animationActive = false;
+      let buttonHeight;
 let layers = [
     { color: "#dbded9", size: 1, height: 125, speed: 1.2, frequency: 10 },
     { color: "#838c7c", size: 2, height: 100, speed: 1.1, frequency: 15 },
@@ -469,28 +470,34 @@ let layers = [
 function setup() {
     let canvas = createCanvas(windowWidth, windowHeight);
     canvas.style('z-index', '998');
-    modalX = (windowWidth - 600) / 2;
-    modalY = (windowHeight - 200) / 2;
+    const btn = document.getElementById('start-btn');
+    const btnRect = btn.getBoundingClientRect();
+    buttonWidth = btnRect.width;
+    buttonHeight = btnRect.height;
+    modalX = (windowWidth - buttonWidth) / 2;
+    modalY = (windowHeight - btnRect.height) / 2;
 }
 
 function draw() {
     clear();
-    layers.forEach((layer, index) => {
-        if (frameCount % layer.frequency == 0) {
-            let startX = modalX + 600 * 0.05;
-            let endX = startX + 600 * 0.9;
-            let x = random(startX, endX);
-            let y = modalY;
-            particles.push(new Particle(x, y, layer.color, layer.size, layer.height, layer.speed));
-        }
-    });
-    
-    for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        p.update();
-        p.display();
-        if (p.isFinished()) {
-            particles.splice(i, 1);
+    if (animationActive) {
+        layers.forEach((layer) => {
+            if (frameCount % layer.frequency == 0) {
+                let startX = modalX + buttonWidth * 0.05;
+                let endX = startX + buttonWidth * 0.9;
+                let x = random(startX, endX);
+                let y = modalY;
+                particles.push(new Particle(x, y, layer.color, layer.size, layer.height, layer.speed));
+            }
+        });
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.update();
+            p.display();
+            if (p.isFinished()) {
+                particles.splice(i, 1);
+            }
         }
     }
 }
@@ -534,6 +541,7 @@ function startParticleAnimation(btn) {
     modalX = rect.left;
     modalY = rect.top;
     buttonWidth = rect.width;
+    buttonHeight = rect.height;
     animationActive = true;
     setTimeout(() => {
         animationActive = false;
