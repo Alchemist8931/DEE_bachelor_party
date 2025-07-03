@@ -1216,15 +1216,15 @@ function showResults() {
 
 startBtn.addEventListener('click', startQuiz);
 nextBtn.addEventListener('click', () => {
-    nextBtn.classList.add('fade-out');
+    nextBtn.classList.add('fade-out-center');
     setTimeout(() => {
         nextBtn.classList.add('hidden');
-        nextBtn.classList.remove('fade-out');
+        nextBtn.classList.remove('fade-out-center');
         quizContentEl.classList.remove('hidden');
         quizContentEl.classList.add('fade-in');
         setTimeout(() => quizContentEl.classList.remove('fade-in'), 500);
         showQuestion();
-    }, 500);
+    }, 1000);
 });
 if (restartBtn) {
     restartBtn.addEventListener('click', startQuiz);
