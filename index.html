@@ -934,13 +934,17 @@ function handleOptionClick(index, button) {
         selectAnswer(index);
         return;
     }
-    selectedIndex = index;
+
     const prev = optionsEl.querySelector('.selected');
-    if (prev) prev.classList.remove('selected');
+    if (prev) {
+        prev.classList.remove('selected');
+    }
+
+    selectedIndex = index;
     button.classList.add('selected');
     startParticleAnimation(button);
 }
-
+        
 function selectAnswer(index) {
     userAnswers.push(index);
     if (index === questions[current].correct) {
