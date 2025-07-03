@@ -434,17 +434,18 @@ h1 {
 }
 
 /* ---------- music switch styles ---------- */
+/* ---------- music switch styles ---------- */
 .switch {
-  font-size: 0.7vw;
+  font-size: 7px;
   position: fixed;
   bottom: 10px;
   left: 10px;
   display: inline-block;
-  width: 2.3vw;
-  height: 1.3vw;
+  width: 22px;
+  height: 12px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
-  margin: 0.1vw;
+  border-radius: 3px;
+  margin: 1px;
   z-index: 9999;
 }
 
@@ -463,28 +464,28 @@ h1 {
   bottom: 0;
   background-color: var(--black-color);
   transition: .4s;
-  border-radius: 6px;
+  border-radius: 3px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 0.8vw;
-  width: 0.18vw;
-  border-radius: 10px;
-  left: 0.2vw;
-  bottom: 0.2vw;
+  height: 8px;
+  width: 2px;
+  border-radius: 5px;
+  left: 2px;
+  bottom: 2px;
   background-color: var(--white-color2);
   transition: .4s;
 }
 
 input:checked + .slider {
   background-color: var(--white-color2);
-  box-shadow: inset 4px rgb(0, 0, 0);
+  box-shadow: inset 2px rgb(0, 0, 0);
 }
 
 input:checked + .slider:before {
-  transform: translateX(1.55vw) rotate(360deg);
+  transform: translateX(15px) rotate(360deg);
   background-color: var(--black-color);
 }
     </style>
