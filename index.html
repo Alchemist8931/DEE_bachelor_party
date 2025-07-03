@@ -951,6 +951,7 @@ async function showQuestion() {
 
 function handleOptionClick(index, button) {
     if (selectedIndex === index) {
+        playIntrigue();
         selectAnswer(index);
         return;
     }
