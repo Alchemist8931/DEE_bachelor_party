@@ -981,6 +981,10 @@ const intrigueBaseSound = new Audio("audio/intrigue.mp3");
 intrigueBaseSound.preload = "auto";
 const eminemSound = new Audio("audio/Eminem - No Afraid.mp3");
 eminemSound.preload = "auto";
+const successSound = new Audio("audio/aplodismentyi.mp3");
+successSound.preload = "auto";
+const failureSound = new Audio("audio/neudacha.mp3");
+failureSound.preload = "auto";
 const musicToggleEl = document.getElementById('music-toggle');
 const eminemPhotoEl = document.getElementById('eminem-photo');
 musicToggleEl.addEventListener('change', () => {
@@ -1104,6 +1108,13 @@ function confirmAnswer(index, button) {
         const correctButton = optionsEl.children[questions[current].correct];
         if (correctButton) {
             correctButton.classList.add('blink-fast');
+        }
+        if (index === questions[current].correct) {
+            successSound.currentTime = 0;
+            successSound.play();
+        } else {
+            failureSound.currentTime = 0;
+            failureSound.play();
         }
         setTimeout(() => {
             if (correctButton) {
