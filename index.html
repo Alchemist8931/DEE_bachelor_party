@@ -1085,9 +1085,11 @@ async function typeText(el, text, speed) {
 }
 
 async function showOptionsSequential(options) {
+    optionsEl.classList.add('hidden');
     optionsEl.innerHTML = '';
     selectedIndex = null;
     await sleep(2000);
+    optionsEl.classList.remove('hidden');
     for (const [idx, opt] of options.entries()) {
         const btn = document.createElement('button');
         btn.setAttribute('role', 'button');
@@ -1144,6 +1146,9 @@ async function showQuestion() {
     }
 
     showRoundInfo();
+
+    optionsEl.classList.add('hidden');
+    optionsEl.innerHTML = '';
 
     const q = questions[current];
     await typeText(questionEl, q.text, typingSpeed);
